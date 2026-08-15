@@ -57,6 +57,10 @@ jobs:
           chmod +x "$GODOT_BIN"
           echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
 
+      - name: Initialize Phantom Camera editor plugin
+        shell: bash
+        run: '"$GODOT_BIN" --headless --editor --path "$GITHUB_WORKSPACE" --quit-after 10'
+
       - name: Run headless Phantom Camera runtime smoke
         shell: bash
         run: '"$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" -- --m1-spike-ci'
