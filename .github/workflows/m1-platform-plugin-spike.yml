@@ -1,0 +1,62 @@
+name: M1.0 Platform & Plugin Spike
+
+on:
+  push:
+    branches:
+      - agent/m1-platform-plugin-spike
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dotnet-and-godot-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Materialize Phantom Camera
+        shell: bash
+        run: bash ./scripts/bootstrap-third-party.sh
+
+      - name: Restore
+        run: dotnet restore Lime.csproj
+
+      - name: Build C# project
+        run: dotnet build Lime.csproj --configuration Debug --no-restore
+
+      - name: Download Godot 4.7.1 .NET editor
+        shell: bash
+        run: |
+          set -euo pipefail
+          GODOT_URL="https://github.com/godotengine/godot/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_linux_x86_64.zip"
+          GODOT_SHA256="6ca7ff0459f1b806900be683c1b0837c607a9c16834c530dc68c81b9fc3ae1f6"
+          ARCHIVE="$RUNNER_TEMP/godot.zip"
+          DESTINATION="$RUNNER_TEMP/godot"
+
+          curl --fail --location --silent --show-error "$GODOT_URL" -o "$ARCHIVE"
+          echo "$GODOT_SHA256  $ARCHIVE" | sha256sum --check --status
+          mkdir -p "$DESTINATION"
+          unzip -q "$ARCHIVE" -d "$DESTINATION"
+
+          GODOT_BIN="$(find "$DESTINATION" -type f -name 'Godot_v4.7.1-stable_mono_linux*' -print -quit)"
+          if [[ -z "$GODOT_BIN" ]]; then
+            echo 'Godot .NET executable not found after extraction.' >&2
+            exit 1
+          fi
+
+          chmod +x "$GODOT_BIN"
+          echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
+
+      - name: Run headless Phantom Camera runtime smoke
+        shell: bash
+        run: '"$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" -- --m1-spike-ci'

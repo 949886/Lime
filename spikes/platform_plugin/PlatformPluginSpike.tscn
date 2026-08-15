@@ -1,0 +1,56 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://spikes/platform_plugin/PlatformPluginSpike.cs" id="1_spike"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_host"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_pcam"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_tween"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_camera_resource"]
+
+[sub_resource type="Resource" id="TweenResource_spike"]
+script = ExtResource("4_tween")
+
+[sub_resource type="Resource" id="Camera3DResource_spike"]
+script = ExtResource("5_camera_resource")
+
+[node name="PlatformPluginSpike" type="Node3D"]
+script = ExtResource("1_spike")
+
+[node name="RenderCamera" type="Camera3D" parent="."]
+current = true
+physics_interpolation_mode = 1
+
+[node name="PhantomCameraHost" type="Node" parent="RenderCamera"]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("2_host")
+
+[node name="FollowCamera" type="Node3D" parent="."]
+unique_name_in_owner = true
+top_level = true
+rotation = Vector3(-0.436332, 0, 0)
+script = ExtResource("3_pcam")
+priority = 100
+follow_mode = 2
+tween_resource = SubResource("TweenResource_spike")
+tween_on_load = false
+camera_3d_resource = SubResource("Camera3DResource_spike")
+follow_offset = Vector3(0, 3.5, 7)
+follow_damping = true
+follow_damping_value = Vector3(1.5, 1.5, 1.5)
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+
+[node name="Target" type="Node3D" parent="."]
+unique_name_in_owner = true
+position = Vector3(0, 0.5, 0)
+
+[node name="TargetVisual" type="CSGBox3D" parent="Target"]
+size = Vector3(0.75, 1, 0.75)
+
+[node name="Ground" type="CSGBox3D" parent="."]
+position = Vector3(0, -0.1, 0)
+size = Vector3(20, 0.2, 20)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.785398, -0.523599, 0)
+shadow_enabled = true

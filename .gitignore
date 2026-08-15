@@ -1,0 +1,14 @@
+.godot/
+.mono/
+bin/
+obj/
+.vscode/
+.idea/
+
+# Materialized by scripts/BootstrapThirdParty.* from the pinned Phantom Camera release.
+addons/phantom_camera/
+
+# Local/export output.
+build/
+exports/
+*.user

@@ -1,0 +1,39 @@
+; Engine configuration file.
+; M1.0 Platform & Plugin Spike baseline.
+config_version=5
+
+[application]
+
+config/name="Lime"
+run/main_scene="res://spikes/platform_plugin/PlatformPluginSpike.tscn"
+config/features=PackedStringArray("4.7", "C#", "Mobile")
+
+[autoload]
+
+PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
+
+[display]
+
+window/size/viewport_width=2560
+window/size/viewport_height=1440
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[dotnet]
+
+project/assembly_name="Lime"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/phantom_camera/plugin.cfg")
+
+[physics]
+
+common/physics_ticks_per_second=60
+
+[rendering]
+
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="mobile"
