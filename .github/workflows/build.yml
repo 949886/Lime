@@ -49,10 +49,11 @@ jobs:
         run: godot --version
 
       # Phantom Camera registers GDScript global classes. A fresh checkout has no
-      # .godot/global_script_class_cache.cfg, so bootstrap the editor before any
-      # runtime smoke or export step.
+      # .godot/global_script_class_cache.cfg, so run Godot's dedicated import mode
+      # before any runtime smoke or export step. --import waits for resource import
+      # completion and then exits cleanly.
       - name: Bootstrap Godot import and script class cache
-        run: godot --headless --editor --path . --quit-after 10
+        run: godot --headless --path . --import
 
       - name: Run Phantom Camera regression smoke
         if: matrix.platform == 'Windows'
