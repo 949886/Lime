@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  platform-plugin-smoke:
+  linux-runtime-and-android-export:
     runs-on: ubuntu-latest
     timeout-minutes: 40
 
@@ -171,3 +171,101 @@ jobs:
             --export-debug 'Android Smoke' "$GITHUB_WORKSPACE/build/android/LimeSmoke.apk"
           test -s "$GITHUB_WORKSPACE/build/android/LimeSmoke.apk"
           ls -lh "$GITHUB_WORKSPACE/build/android/LimeSmoke.apk"
+
+  macos-ios-export:
+    runs-on: macos-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Verify Xcode environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcode-select -p
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-path
+
+      - name: Materialize Phantom Camera
+        shell: bash
+        run: bash ./scripts/bootstrap-third-party.sh
+
+      - name: Restore
+        run: dotnet restore Lime.csproj
+
+      - name: Build C# project
+        run: dotnet build Lime.csproj --configuration Debug --no-restore
+
+      - name: Download Godot 4.7.1 .NET macOS editor
+        shell: bash
+        run: |
+          set -euo pipefail
+          GODOT_URL="https://github.com/godotengine/godot/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_macos.universal.zip"
+          GODOT_SHA256="92cac516baa8ddc7756eeaa38a6d007778a968bfbf188db7c5d6e6ec21c5d52c"
+          ARCHIVE="$RUNNER_TEMP/godot-macos.zip"
+          DESTINATION="$RUNNER_TEMP/godot-macos"
+
+          curl --fail --location --silent --show-error "$GODOT_URL" -o "$ARCHIVE"
+          echo "$GODOT_SHA256  $ARCHIVE" | shasum -a 256 -c -
+          mkdir -p "$DESTINATION"
+          ditto -x -k "$ARCHIVE" "$DESTINATION"
+
+          GODOT_BIN="$(find "$DESTINATION" -type f -path '*/Contents/MacOS/Godot' -print -quit)"
+          if [[ -z "$GODOT_BIN" ]]; then
+            echo 'Godot .NET macOS executable not found after extraction.' >&2
+            find "$DESTINATION" -maxdepth 5 -type f | head -100
+            exit 1
+          fi
+
+          chmod +x "$GODOT_BIN"
+          echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
+
+      - name: Initialize Phantom Camera editor plugin
+        shell: bash
+        run: '"$GODOT_BIN" --headless --editor --path "$GITHUB_WORKSPACE" --quit-after 10'
+
+      - name: Install Godot 4.7.1 .NET export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          TEMPLATE_URL="https://github.com/godotengine/godot/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_export_templates.tpz"
+          TEMPLATE_SHA256="ef9a708be51ecd974cd7dccdcafd7a1870da3d3e1c24c072bdbb9818c7a7db63"
+          ARCHIVE="$RUNNER_TEMP/godot-export-templates.tpz"
+          EXTRACT_ROOT="$RUNNER_TEMP/godot-export-templates"
+          INSTALL_ROOT="$HOME/Library/Application Support/Godot/export_templates/4.7.1.stable.mono"
+
+          curl --fail --location --silent --show-error "$TEMPLATE_URL" -o "$ARCHIVE"
+          echo "$TEMPLATE_SHA256  $ARCHIVE" | shasum -a 256 -c -
+          mkdir -p "$EXTRACT_ROOT"
+          ditto -x -k "$ARCHIVE" "$EXTRACT_ROOT"
+
+          SOURCE_DIR="$(find "$EXTRACT_ROOT" -type d -path '*/4.7.1.stable.mono' -print -quit)"
+          if [[ -z "$SOURCE_DIR" ]]; then
+            SOURCE_DIR="$(find "$EXTRACT_ROOT" -type f -name 'ios.zip' -exec dirname {} \; -quit)"
+          fi
+          if [[ -z "$SOURCE_DIR" ]]; then
+            echo 'Could not locate the mono export template directory.' >&2
+            exit 1
+          fi
+
+          mkdir -p "$INSTALL_ROOT"
+          cp -R "$SOURCE_DIR"/. "$INSTALL_ROOT"/
+          test -e "$INSTALL_ROOT/ios.zip"
+
+      - name: Export iOS C# Xcode project smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/build/ios"
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" \
+            --export-debug 'iOS Smoke' "$GITHUB_WORKSPACE/build/ios/LimeSmoke.zip"
+          test -s "$GITHUB_WORKSPACE/build/ios/LimeSmoke.zip"
+          unzip -l "$GITHUB_WORKSPACE/build/ios/LimeSmoke.zip" | tee "$RUNNER_TEMP/ios-export-list.txt"
+          grep -q '\.xcodeproj/project\.pbxproj' "$RUNNER_TEMP/ios-export-list.txt"
