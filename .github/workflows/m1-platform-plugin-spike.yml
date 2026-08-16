@@ -11,9 +11,9 @@ permissions:
   contents: read
 
 jobs:
-  dotnet-and-godot-smoke:
+  platform-plugin-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
 
     steps:
       - name: Checkout
@@ -23,6 +23,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+
+      - name: Setup OpenJDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - name: Materialize Phantom Camera
         shell: bash
@@ -64,3 +70,104 @@ jobs:
       - name: Run headless Phantom Camera runtime smoke
         shell: bash
         run: '"$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" -- --m1-spike-ci'
+
+      - name: Ensure Android SDK packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          if [[ -z "$SDK_ROOT" ]]; then
+            echo 'ANDROID_SDK_ROOT / ANDROID_HOME is not configured on the runner.' >&2
+            exit 1
+          fi
+
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [[ -z "$SDKMANAGER" ]]; then
+            SDKMANAGER="$(find "$SDK_ROOT/cmdline-tools" -type f -name sdkmanager -print -quit)"
+          fi
+          if [[ -z "$SDKMANAGER" ]]; then
+            echo 'sdkmanager was not found.' >&2
+            exit 1
+          fi
+
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" --sdk_root="$SDK_ROOT" \
+            'platform-tools' \
+            'build-tools;35.0.1' \
+            'platforms;android-35' \
+            'cmake;3.10.2.4988404' \
+            'ndk;28.1.13356709'
+
+          echo "LIME_ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+
+      - name: Configure Godot Android editor settings
+        shell: bash
+        run: |
+          set -euo pipefail
+          SETTINGS_FILE="$(find "$HOME/.config/godot" -type f -name 'editor_settings-4.7.tres' -print -quit)"
+          if [[ -z "$SETTINGS_FILE" ]]; then
+            echo 'Godot editor settings file was not created.' >&2
+            exit 1
+          fi
+
+          python3 - "$SETTINGS_FILE" "$LIME_ANDROID_SDK_ROOT" "$JAVA_HOME" <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          path = pathlib.Path(sys.argv[1])
+          android_sdk = sys.argv[2]
+          java_sdk = sys.argv[3]
+          text = path.read_text(encoding="utf-8")
+
+          values = {
+              "export/android/android_sdk_path": android_sdk,
+              "export/android/java_sdk_path": java_sdk,
+          }
+
+          for key, value in values.items():
+              escaped = value.replace("\\", "\\\\").replace('"', '\\"')
+              line = f'{key} = "{escaped}"'
+              pattern = rf'(?m)^{re.escape(key)}\s*=.*$'
+              if re.search(pattern, text):
+                  text = re.sub(pattern, line, text)
+              else:
+                  text = text.rstrip() + "\n" + line + "\n"
+
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Install Godot 4.7.1 .NET export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          TEMPLATE_URL="https://github.com/godotengine/godot/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_export_templates.tpz"
+          TEMPLATE_SHA256="ef9a708be51ecd974cd7dccdcafd7a1870da3d3e1c24c072bdbb9818c7a7db63"
+          ARCHIVE="$RUNNER_TEMP/godot-export-templates.tpz"
+          EXTRACT_ROOT="$RUNNER_TEMP/godot-export-templates"
+          INSTALL_ROOT="$HOME/.local/share/godot/export_templates/4.7.1.stable.mono"
+
+          curl --fail --location --silent --show-error "$TEMPLATE_URL" -o "$ARCHIVE"
+          echo "$TEMPLATE_SHA256  $ARCHIVE" | sha256sum --check --status
+          mkdir -p "$EXTRACT_ROOT"
+          unzip -q "$ARCHIVE" -d "$EXTRACT_ROOT"
+
+          SOURCE_DIR="$(find "$EXTRACT_ROOT" -type f -name android_debug.apk -printf '%h\n' -quit)"
+          if [[ -z "$SOURCE_DIR" ]]; then
+            echo 'android_debug.apk was not found in the export template archive.' >&2
+            exit 1
+          fi
+
+          mkdir -p "$INSTALL_ROOT"
+          cp -R "$SOURCE_DIR"/. "$INSTALL_ROOT"/
+          test -s "$INSTALL_ROOT/android_debug.apk"
+
+      - name: Export Android C# smoke APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/build/android"
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" \
+            --export-debug 'Android Smoke' "$GITHUB_WORKSPACE/build/android/LimeSmoke.apk"
+          test -s "$GITHUB_WORKSPACE/build/android/LimeSmoke.apk"
+          ls -lh "$GITHUB_WORKSPACE/build/android/LimeSmoke.apk"
