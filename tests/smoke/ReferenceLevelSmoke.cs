@@ -96,6 +96,7 @@ public partial class ReferenceLevelSmoke : Node
         var upperPlatform = level.GetNode<MeshInstance3D>("Geometry/UpperPlatform");
         var intermediatePlatform = level.GetNode<MeshInstance3D>("Geometry/IntermediatePlatform");
         var lowerCorridor = level.GetNode<MeshInstance3D>("Geometry/LowerCorridor");
+        var lowerFrontStep = level.GetNode<MeshInstance3D>("Geometry/LowerFrontStairs/Step01");
 
         var upperMesh = upperPlatform.Mesh as BoxMesh
             ?? throw new InvalidOperationException("UpperPlatform must use a BoxMesh graybox mass.");
@@ -103,15 +104,27 @@ public partial class ReferenceLevelSmoke : Node
             ?? throw new InvalidOperationException("IntermediatePlatform must use a BoxMesh graybox mass.");
         var corridorMesh = lowerCorridor.Mesh as BoxMesh
             ?? throw new InvalidOperationException("LowerCorridor must use a BoxMesh graybox mass.");
+        var lowerFrontStepMesh = lowerFrontStep.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("LowerFrontStairs must use BoxMesh graybox steps.");
 
         Require(Near(upperMesh.Size.X, 18.0f) && Near(upperMesh.Size.Z, 12.0f),
             "UpperPlatform bootstrap footprint must remain 18 x 12.");
         Require(Near(intermediateMesh.Size.X, 8.0f) && Near(intermediateMesh.Size.Z, 5.0f),
             "IntermediatePlatform bootstrap footprint must remain 8 x 5.");
-        Require(Near(corridorMesh.Size.X, 22.0f) && Near(corridorMesh.Size.Z, 3.5f),
-            "LowerCorridor bootstrap footprint must remain 22 x 3.5.");
-        Require(corridorMesh.Size.X > corridorMesh.Size.Z * 5.0f,
+
+        var corridorLongSide = Mathf.Max(corridorMesh.Size.X, corridorMesh.Size.Z);
+        var corridorShortSide = Mathf.Min(corridorMesh.Size.X, corridorMesh.Size.Z);
+        Require(Near(corridorLongSide, 25.0f) && Near(corridorShortSide, 3.5f),
+            $"LowerCorridor bootstrap footprint must remain 25 x 3.5 after lower-stair alignment. " +
+            $"Actual XZ=({corridorMesh.Size.X}, {corridorMesh.Size.Z}).");
+        Require(corridorLongSide > corridorShortSide * 5.0f,
             "LowerCorridor must stay a narrow cross-corridor instead of becoming a broad platform.");
+
+        var corridorLeftEdgeX = WorldMaxX(lowerCorridor, corridorMesh);
+        var lowerFrontStairLeftEdgeX = WorldMaxX(lowerFrontStep, lowerFrontStepMesh);
+        Require(Near(corridorLeftEdgeX, lowerFrontStairLeftEdgeX),
+            $"LowerCorridor screen-left/world-+X edge must align with the lower-front stair left edge. " +
+            $"Corridor={corridorLeftEdgeX}, Stair={lowerFrontStairLeftEdgeX}.");
 
         Require(level.GetNodeOrNull<Node3D>("Geometry/Stairs01") is not null,
             "Reference graybox must include first stair visuals.");
@@ -136,6 +149,16 @@ public partial class ReferenceLevelSmoke : Node
             "ReferenceLevel static collision must use World layer 1.");
         Require(worldCollision.CollisionMask == 0,
             "Static reference World collision does not need a collision mask.");
+
+        var corridorCollision = worldCollision.GetNode<CollisionShape3D>("LowerCorridor");
+        var corridorShape = corridorCollision.Shape as BoxShape3D
+            ?? throw new InvalidOperationException("LowerCorridor gameplay collision must use a BoxShape3D.");
+        Require(Near(corridorShape.Size.X, corridorMesh.Size.X) &&
+                Near(corridorShape.Size.Y, corridorMesh.Size.Y) &&
+                Near(corridorShape.Size.Z, corridorMesh.Size.Z),
+            "LowerCorridor visual mesh and gameplay collision footprint must stay synchronized.");
+        Require(corridorCollision.GlobalPosition.DistanceTo(lowerCorridor.GlobalPosition) < 0.01f,
+            "LowerCorridor visual mesh and gameplay collision must share the same center.");
 
         var stairRamp01 = worldCollision.GetNode<CollisionShape3D>("StairRamp01");
         var stairRamp02 = worldCollision.GetNode<CollisionShape3D>("StairRamp02");
@@ -237,6 +260,16 @@ public partial class ReferenceLevelSmoke : Node
     private static float HorizontalDistance(Vector3 left, Vector3 right)
     {
         return new Vector2(left.X - right.X, left.Z - right.Z).Length();
+    }
+
+    private static float WorldMaxX(MeshInstance3D instance, BoxMesh mesh)
+    {
+        var halfSize = mesh.Size * 0.5f;
+        var basis = instance.GlobalBasis;
+        return instance.GlobalPosition.X +
+               Mathf.Abs(basis.X.X) * halfSize.X +
+               Mathf.Abs(basis.Y.X) * halfSize.Y +
+               Mathf.Abs(basis.Z.X) * halfSize.Z;
     }
 
     private static bool Near(float left, float right)
