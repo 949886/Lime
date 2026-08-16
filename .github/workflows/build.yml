@@ -48,6 +48,25 @@ jobs:
       - name: Verify Godot
         run: godot --version
 
+      # Headless CI never uses one-click deploy. The repository's editor-authored
+      # export_presets.cfg may remember runnable platform presets (notably Android),
+      # which starts device polling during editor import and is unnecessary here.
+      # Keep all named export presets/options, but clear only the ephemeral checkout's
+      # runnable selection before Godot editor/bootstrap starts.
+      - name: Disable one-click runnable presets in CI
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("export_presets.cfg")
+          text = path.read_text(encoding="utf-8")
+          header = "[runnable_presets]"
+          first_preset = "[preset.0]"
+          start = text.index(header)
+          end = text.index(first_preset, start)
+          text = text[:start] + header + "\n\n" + text[end:]
+          path.write_text(text, encoding="utf-8")
+
       # Phantom Camera registers GDScript global classes. A fresh checkout has no
       # .godot/global_script_class_cache.cfg, so run Godot's dedicated import mode
       # before any runtime smoke or export step. --import waits for resource import
