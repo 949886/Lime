@@ -1,0 +1,64 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://spikes/platform_plugin/PlatformPluginSpike.cs" id="1_spike"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_host"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_pcam"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_tween"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_camera_resource"]
+
+[sub_resource type="Resource" id="Tween_follow"]
+script = ExtResource("4_tween")
+
+[sub_resource type="Resource" id="CameraResource_follow"]
+script = ExtResource("5_camera_resource")
+
+[sub_resource type="Resource" id="Tween_static"]
+script = ExtResource("4_tween")
+
+[sub_resource type="Resource" id="CameraResource_static"]
+script = ExtResource("5_camera_resource")
+
+[sub_resource type="BoxMesh" id="BoxMesh_target"]
+size = Vector3(1, 1, 1)
+
+[node name="PlatformPluginSpike" type="Node3D"]
+script = ExtResource("1_spike")
+
+[node name="RenderCamera" type="Camera3D" parent="."]
+current = true
+physics_interpolation_mode = 1
+
+[node name="PhantomCameraHost" type="Node" parent="RenderCamera"]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("2_host")
+
+[node name="FollowTarget" type="Node3D" parent="."]
+
+[node name="PlaceholderVisual" type="MeshInstance3D" parent="FollowTarget"]
+mesh = SubResource("BoxMesh_target")
+
+[node name="PCams" type="Node3D" parent="."]
+
+[node name="FollowCamera" type="Node3D" parent="PCams" node_paths=PackedStringArray("follow_target")]
+top_level = true
+script = ExtResource("3_pcam")
+priority = 100
+follow_mode = 2
+follow_target = NodePath("../../FollowTarget")
+tween_resource = SubResource("Tween_follow")
+tween_on_load = false
+camera_3d_resource = SubResource("CameraResource_follow")
+follow_offset = Vector3(0, 3, 6)
+follow_damping = true
+follow_damping_value = Vector3(0.2, 0.2, 0.2)
+rotation_degrees = Vector3(-25, 0, 0)
+
+[node name="StaticCamera" type="Node3D" parent="PCams"]
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 5, 4, 8)
+top_level = true
+script = ExtResource("3_pcam")
+priority = 0
+tween_resource = SubResource("Tween_static")
+tween_on_load = false
+camera_3d_resource = SubResource("CameraResource_static")
