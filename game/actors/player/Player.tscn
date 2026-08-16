@@ -3,12 +3,9 @@
 [ext_resource type="Script" path="res://game/actors/player/PlayerController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://game/actors/player/PlayerInput.cs" id="2_input"]
 [ext_resource type="Resource" path="res://game/actors/player/profiles/bootstrap_movement.tres" id="3_profile"]
+[ext_resource type="PackedScene" path="res://assets/spine/1015_aglna2/Angelina.tscn" id="4_angelina"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
-radius = 0.3
-height = 1.6
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_player"]
 radius = 0.3
 height = 1.6
 
@@ -28,6 +25,4 @@ shape = SubResource("CapsuleShape3D_player")
 
 [node name="VisualRoot" type="Node3D" parent="."]
 
-[node name="PlaceholderVisual" type="MeshInstance3D" parent="VisualRoot"]
-position = Vector3(0, 0.8, 0)
-mesh = SubResource("CapsuleMesh_player")
+[node name="CharacterVisual" parent="VisualRoot" instance=ExtResource("4_angelina")]
