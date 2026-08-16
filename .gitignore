@@ -1,14 +1,20 @@
+# Godot 4+ specific ignores
 .godot/
+!.godot/extension_list.cfg
+
+# Godot-specific ignores
+.import/
+# export.cfg
+# export_presets.cfg
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+
+# Mono-specific ignores
 .mono/
-bin/
-obj/
-.vscode/
-.idea/
+data_*/
+mono_crash.*.json
 
-# Materialized by scripts/BootstrapThirdParty.* from the pinned Phantom Camera release.
-addons/phantom_camera/
-
-# Local/export output.
-build/
-exports/
-*.user
+# Misc
+.idea
+/.doc/NoitaWangTiler

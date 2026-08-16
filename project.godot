@@ -1,5 +1,11 @@
 ; Engine configuration file.
-; M1.0 Platform & Plugin Spike baseline.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
 config_version=5
 
 [application]
@@ -30,12 +36,7 @@ project/assembly_name="Lime"
 
 enabled=PackedStringArray("res://addons/phantom_camera/plugin.cfg")
 
-[physics]
-
-common/physics_ticks_per_second=60
-
 [rendering]
 
 renderer/rendering_method="mobile"
-renderer/rendering_method.mobile="mobile"
 textures/vram_compression/import_etc2_astc=true
