@@ -3,7 +3,7 @@ using Godot;
 
 namespace Lime.App;
 
-public enum GameMode
+public enum GameState
 {
     Hub,
     Transition,
@@ -11,7 +11,7 @@ public enum GameMode
     Cutscene,
 }
 
-public enum UiMode
+public enum UiState
 {
     None,
     Dialogue,
@@ -21,11 +21,11 @@ public enum UiMode
 public partial class FlowController : Node
 {
     public bool IsStarted { get; private set; }
-    public GameMode CurrentGameMode { get; private set; } = GameMode.Hub;
-    public UiMode CurrentUiMode { get; private set; } = UiMode.None;
+    public GameState CurrentGameState { get; private set; } = GameState.Hub;
+    public UiState CurrentUiState { get; private set; } = UiState.None;
 
     public bool GameplayInputEnabled =>
-        IsStarted && CurrentGameMode == GameMode.Explore && CurrentUiMode == UiMode.None;
+        IsStarted && CurrentGameState == GameState.Explore && CurrentUiState == UiState.None;
 
     public void Start()
     {
@@ -35,20 +35,20 @@ public partial class FlowController : Node
         }
 
         IsStarted = true;
-        CurrentGameMode = GameMode.Explore;
-        CurrentUiMode = UiMode.None;
+        CurrentGameState = GameState.Explore;
+        CurrentUiState = UiState.None;
     }
 
-    public void SetGameMode(GameMode mode)
+    public void SetGameState(GameState state)
     {
         EnsureStarted();
-        CurrentGameMode = mode;
+        CurrentGameState = state;
     }
 
-    public void SetUiMode(UiMode mode)
+    public void SetUiState(UiState state)
     {
         EnsureStarted();
-        CurrentUiMode = mode;
+        CurrentUiState = state;
     }
 
     private void EnsureStarted()
