@@ -1,8 +1,8 @@
 using System;
 using Godot;
-using Lime.Actors.Player;
-using Lime.App;
-using Lime.World;
+using Lime.Game;
+using Lime.Game.Actors.Player;
+using Lime.Game.World;
 
 namespace Lime.Tests.Smoke;
 
@@ -16,7 +16,7 @@ public partial class ProjectSkeletonSmoke : Node
             InputActions.ValidateConfigured();
             CollisionLayers.ValidateConfigured();
 
-            var scene = GD.Load<PackedScene>("res://app/GameRoot.tscn")
+            var scene = GD.Load<PackedScene>("res://game/GameRoot.tscn")
                 ?? throw new InvalidOperationException("GameRoot.tscn could not be loaded.");
 
             var gameRoot = scene.Instantiate<GameRoot>();
@@ -40,7 +40,7 @@ public partial class ProjectSkeletonSmoke : Node
     {
         Require(
             ProjectSettings.GetSetting("application/run/main_scene").AsString() ==
-            "res://app/GameRoot.tscn",
+            "res://game/GameRoot.tscn",
             "GameRoot.tscn is not configured as the project main scene.");
 
         Require(

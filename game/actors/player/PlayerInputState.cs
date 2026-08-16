@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Lime.Actors.Player;
+namespace Lime.Game.Actors.Player;
 
 public readonly record struct PlayerInputState(
     Vector2 Move,

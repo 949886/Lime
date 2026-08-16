@@ -1,7 +1,7 @@
 using Godot;
-using Lime.App;
+using Lime.Game;
 
-namespace Lime.Actors.Player;
+namespace Lime.Game.Actors.Player;
 
 public partial class PlayerInput : Node
 {

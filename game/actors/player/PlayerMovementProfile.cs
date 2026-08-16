@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Lime.Actors.Player;
+namespace Lime.Game.Actors.Player;
 
 [GlobalClass]
 public partial class PlayerMovementProfile : Resource

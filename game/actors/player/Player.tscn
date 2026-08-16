@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3]
 
-[ext_resource type="Script" path="res://actors/player/PlayerController.cs" id="1_controller"]
-[ext_resource type="Script" path="res://actors/player/PlayerInput.cs" id="2_input"]
-[ext_resource type="Resource" path="res://actors/player/profiles/bootstrap_movement.tres" id="3_profile"]
+[ext_resource type="Script" path="res://game/actors/player/PlayerController.cs" id="1_controller"]
+[ext_resource type="Script" path="res://game/actors/player/PlayerInput.cs" id="2_input"]
+[ext_resource type="Resource" path="res://game/actors/player/profiles/bootstrap_movement.tres" id="3_profile"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.3

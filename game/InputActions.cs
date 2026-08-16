@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 
-namespace Lime.App;
+namespace Lime.Game;
 
 public static class InputActions
 {

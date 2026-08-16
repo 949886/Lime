@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace Lime.Actors.Player;
+namespace Lime.Game.Actors.Player;
 
 public partial class PlayerController : CharacterBody3D
 {

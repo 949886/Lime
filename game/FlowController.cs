@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace Lime.App;
+namespace Lime.Game;
 
 public enum GameState
 {

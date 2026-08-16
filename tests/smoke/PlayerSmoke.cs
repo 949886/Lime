@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Godot;
-using Lime.Actors.Player;
-using Lime.App;
-using Lime.World;
+using Lime.Game;
+using Lime.Game.Actors.Player;
+using Lime.Game.World;
 
 namespace Lime.Tests.Smoke;
 

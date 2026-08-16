@@ -1,8 +1,8 @@
 using Godot;
-using Lime.Actors.Player;
-using Lime.World;
+using Lime.Game.Actors.Player;
+using Lime.Game.World;
 
-namespace Lime.App;
+namespace Lime.Game;
 
 public partial class GameRoot : Node
 {

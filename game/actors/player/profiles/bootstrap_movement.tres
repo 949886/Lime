@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="PlayerMovementProfile" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://actors/player/PlayerMovementProfile.cs" id="1_profile"]
+[ext_resource type="Script" path="res://game/actors/player/PlayerMovementProfile.cs" id="1_profile"]
 
 [resource]
 script = ExtResource("1_profile")

@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace Lime.World;
+namespace Lime.Game.World;
 
 public static class CollisionLayers
 {
