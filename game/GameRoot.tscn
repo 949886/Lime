@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://game/GameRoot.cs" id="1_game_root"]
 [ext_resource type="Script" path="res://game/FlowController.cs" id="2_flow_controller"]
 [ext_resource type="PackedScene" path="res://game/actors/player/Player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://game/camera/CameraSystem.tscn" id="4_camera_system"]
+[ext_resource type="PackedScene" path="res://game/world/levels/reference/ReferenceLevel.tscn" id="5_reference_level"]
 
 [node name="GameRoot" type="Node"]
 script = ExtResource("1_game_root")
@@ -16,6 +17,9 @@ script = ExtResource("2_flow_controller")
 unique_name_in_owner = true
 
 [node name="LevelRoot" type="Node3D" parent="WorldRoot"]
+unique_name_in_owner = true
+
+[node name="ReferenceLevel" parent="WorldRoot/LevelRoot" instance=ExtResource("5_reference_level")]
 unique_name_in_owner = true
 
 [node name="ActorRoot" type="Node3D" parent="WorldRoot"]

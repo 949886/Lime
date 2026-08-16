@@ -1,0 +1,334 @@
+[gd_scene load_steps=27 format=3]
+
+[ext_resource type="Script" path="res://game/world/levels/reference/ReferenceLevel.cs" id="1_reference_level"]
+
+[sub_resource type="StandardMaterial3D" id="Material_ground"]
+albedo_color = Color(0.42, 0.43, 0.45, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_step"]
+albedo_color = Color(0.55, 0.56, 0.58, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_building"]
+albedo_color = Color(0.28, 0.29, 0.31, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_rail"]
+albedo_color = Color(0.18, 0.19, 0.21, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_water"]
+albedo_color = Color(0.22, 0.38, 0.46, 1)
+roughness = 0.25
+
+[sub_resource type="StandardMaterial3D" id="Material_foreground"]
+albedo_color = Color(0.24, 0.25, 0.27, 1)
+
+[sub_resource type="Environment" id="Environment_reference"]
+background_mode = 1
+background_color = Color(0.13, 0.14, 0.16, 1)
+
+[sub_resource type="BoxMesh" id="Box_upper"]
+material = SubResource("Material_ground")
+size = Vector3(10, 0.3, 8)
+
+[sub_resource type="BoxMesh" id="Box_lower"]
+material = SubResource("Material_ground")
+size = Vector3(12, 0.3, 13)
+
+[sub_resource type="BoxMesh" id="Box_final"]
+material = SubResource("Material_ground")
+size = Vector3(12, 0.3, 8)
+
+[sub_resource type="BoxMesh" id="Box_step"]
+material = SubResource("Material_step")
+size = Vector3(3, 0.25, 0.5)
+
+[sub_resource type="BoxMesh" id="Box_building_large"]
+material = SubResource("Material_building")
+size = Vector3(4, 5, 5)
+
+[sub_resource type="BoxMesh" id="Box_building_back"]
+material = SubResource("Material_building")
+size = Vector3(6, 6, 4)
+
+[sub_resource type="BoxMesh" id="Box_rail_long"]
+material = SubResource("Material_rail")
+size = Vector3(5, 0.12, 0.12)
+
+[sub_resource type="BoxMesh" id="Box_rail_post"]
+material = SubResource("Material_rail")
+size = Vector3(0.12, 0.8, 0.12)
+
+[sub_resource type="BoxMesh" id="Box_water"]
+material = SubResource("Material_water")
+size = Vector3(5, 0.08, 5)
+
+[sub_resource type="BoxMesh" id="Box_foreground"]
+material = SubResource("Material_foreground")
+size = Vector3(3, 3.5, 2)
+
+[sub_resource type="CylinderMesh" id="Cylinder_tower"]
+material = SubResource("Material_building")
+top_radius = 2.2
+bottom_radius = 2.2
+height = 5.5
+
+[sub_resource type="BoxShape3D" id="Shape_upper"]
+size = Vector3(10, 0.3, 8)
+
+[sub_resource type="BoxShape3D" id="Shape_lower"]
+size = Vector3(12, 0.3, 13)
+
+[sub_resource type="BoxShape3D" id="Shape_final"]
+size = Vector3(12, 0.3, 8)
+
+[sub_resource type="BoxShape3D" id="Shape_ramp01"]
+size = Vector3(3, 0.16, 4.472136)
+
+[sub_resource type="BoxShape3D" id="Shape_ramp02"]
+size = Vector3(3, 0.16, 3.354102)
+
+[sub_resource type="BoxShape3D" id="Shape_boundary_long"]
+size = Vector3(0.3, 2, 13)
+
+[sub_resource type="BoxShape3D" id="Shape_boundary_upper"]
+size = Vector3(0.3, 2, 8)
+
+[node name="ReferenceLevel" type="Node3D"]
+script = ExtResource("1_reference_level")
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_reference")
+
+[node name="Sun" type="DirectionalLight3D" parent="Environment"]
+rotation_degrees = Vector3(-55, -30, 0)
+light_energy = 1.15
+shadow_enabled = true
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="UpperPlatform" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(0, 1.85, 4)
+mesh = SubResource("Box_upper")
+
+[node name="LowerConcourse" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(0, -0.15, -10)
+mesh = SubResource("Box_lower")
+
+[node name="FinalPlatform" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(3, 1.35, -21)
+mesh = SubResource("Box_final")
+
+[node name="Stairs01" type="Node3D" parent="Geometry"]
+
+[node name="Step01" type="MeshInstance3D" parent="Geometry/Stairs01"]
+position = Vector3(0, 1.875, -0.250)
+mesh = SubResource("Box_step")
+
+[node name="Step02" type="MeshInstance3D" parent="Geometry/Stairs01"]
+position = Vector3(0, 1.625, -0.750)
+mesh = SubResource("Box_step")
+
+[node name="Step03" type="MeshInstance3D" parent="Geometry/Stairs01"]
+position = Vector3(0, 1.375, -1.250)
+mesh = SubResource("Box_step")
+
+[node name="Step04" type="MeshInstance3D" parent="Geometry/Stairs01"]
+position = Vector3(0, 1.125, -1.750)
+mesh = SubResource("Box_step")
+
+[node name="Step05" type="MeshInstance3D" parent="Geometry/Stairs01"]
+position = Vector3(0, 0.875, -2.250)
+mesh = SubResource("Box_step")
+
+[node name="Step06" type="MeshInstance3D" parent="Geometry/Stairs01"]
+position = Vector3(0, 0.625, -2.750)
+mesh = SubResource("Box_step")
+
+[node name="Step07" type="MeshInstance3D" parent="Geometry/Stairs01"]
+position = Vector3(0, 0.375, -3.250)
+mesh = SubResource("Box_step")
+
+[node name="Step08" type="MeshInstance3D" parent="Geometry/Stairs01"]
+position = Vector3(0, 0.125, -3.750)
+mesh = SubResource("Box_step")
+
+[node name="Stairs02" type="Node3D" parent="Geometry"]
+
+[node name="Step01" type="MeshInstance3D" parent="Geometry/Stairs02"]
+position = Vector3(0, 0.125, -15.250)
+mesh = SubResource("Box_step")
+
+[node name="Step02" type="MeshInstance3D" parent="Geometry/Stairs02"]
+position = Vector3(0, 0.375, -15.750)
+mesh = SubResource("Box_step")
+
+[node name="Step03" type="MeshInstance3D" parent="Geometry/Stairs02"]
+position = Vector3(0, 0.625, -16.250)
+mesh = SubResource("Box_step")
+
+[node name="Step04" type="MeshInstance3D" parent="Geometry/Stairs02"]
+position = Vector3(0, 0.875, -16.750)
+mesh = SubResource("Box_step")
+
+[node name="Step05" type="MeshInstance3D" parent="Geometry/Stairs02"]
+position = Vector3(0, 1.125, -17.250)
+mesh = SubResource("Box_step")
+
+[node name="Step06" type="MeshInstance3D" parent="Geometry/Stairs02"]
+position = Vector3(0, 1.375, -17.750)
+mesh = SubResource("Box_step")
+
+[node name="Tower" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(-4.2, 2.75, -8.0)
+mesh = SubResource("Cylinder_tower")
+
+[node name="RightBuilding" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(5.2, 2.5, -7.0)
+mesh = SubResource("Box_building_large")
+
+[node name="BackBuilding" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(-3.8, 3.0, -23.0)
+mesh = SubResource("Box_building_back")
+
+[node name="ForegroundBlocker" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(-5.2, 1.75, -15.0)
+mesh = SubResource("Box_foreground")
+
+[node name="WaterPool" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(-2.5, 1.47, -20.5)
+mesh = SubResource("Box_water")
+
+[node name="Rails" type="Node3D" parent="Geometry"]
+
+[node name="UpperFront" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(-2.5, 2.45, 0.2)
+mesh = SubResource("Box_rail_long")
+
+[node name="UpperFrontRight" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(2.5, 2.45, 0.2)
+mesh = SubResource("Box_rail_long")
+
+[node name="LowerLeft" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(-5.8, 0.6, -10)
+rotation_degrees = Vector3(0, 90, 0)
+mesh = SubResource("Box_rail_long")
+
+[node name="LowerRight" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(5.8, 0.6, -10)
+rotation_degrees = Vector3(0, 90, 0)
+mesh = SubResource("Box_rail_long")
+
+[node name="FinalFront" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(3, 2.1, -24.8)
+mesh = SubResource("Box_rail_long")
+
+[node name="Post01" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(-5, 2.4, 0.2)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post02" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(0, 2.4, 0.2)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post03" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(5, 2.4, 0.2)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post04" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(-5.8, 0.4, -4)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post05" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(-5.8, 0.4, -10)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post06" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(-5.8, 0.4, -16)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post07" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(5.8, 0.4, -4)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post08" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(5.8, 0.4, -10)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post09" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(5.8, 0.4, -16)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post10" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(0, 2.0, -24.8)
+mesh = SubResource("Box_rail_post")
+
+[node name="Post11" type="MeshInstance3D" parent="Geometry/Rails"]
+position = Vector3(6, 2.0, -24.8)
+mesh = SubResource("Box_rail_post")
+
+[node name="Collision" type="Node3D" parent="."]
+
+[node name="WorldCollision" type="StaticBody3D" parent="Collision"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="UpperPlatform" type="CollisionShape3D" parent="Collision/WorldCollision"]
+position = Vector3(0, 1.85, 4)
+shape = SubResource("Shape_upper")
+
+[node name="LowerConcourse" type="CollisionShape3D" parent="Collision/WorldCollision"]
+position = Vector3(0, -0.15, -10)
+shape = SubResource("Shape_lower")
+
+[node name="FinalPlatform" type="CollisionShape3D" parent="Collision/WorldCollision"]
+position = Vector3(3, 1.35, -21)
+shape = SubResource("Shape_final")
+
+[node name="StairRamp01" type="CollisionShape3D" parent="Collision/WorldCollision"]
+position = Vector3(0, 1.0, -2.0)
+rotation_degrees = Vector3(-26.565, 0, 0)
+shape = SubResource("Shape_ramp01")
+
+[node name="StairRamp02" type="CollisionShape3D" parent="Collision/WorldCollision"]
+position = Vector3(0, 0.75, -16.5)
+rotation_degrees = Vector3(26.565, 0, 0)
+shape = SubResource("Shape_ramp02")
+
+[node name="UpperLeftBoundary" type="CollisionShape3D" parent="Collision/WorldCollision"]
+position = Vector3(-5.15, 2.8, 4)
+shape = SubResource("Shape_boundary_upper")
+
+[node name="UpperRightBoundary" type="CollisionShape3D" parent="Collision/WorldCollision"]
+position = Vector3(5.15, 2.8, 4)
+shape = SubResource("Shape_boundary_upper")
+
+[node name="LowerLeftBoundary" type="CollisionShape3D" parent="Collision/WorldCollision"]
+position = Vector3(-6.15, 0.8, -10)
+shape = SubResource("Shape_boundary_long")
+
+[node name="LowerRightBoundary" type="CollisionShape3D" parent="Collision/WorldCollision"]
+position = Vector3(6.15, 0.8, -10)
+shape = SubResource("Shape_boundary_long")
+
+[node name="ReferenceMarkers" type="Node3D" parent="."]
+
+[node name="PlayerStart" type="Marker3D" parent="ReferenceMarkers"]
+unique_name_in_owner = true
+position = Vector3(0, 2.02, 6.0)
+
+[node name="CameraCheck01" type="Marker3D" parent="ReferenceMarkers"]
+unique_name_in_owner = true
+position = Vector3(0, 2.02, 1.0)
+
+[node name="CameraCheck02" type="Marker3D" parent="ReferenceMarkers"]
+unique_name_in_owner = true
+position = Vector3(0, 0.02, -10.0)
+
+[node name="CameraCheck03" type="Marker3D" parent="ReferenceMarkers"]
+unique_name_in_owner = true
+position = Vector3(0, 1.52, -19.0)
+
+[node name="RouteEnd" type="Marker3D" parent="ReferenceMarkers"]
+unique_name_in_owner = true
+position = Vector3(4.0, 1.52, -22.0)
