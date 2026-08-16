@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://bl82q16omkxqi"
+path="res://.godot/imported/build_char_4235_thumpy.skel-5d565adde195134d5060c6c7afa0249c.spskel"
+
+[deps]
+
+source_file="res://assets/spine/4235_thumpy/build_char_4235_thumpy.skel"
+dest_files=["res://.godot/imported/build_char_4235_thumpy.skel-5d565adde195134d5060c6c7afa0249c.spskel"]
+
+[params]
+

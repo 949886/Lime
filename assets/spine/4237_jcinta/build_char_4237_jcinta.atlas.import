@@ -1,0 +1,15 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://dxi8b5o58q05b"
+path="res://.godot/imported/build_char_4237_jcinta.atlas-45fda3398e68f770b4f3c821d8637477.spatlas"
+
+[deps]
+
+source_file="res://assets/spine/4237_jcinta/build_char_4237_jcinta.atlas"
+dest_files=["res://.godot/imported/build_char_4237_jcinta.atlas-45fda3398e68f770b4f3c821d8637477.spatlas"]
+
+[params]
+
+normal_map_prefix="n"

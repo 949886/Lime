@@ -1,0 +1,15 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://dtdvko803dj5m"
+path="res://.godot/imported/build_char_4236_tmslot.atlas-6f0ba715a267bed27eb18addb8823b94.spatlas"
+
+[deps]
+
+source_file="res://assets/spine/4236_tmslot/build_char_4236_tmslot.atlas"
+dest_files=["res://.godot/imported/build_char_4236_tmslot.atlas-6f0ba715a267bed27eb18addb8823b94.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
