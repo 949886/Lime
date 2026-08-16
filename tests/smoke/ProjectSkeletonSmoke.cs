@@ -77,30 +77,30 @@ public partial class ProjectSkeletonSmoke : Node
 
     private static void ValidateFlowState(FlowController flow)
     {
-        Require(flow.CurrentGameMode == GameMode.Explore,
-            "M1 bootstrap must start in Explore mode.");
-        Require(flow.CurrentUiMode == UiMode.None,
-            "M1 bootstrap must start with no blocking UI mode.");
+        Require(flow.CurrentGameState == GameState.Explore,
+            "M1 bootstrap must start in Explore game state.");
+        Require(flow.CurrentUiState == UiState.None,
+            "M1 bootstrap must start with no blocking UI state.");
         Require(flow.GameplayInputEnabled,
             "Gameplay input must be enabled in Explore with no blocking UI.");
 
-        flow.SetUiMode(UiMode.Dialogue);
+        flow.SetUiState(UiState.Dialogue);
         Require(!flow.GameplayInputEnabled,
-            "Dialogue UI must gate gameplay input without changing GameMode.");
-        Require(flow.CurrentGameMode == GameMode.Explore,
-            "Dialogue UI must not replace Explore GameMode.");
+            "Dialogue UI must gate gameplay input without changing GameState.");
+        Require(flow.CurrentGameState == GameState.Explore,
+            "Dialogue UI must not replace Explore GameState.");
 
-        flow.SetUiMode(UiMode.None);
+        flow.SetUiState(UiState.None);
         Require(flow.GameplayInputEnabled,
             "Gameplay input must resume when blocking UI closes.");
 
-        flow.SetGameMode(GameMode.Cutscene);
+        flow.SetGameState(GameState.Cutscene);
         Require(!flow.GameplayInputEnabled,
-            "Cutscene mode must gate gameplay input.");
-        Require(flow.CurrentUiMode == UiMode.None,
-            "Changing GameMode must not implicitly mutate UiMode.");
+            "Cutscene game state must gate gameplay input.");
+        Require(flow.CurrentUiState == UiState.None,
+            "Changing GameState must not implicitly mutate UiState.");
 
-        flow.SetGameMode(GameMode.Explore);
+        flow.SetGameState(GameState.Explore);
         Require(flow.GameplayInputEnabled,
             "Gameplay input must resume after returning to Explore.");
     }
