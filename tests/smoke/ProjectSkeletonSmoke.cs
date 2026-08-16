@@ -15,8 +15,8 @@ public partial class ProjectSkeletonSmoke : Node
             InputActions.ValidateConfigured();
             CollisionLayers.ValidateConfigured();
 
-            var scene = GD.Load<PackedScene>("res://app/GameRoot.tscn");
-            Require(scene is not null, "GameRoot.tscn could not be loaded.");
+            var scene = GD.Load<PackedScene>("res://app/GameRoot.tscn")
+                ?? throw new InvalidOperationException("GameRoot.tscn could not be loaded.");
 
             var gameRoot = scene.Instantiate<GameRoot>();
             AddChild(gameRoot);
