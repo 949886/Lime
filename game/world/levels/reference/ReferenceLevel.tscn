@@ -31,7 +31,7 @@ size = Vector3(10, 0.3, 8)
 
 [sub_resource type="BoxMesh" id="Box_lower"]
 material = SubResource("Material_ground")
-size = Vector3(12, 0.3, 13)
+size = Vector3(12, 0.3, 10.5)
 
 [sub_resource type="BoxMesh" id="Box_final"]
 material = SubResource("Material_ground")
@@ -75,7 +75,7 @@ height = 5.5
 size = Vector3(10, 0.3, 8)
 
 [sub_resource type="BoxShape3D" id="Shape_lower"]
-size = Vector3(12, 0.3, 13)
+size = Vector3(12, 0.3, 10.5)
 
 [sub_resource type="BoxShape3D" id="Shape_final"]
 size = Vector3(12, 0.3, 8)
@@ -112,7 +112,7 @@ position = Vector3(0, 1.85, 4)
 mesh = SubResource("Box_upper")
 
 [node name="LowerConcourse" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(0, -0.15, -10)
+position = Vector3(0, -0.15, -8.75)
 mesh = SubResource("Box_lower")
 
 [node name="FinalPlatform" type="MeshInstance3D" parent="Geometry"]
@@ -156,27 +156,27 @@ mesh = SubResource("Box_step")
 [node name="Stairs02" type="Node3D" parent="Geometry"]
 
 [node name="Step01" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(0, 0.125, -15.250)
+position = Vector3(0, 0.125, -14.250)
 mesh = SubResource("Box_step")
 
 [node name="Step02" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(0, 0.375, -15.750)
+position = Vector3(0, 0.375, -14.750)
 mesh = SubResource("Box_step")
 
 [node name="Step03" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(0, 0.625, -16.250)
+position = Vector3(0, 0.625, -15.250)
 mesh = SubResource("Box_step")
 
 [node name="Step04" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(0, 0.875, -16.750)
+position = Vector3(0, 0.875, -15.750)
 mesh = SubResource("Box_step")
 
 [node name="Step05" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(0, 1.125, -17.250)
+position = Vector3(0, 1.125, -16.250)
 mesh = SubResource("Box_step")
 
 [node name="Step06" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(0, 1.375, -17.750)
+position = Vector3(0, 1.375, -16.750)
 mesh = SubResource("Box_step")
 
 [node name="Tower" type="MeshInstance3D" parent="Geometry"]
@@ -278,7 +278,7 @@ position = Vector3(0, 1.85, 4)
 shape = SubResource("Shape_upper")
 
 [node name="LowerConcourse" type="CollisionShape3D" parent="Collision/WorldCollision"]
-position = Vector3(0, -0.15, -10)
+position = Vector3(0, -0.15, -8.75)
 shape = SubResource("Shape_lower")
 
 [node name="FinalPlatform" type="CollisionShape3D" parent="Collision/WorldCollision"]
@@ -291,7 +291,7 @@ rotation_degrees = Vector3(-26.565, 0, 0)
 shape = SubResource("Shape_ramp01")
 
 [node name="StairRamp02" type="CollisionShape3D" parent="Collision/WorldCollision"]
-position = Vector3(0, 0.75, -16.5)
+position = Vector3(0, 0.75, -15.5)
 rotation_degrees = Vector3(26.565, 0, 0)
 shape = SubResource("Shape_ramp02")
 

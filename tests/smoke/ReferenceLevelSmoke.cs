@@ -111,12 +111,6 @@ public partial class ReferenceLevelSmoke : Node
         Require(worldCollision.GetNodeOrNull<CollisionShape3D>("StairRamp02") is not null,
             "Second visible stair set must use a hidden ramp collision.");
 
-        Require(level.PlayerStart is not null, "PlayerStart marker is required.");
-        Require(level.RouteEnd is not null, "RouteEnd marker is required.");
-        Require(level.CameraCheck01 is not null, "CameraCheck01 marker is required.");
-        Require(level.CameraCheck02 is not null, "CameraCheck02 marker is required.");
-        Require(level.CameraCheck03 is not null, "CameraCheck03 marker is required.");
-
         Require(level.PlayerStart.GlobalPosition.Y > level.CameraCheck02.GlobalPosition.Y + 1.5f,
             "Reference route must preserve a meaningful upper-to-lower height change.");
         Require(level.CameraCheck03.GlobalPosition.Y > level.CameraCheck02.GlobalPosition.Y + 1.0f,
@@ -149,7 +143,8 @@ public partial class ReferenceLevelSmoke : Node
                 await WaitPhysicsFrames(8);
 
                 Require(Mathf.Abs(player.GlobalPosition.Y - marker.GlobalPosition.Y) < 0.40f,
-                    $"Player reached {marker.Name} horizontally but not at the expected traversable height.");
+                    $"Player reached {marker.Name} horizontally but not at the expected traversable height. " +
+                    $"Player={player.GlobalPosition}, Target={marker.GlobalPosition}.");
                 return;
             }
 
@@ -171,7 +166,9 @@ public partial class ReferenceLevelSmoke : Node
 
         playerInput.ClearVirtualMove();
         throw new InvalidOperationException(
-            $"Player could not reach traversal marker {marker.Name} within {maxFrames} physics frames.");
+            $"Player could not reach traversal marker {marker.Name} within {maxFrames} physics frames. " +
+            $"Player={player.GlobalPosition}, Target={marker.GlobalPosition}, " +
+            $"Velocity={player.Velocity}, IsOnFloor={player.IsOnFloor()}.");
     }
 
     private async Task WaitPhysicsFrames(int count)
