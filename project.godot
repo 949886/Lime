@@ -11,8 +11,7 @@ config_version=5
 [application]
 
 config/name="Lime"
-run/main_scene="res://spikes/platform_plugin/PlatformPluginSpike.tscn"
-config/features=PackedStringArray("4.7", "Forward Plus")
+config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
