@@ -51,28 +51,41 @@ jobs:
       # Headless CI never uses one-click deploy. The repository's editor-authored
       # export_presets.cfg may remember runnable platform presets (notably Android),
       # which starts device polling during editor import and is unnecessary here.
-      # Keep all named export presets/options, but clear only the ephemeral checkout's
-      # runnable selection before Godot editor/bootstrap starts.
-      - name: Disable one-click runnable presets in CI
+      #
+      # The checked-in Spine GDExtension also exposes a Linux editor binary. On the
+      # Ubuntu CI host, loading that host-only editor library causes Godot 4.7.1 to
+      # segfault during editor/export shutdown after all work has completed. Remove
+      # ONLY the Linux x86_64 editor entry in the ephemeral checkout. Windows and
+      # Android debug/release entries stay intact and continue to participate in
+      # target-platform export.
+      - name: Prepare headless CI editor environment
         shell: python
         run: |
           from pathlib import Path
 
-          path = Path("export_presets.cfg")
-          text = path.read_text(encoding="utf-8")
+          presets_path = Path("export_presets.cfg")
+          text = presets_path.read_text(encoding="utf-8")
           header = "[runnable_presets]"
           first_preset = "[preset.0]"
           start = text.index(header)
           end = text.index(first_preset, start)
           text = text[:start] + header + "\n\n" + text[end:]
-          path.write_text(text, encoding="utf-8")
+          presets_path.write_text(text, encoding="utf-8")
 
-      # A fresh checkout needs Godot's script class cache before Phantom Camera can
-      # run. Recovery mode deliberately keeps editor plugins, tool scripts and
-      # GDExtensions out of this editor-only bootstrap path; the following runtime
-      # smoke tests run normally and therefore still exercise the real addons.
+          spine_path = Path("bin/spine/spine_godot_extension.gdextension")
+          lines = spine_path.read_text(encoding="utf-8").splitlines()
+          lines = [
+              line
+              for line in lines
+              if not line.lstrip().startswith("linux.editor.x86_64 =")
+          ]
+          spine_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+      # Phantom Camera registers GDScript global classes. A fresh checkout has no
+      # .godot/global_script_class_cache.cfg, so run Godot's normal import mode
+      # after isolating the CI host-only Spine editor binary.
       - name: Bootstrap Godot import and script class cache
-        run: godot --headless --recovery-mode --path . --import
+        run: godot --headless --path . --import
 
       - name: Run Phantom Camera regression smoke
         if: matrix.platform == 'Windows'
@@ -125,6 +138,8 @@ jobs:
           godot --headless --verbose --path . \
             --export-release "Windows" \
             "build/windows/Lime.exe"
+          test -f build/windows/Lime.exe
+          find build/windows -maxdepth 6 -type f -print | sort
 
       - name: Export Android
         if: matrix.platform == 'Android'
@@ -133,6 +148,8 @@ jobs:
           godot --headless --verbose --path . \
             --export-release "Android" \
             "build/android/Lime.apk"
+          test -f build/android/Lime.apk
+          unzip -l build/android/Lime.apk | grep -E "lib/arm64-v8a/.*spine.*\\.so" || true
 
       - name: Upload Windows artifact
         if: matrix.platform == 'Windows'
