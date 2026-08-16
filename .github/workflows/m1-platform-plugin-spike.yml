@@ -266,6 +266,7 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/build/ios"
           "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" \
             --export-debug 'iOS Smoke' "$GITHUB_WORKSPACE/build/ios/LimeSmoke.zip"
-          test -s "$GITHUB_WORKSPACE/build/ios/LimeSmoke.zip"
-          unzip -l "$GITHUB_WORKSPACE/build/ios/LimeSmoke.zip" | tee "$RUNNER_TEMP/ios-export-list.txt"
-          grep -q '\.xcodeproj/project\.pbxproj' "$RUNNER_TEMP/ios-export-list.txt"
+          test -f "$GITHUB_WORKSPACE/build/ios/LimeSmoke.xcodeproj/project.pbxproj"
+          test -d "$GITHUB_WORKSPACE/build/ios/LimeSmoke"
+          test -d "$GITHUB_WORKSPACE/build/ios/LimeSmoke/dylibs/ExportDebug/Lime_aot.xcframework"
+          find "$GITHUB_WORKSPACE/build/ios" -maxdepth 3 -type f | sort
