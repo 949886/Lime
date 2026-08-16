@@ -75,12 +75,12 @@ public partial class PlayerSmoke : Node3D
         var capsule = collisionShape.Shape as CapsuleShape3D
             ?? throw new InvalidOperationException("Player collision shape must be CapsuleShape3D.");
 
-        Require((collisionShape.Position - new Vector3(0.0f, 0.8f, 0.0f)).Length() < 0.001f,
+        Require((collisionShape.Position - new Vector3(0.0f, 0.5f, 0.0f)).Length() < 0.001f,
             "Player root origin must remain at the feet/ground contact point.");
         Require(Mathf.Abs(capsule.Radius - 0.30f) < 0.001f,
             "Bootstrap player capsule radius must be 0.30 m.");
-        Require(Mathf.Abs(capsule.Height - 1.60f) < 0.001f,
-            "Bootstrap player capsule total height must be 1.60 m.");
+        Require(Mathf.Abs(capsule.Height - 1.00f) < 0.001f,
+            "Bootstrap player capsule total height must be 1.00 m.");
 
         var visualRoot = player.GetNode<Node3D>("VisualRoot");
         var characterVisual = visualRoot.GetNodeOrNull<Node3D>("CharacterVisual");
