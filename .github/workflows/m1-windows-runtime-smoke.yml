@@ -1,0 +1,73 @@
+name: M1.0 Windows Runtime Smoke
+
+on:
+  push:
+    branches:
+      - agent/m1-platform-plugin-spike
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-runtime-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Materialize Phantom Camera with PowerShell bootstrap
+        shell: pwsh
+        run: ./scripts/BootstrapThirdParty.ps1
+
+      - name: Restore
+        shell: pwsh
+        run: dotnet restore Lime.csproj
+
+      - name: Build C# project
+        shell: pwsh
+        run: dotnet build Lime.csproj --configuration Debug --no-restore
+
+      - name: Download Godot 4.7.1 .NET Windows editor
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $url = 'https://github.com/godotengine/godot/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_win64.zip'
+          $expectedSha256 = '764a089809fb1a6f745686ce9f6d3ca83adce8fb60fb9a4e2324b63baaebaa45'
+          $archive = Join-Path $env:RUNNER_TEMP 'godot-win64.zip'
+          $destination = Join-Path $env:RUNNER_TEMP 'godot-win64'
+
+          Invoke-WebRequest -Uri $url -OutFile $archive
+          $actualSha256 = (Get-FileHash -Path $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualSha256 -ne $expectedSha256) {
+              throw "Godot archive SHA-256 mismatch: $actualSha256"
+          }
+
+          Expand-Archive -Path $archive -DestinationPath $destination -Force
+          $godotBin = Get-ChildItem -Path $destination -Recurse -File -Filter 'Godot_v4.7.1-stable_mono_win64.exe' |
+              Select-Object -First 1 -ExpandProperty FullName
+          if ([string]::IsNullOrWhiteSpace($godotBin)) {
+              throw 'Godot .NET Windows executable was not found after extraction.'
+          }
+
+          "GODOT_BIN=$godotBin" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Initialize Phantom Camera editor plugin
+        shell: pwsh
+        run: |
+          & $env:GODOT_BIN --headless --editor --path $env:GITHUB_WORKSPACE --quit-after 10
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run Windows Phantom Camera runtime smoke
+        shell: pwsh
+        run: |
+          & $env:GODOT_BIN --headless --path $env:GITHUB_WORKSPACE -- --m1-spike-ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
