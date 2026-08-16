@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://app/GameRoot.cs" id="1_game_root"]
+[ext_resource type="Script" path="res://app/FlowController.cs" id="2_flow_controller"]
+
+[node name="GameRoot" type="Node"]
+script = ExtResource("1_game_root")
+
+[node name="FlowController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_flow_controller")
+
+[node name="WorldRoot" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="LevelRoot" type="Node3D" parent="WorldRoot"]
+unique_name_in_owner = true
+
+[node name="ActorRoot" type="Node3D" parent="WorldRoot"]
+unique_name_in_owner = true
+
+[node name="CameraRoot" type="Node3D" parent="WorldRoot"]
+unique_name_in_owner = true
+
+[node name="UIRoot" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+
+[node name="AudioRoot" type="Node" parent="."]
+unique_name_in_owner = true
