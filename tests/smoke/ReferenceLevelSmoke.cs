@@ -27,21 +27,22 @@ public partial class ReferenceLevelSmoke : Node
 
             var referenceLevel = gameRoot.ReferenceLevel;
             var player = gameRoot.Player;
+            var renderCamera = gameRoot.CameraDirector.RenderCamera;
             playerInput = player.GetNode<PlayerInput>("%PlayerInput");
 
-            ValidateLevelContract(referenceLevel);
+            ValidateLevelContract(referenceLevel, renderCamera);
             ValidateSpawnContract(gameRoot);
 
-            var cameraStart = gameRoot.CameraDirector.RenderCamera.GlobalPosition;
+            var cameraStart = renderCamera.GlobalPosition;
 
-            await DriveToMarker(player, playerInput, gameRoot.CameraDirector.RenderCamera,
+            await DriveToMarker(player, playerInput, renderCamera,
                 referenceLevel.CameraCheck01, 240);
-            await DriveToMarker(player, playerInput, gameRoot.CameraDirector.RenderCamera,
+            await DriveToMarker(player, playerInput, renderCamera,
                 referenceLevel.CameraCheck02, 280);
-            await DriveToMarker(player, playerInput, gameRoot.CameraDirector.RenderCamera,
+            await DriveToMarker(player, playerInput, renderCamera,
                 referenceLevel.CameraCheck03, 220);
-            await DriveToMarker(player, playerInput, gameRoot.CameraDirector.RenderCamera,
-                referenceLevel.RouteEnd, 380);
+            await DriveToMarker(player, playerInput, renderCamera,
+                referenceLevel.RouteEnd, 480);
 
             playerInput.ClearVirtualMove();
             await WaitPhysicsFrames(12);
@@ -51,8 +52,8 @@ public partial class ReferenceLevelSmoke : Node
             Require(HorizontalDistance(player.GlobalPosition, referenceLevel.RouteEnd.GlobalPosition) < 0.55f,
                 "Player must be able to traverse the reference graybox from PlayerStart to RouteEnd.");
             Require(Mathf.Abs(player.GlobalPosition.Y - referenceLevel.RouteEnd.GlobalPosition.Y) < 0.35f,
-                "RouteEnd marker height must match the traversable pool-plaza level.");
-            Require(gameRoot.CameraDirector.RenderCamera.GlobalPosition.DistanceTo(cameraStart) > 8.0f,
+                "RouteEnd marker height must match the traversable lower corridor.");
+            Require(renderCamera.GlobalPosition.DistanceTo(cameraStart) > 10.0f,
                 "Production Camera must follow Player across the reference route.");
             Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.ExplorePerspective,
                 "Reference traversal must preserve the bootstrap ExplorePerspective camera.");
@@ -71,7 +72,7 @@ public partial class ReferenceLevelSmoke : Node
         }
     }
 
-    private static void ValidateLevelContract(ReferenceLevel level)
+    private static void ValidateLevelContract(ReferenceLevel level, Camera3D renderCamera)
     {
         Require(level.Name == "ReferenceLevel",
             "ReferenceLevel production scene is not wired into GameRoot/LevelRoot.");
@@ -86,28 +87,44 @@ public partial class ReferenceLevelSmoke : Node
 
         Require(level.GetNodeOrNull<DirectionalLight3D>("Environment/Sun") is not null,
             "Reference graybox must include a directional light.");
-        Require(level.GetNodeOrNull<MeshInstance3D>("Geometry/UpperPlatform") is not null,
-            "Reference graybox must include the starting upper platform.");
-        Require(level.GetNodeOrNull<MeshInstance3D>("Geometry/IntermediatePlatform") is not null,
-            "Reference graybox must include the intermediate lateral terrace.");
-        Require(level.GetNodeOrNull<MeshInstance3D>("Geometry/LowerLanding") is not null,
-            "Reference graybox must include the lower landing after the second descent.");
-        Require(level.GetNodeOrNull<MeshInstance3D>("Geometry/LowerConcourse") is not null,
-            "Reference graybox must include the lower concourse.");
-        Require(level.GetNodeOrNull<MeshInstance3D>("Geometry/PoolPlaza") is not null,
-            "Reference graybox must include the pool/NPC plaza extension.");
-        Require(level.GetNodeOrNull<MeshInstance3D>("Geometry/BackWalkway") is not null,
-            "Reference graybox must include the raised walkway behind the pool.");
+
+        var upperPlatform = level.GetNode<MeshInstance3D>("Geometry/UpperPlatform");
+        var intermediatePlatform = level.GetNode<MeshInstance3D>("Geometry/IntermediatePlatform");
+        var lowerCorridor = level.GetNode<MeshInstance3D>("Geometry/LowerCorridor");
+        var plazaExtension = level.GetNode<MeshInstance3D>("Geometry/PlazaExtension");
+        var lowerFrontPlatform = level.GetNode<MeshInstance3D>("Geometry/LowerFrontPlatform");
+
+        Require(upperPlatform.Mesh is BoxMesh upperMesh,
+            "UpperPlatform must use a BoxMesh graybox mass.");
+        Require(intermediatePlatform.Mesh is BoxMesh intermediateMesh,
+            "IntermediatePlatform must use a BoxMesh graybox mass.");
+        Require(lowerCorridor.Mesh is BoxMesh corridorMesh,
+            "LowerCorridor must use a BoxMesh graybox mass.");
+
+        Require(Near(upperMesh.Size.X, 18.0f) && Near(upperMesh.Size.Z, 12.0f),
+            "UpperPlatform bootstrap footprint must remain 18 x 12.");
+        Require(Near(intermediateMesh.Size.X, 8.0f) && Near(intermediateMesh.Size.Z, 5.0f),
+            "IntermediatePlatform bootstrap footprint must remain 8 x 5.");
+        Require(Near(corridorMesh.Size.X, 22.0f) && Near(corridorMesh.Size.Z, 3.5f),
+            "LowerCorridor bootstrap footprint must remain 22 x 3.5.");
+        Require(corridorMesh.Size.X > corridorMesh.Size.Z * 5.0f,
+            "LowerCorridor must stay a narrow cross-corridor instead of becoming a broad platform.");
+
         Require(level.GetNodeOrNull<Node3D>("Geometry/Stairs01") is not null,
             "Reference graybox must include first stair visuals.");
         Require(level.GetNodeOrNull<Node3D>("Geometry/Stairs02") is not null,
             "Reference graybox must include second stair visuals.");
-        Require(level.GetNodeOrNull<Node3D>("Geometry/PoolStairs") is not null,
-            "Reference graybox must keep the pool-area staircase separate from the two main descents.");
+        Require(level.GetNodeOrNull<Node3D>("Geometry/LowerFrontStairs") is not null,
+            "Reference graybox must include the separate lower-front stair run.");
         Require(level.GetNodeOrNull<MeshInstance3D>("Geometry/ForegroundBlocker") is not null,
             "Reference graybox must include a foreground blocker volume.");
         Require(level.GetNodeOrNull<Node3D>("Geometry/Rails") is not null,
             "Reference graybox must include rail silhouettes.");
+
+        Require(level.GetNode<MeshInstance3D>("Geometry/CylinderBuilding01").Mesh is CylinderMesh,
+            "Reference graybox must include the first cylindrical building mass.");
+        Require(level.GetNode<MeshInstance3D>("Geometry/CylinderBuilding02").Mesh is CylinderMesh,
+            "Reference graybox must include the second cylindrical building mass.");
 
         var worldCollision = level.GetNode<StaticBody3D>("Collision/WorldCollision");
         Require(worldCollision.CollisionLayer == CollisionLayers.WorldMask,
@@ -117,21 +134,45 @@ public partial class ReferenceLevelSmoke : Node
 
         var stairRamp01 = worldCollision.GetNode<CollisionShape3D>("StairRamp01");
         var stairRamp02 = worldCollision.GetNode<CollisionShape3D>("StairRamp02");
-        Require(worldCollision.GetNodeOrNull<CollisionShape3D>("PoolStairRamp") is not null,
-            "Pool-area stair visuals must use a separate hidden ramp collision.");
+        Require(worldCollision.GetNodeOrNull<CollisionShape3D>("LowerFrontRamp") is not null,
+            "Lower-front stair visuals must use their own hidden ramp collision.");
+        Require(Mathf.Abs(stairRamp01.Rotation.X - stairRamp02.Rotation.X) < 0.01f,
+            "The two main stair runs must remain parallel descents.");
 
-        Require(Mathf.Abs(stairRamp02.GlobalPosition.X - stairRamp01.GlobalPosition.X) > 3.0f,
-            "The two main stair runs must be laterally staggered instead of sharing one camera-facing centerline.");
         Require(level.PlayerStart.GlobalPosition.Y > level.CameraCheck01.GlobalPosition.Y + 1.0f,
             "The first stair run must descend from the starting upper platform.");
         Require(Mathf.Abs(level.CameraCheck01.GlobalPosition.Y - level.CameraCheck02.GlobalPosition.Y) < 0.15f,
-            "CameraCheck01 and CameraCheck02 must remain on the same intermediate terrace.");
-        Require(Mathf.Abs(level.CameraCheck02.GlobalPosition.X - level.CameraCheck01.GlobalPosition.X) > 3.0f,
-            "The intermediate terrace must carry the route laterally between the two stair runs.");
+            "CameraCheck01 and CameraCheck02 must remain on the same intermediate platform.");
         Require(level.CameraCheck02.GlobalPosition.Y > level.CameraCheck03.GlobalPosition.Y + 1.0f,
-            "The second main stair run must continue descending instead of restoring elevation.");
+            "The second main stair run must continue descending to the lower corridor.");
         Require(Mathf.Abs(level.CameraCheck03.GlobalPosition.Y - level.RouteEnd.GlobalPosition.Y) < 0.15f,
-            "The lower route and pool-plaza endpoint must remain on the same traversal level.");
+            "CameraCheck03 and RouteEnd must remain on the same lower corridor level.");
+
+        var cameraRight = renderCamera.GlobalBasis.X;
+        cameraRight.Y = 0.0f;
+        cameraRight = cameraRight.Normalized();
+
+        var cameraForward = -renderCamera.GlobalBasis.Z;
+        cameraForward.Y = 0.0f;
+        cameraForward = cameraForward.Normalized();
+
+        var routeDelta = level.RouteEnd.GlobalPosition - level.CameraCheck03.GlobalPosition;
+        routeDelta.Y = 0.0f;
+
+        Require(routeDelta.Dot(cameraRight) > 8.0f,
+            "After Stairs02 the lower corridor must travel toward screen-right in the production Explore camera.");
+        Require(Mathf.Abs(routeDelta.Dot(cameraForward)) < 3.0f,
+            "After Stairs02 the route must turn roughly 90 degrees along the cross-corridor.");
+
+        var plazaDelta = plazaExtension.GlobalPosition - level.RouteEnd.GlobalPosition;
+        plazaDelta.Y = 0.0f;
+        Require(plazaDelta.Dot(cameraRight) > 8.0f,
+            "PlazaExtension must continue farther toward screen-right beyond the pre-black RouteEnd.");
+
+        var lowerFrontDelta = lowerFrontPlatform.GlobalPosition - lowerCorridor.GlobalPosition;
+        lowerFrontDelta.Y = 0.0f;
+        Require(lowerFrontDelta.Dot(cameraRight) < -8.0f,
+            "The separate lower-front platform must stay on the opposite/left side of the main corridor composition.");
     }
 
     private static void ValidateSpawnContract(GameRoot gameRoot)
@@ -199,6 +240,11 @@ public partial class ReferenceLevelSmoke : Node
     private static float HorizontalDistance(Vector3 left, Vector3 right)
     {
         return new Vector2(left.X - right.X, left.Z - right.Z).Length();
+    }
+
+    private static bool Near(float left, float right)
+    {
+        return Mathf.Abs(left - right) < 0.01f;
     }
 
     private static void Require(bool condition, string message)
