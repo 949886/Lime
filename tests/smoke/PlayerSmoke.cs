@@ -72,6 +72,13 @@ public partial class PlayerSmoke : Node3D
             "Bootstrap player capsule radius must be 0.30 m.");
         Require(Mathf.Abs(capsule.Height - 1.60f) < 0.001f,
             "Bootstrap player capsule total height must be 1.60 m.");
+
+        var visualRoot = player.GetNode<Node3D>("VisualRoot");
+        var characterVisual = visualRoot.GetNodeOrNull<Node3D>("CharacterVisual");
+        Require(characterVisual is not null,
+            "Player VisualRoot must contain the 3D Angelina CharacterVisual scene.");
+        Require(visualRoot.GetNodeOrNull<MeshInstance3D>("PlaceholderVisual") is null,
+            "PlaceholderVisual must be removed after the 3D character scene is integrated.");
     }
 
     private static void ValidateInputContract(PlayerController player, PlayerInput playerInput)
