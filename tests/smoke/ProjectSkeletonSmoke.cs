@@ -2,6 +2,7 @@ using System;
 using Godot;
 using Lime.Game;
 using Lime.Game.Actors.Player;
+using Lime.Game.Camera;
 using Lime.Game.World;
 
 namespace Lime.Tests.Smoke;
@@ -24,14 +25,15 @@ public partial class ProjectSkeletonSmoke : Node
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 
             ValidateCompositionRoot(gameRoot);
+            ValidateCameraWiring(gameRoot);
             ValidateFlowState(gameRoot);
 
-            GD.Print("[M1.1/M1.2] PASS: Project skeleton runtime smoke completed successfully.");
+            GD.Print("[M1.1-M1.3] PASS: Project skeleton runtime smoke completed successfully.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
         {
-            GD.PushError($"[M1.1/M1.2] FAIL: {exception}");
+            GD.PushError($"[M1.1-M1.3] FAIL: {exception}");
             GetTree().Quit(1);
         }
     }
@@ -73,8 +75,17 @@ public partial class ProjectSkeletonSmoke : Node
         Require(gameRoot.ActorRoot.Name == "ActorRoot", "ActorRoot wiring is invalid.");
         Require(gameRoot.Player.Name == "Player", "Player wiring is invalid.");
         Require(gameRoot.CameraRoot.Name == "CameraRoot", "CameraRoot wiring is invalid.");
+        Require(gameRoot.CameraDirector.Name == "CameraSystem", "CameraSystem wiring is invalid.");
         Require(gameRoot.UIRoot.Name == "UIRoot", "UIRoot wiring is invalid.");
         Require(gameRoot.AudioRoot.Name == "AudioRoot", "AudioRoot wiring is invalid.");
+    }
+
+    private static void ValidateCameraWiring(GameRoot gameRoot)
+    {
+        Require(gameRoot.CameraDirector.RenderCamera.Current,
+            "CameraSystem RenderCamera must be the current Camera3D.");
+        Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.ExplorePerspective,
+            "GameRoot must bootstrap the ExplorePerspective camera.");
     }
 
     private static void ValidateFlowState(GameRoot gameRoot)

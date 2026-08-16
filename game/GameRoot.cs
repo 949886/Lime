@@ -1,5 +1,6 @@
 using Godot;
 using Lime.Game.Actors.Player;
+using Lime.Game.Camera;
 using Lime.Game.World;
 
 namespace Lime.Game;
@@ -12,6 +13,7 @@ public partial class GameRoot : Node
     public Node3D ActorRoot { get; private set; } = null!;
     public PlayerController Player { get; private set; } = null!;
     public Node3D CameraRoot { get; private set; } = null!;
+    public CameraDirector CameraDirector { get; private set; } = null!;
     public CanvasLayer UIRoot { get; private set; } = null!;
     public Node AudioRoot { get; private set; } = null!;
 
@@ -19,6 +21,7 @@ public partial class GameRoot : Node
     {
         ResolveOwnedNodes();
         ValidateProjectContracts();
+        WireCamera();
 
         FlowController.StateChanged += SyncGameplayInput;
         FlowController.Start();
@@ -41,6 +44,7 @@ public partial class GameRoot : Node
         ActorRoot = GetNode<Node3D>("%ActorRoot");
         Player = GetNode<PlayerController>("%Player");
         CameraRoot = GetNode<Node3D>("%CameraRoot");
+        CameraDirector = GetNode<CameraDirector>("%CameraSystem");
         UIRoot = GetNode<CanvasLayer>("%UIRoot");
         AudioRoot = GetNode<Node>("%AudioRoot");
     }
@@ -49,6 +53,13 @@ public partial class GameRoot : Node
     {
         InputActions.ValidateConfigured();
         CollisionLayers.ValidateConfigured();
+    }
+
+    private void WireCamera()
+    {
+        CameraDirector.BindExploreTarget(Player);
+        Player.SetMovementReference(CameraDirector.RenderCamera);
+        CameraDirector.ActivateInstant(CameraId.ExplorePerspective);
     }
 
     private void SyncGameplayInput()

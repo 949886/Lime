@@ -1,0 +1,63 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://game/camera/CameraDirector.cs" id="1_director"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_host"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_pcam"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_tween"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_camera_resource"]
+
+[sub_resource type="Resource" id="Tween_perspective"]
+script = ExtResource("4_tween")
+
+[sub_resource type="Resource" id="CameraResource_perspective"]
+script = ExtResource("5_camera_resource")
+fov = 45.0
+
+[sub_resource type="Resource" id="Tween_orthographic"]
+script = ExtResource("4_tween")
+
+[sub_resource type="Resource" id="CameraResource_orthographic"]
+script = ExtResource("5_camera_resource")
+projection = 1
+size = 6.0
+
+[node name="CameraSystem" type="Node3D"]
+script = ExtResource("1_director")
+
+[node name="RenderCamera" type="Camera3D" parent="."]
+unique_name_in_owner = true
+current = true
+physics_interpolation_mode = 1
+
+[node name="PhantomCameraHost" type="Node" parent="RenderCamera"]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("2_host")
+
+[node name="PCams" type="Node3D" parent="."]
+
+[node name="ExplorePerspective" type="Node3D" parent="PCams"]
+top_level = true
+script = ExtResource("3_pcam")
+priority = 0
+follow_mode = 2
+tween_resource = SubResource("Tween_perspective")
+tween_on_load = false
+camera_3d_resource = SubResource("CameraResource_perspective")
+follow_offset = Vector3(0, 3, 6)
+follow_damping = true
+follow_damping_value = Vector3(0.2, 0.2, 0.2)
+rotation_degrees = Vector3(-25, 0, 0)
+
+[node name="ExploreOrthographic" type="Node3D" parent="PCams"]
+top_level = true
+script = ExtResource("3_pcam")
+priority = 0
+follow_mode = 2
+tween_resource = SubResource("Tween_orthographic")
+tween_on_load = false
+camera_3d_resource = SubResource("CameraResource_orthographic")
+follow_offset = Vector3(0, 3, 6)
+follow_damping = true
+follow_damping_value = Vector3(0.2, 0.2, 0.2)
+rotation_degrees = Vector3(-25, 0, 0)

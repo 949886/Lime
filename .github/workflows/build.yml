@@ -99,6 +99,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/PlayerSmoke.tscn
 
+      - name: Run M1.3 camera smoke
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/CameraSmoke.tscn
+
       - name: Setup JDK 17
         if: matrix.platform == 'Android'
         uses: actions/setup-java@v4
