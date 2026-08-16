@@ -3,15 +3,28 @@
 [ext_resource type="SpineAtlasResource" uid="uid://dtdvko803dj5m" path="res://assets/spine/4236_tmslot/build_char_4236_tmslot.atlas" id="1_ylo3l"]
 [ext_resource type="SpineSkeletonFileResource" uid="uid://dy7svk4qwd5n1" path="res://assets/spine/4236_tmslot/build_char_4236_tmslot.skel" id="2_yovos"]
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_timeslot"]
+viewport_path = NodePath("Sprite3D/SubViewport")
+
 [sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_vvw3o"]
 atlas_res = ExtResource("1_ylo3l")
 skeleton_file_res = ExtResource("2_yovos")
 
-[node name="Timeslot" type="Node2D" unique_id=1545763245]
+[node name="Timeslot" type="Node3D" unique_id=1545763245]
 
-[node name="SpineSprite" type="SpineSprite" parent="." unique_id=1567189654]
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1416223593]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+pixel_size = 0.002
+billboard = 1
+texture = SubResource("ViewportTexture_timeslot")
+
+[node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=1770565186]
+transparent_bg = true
+
+[node name="SpineSprite" type="SpineSprite" parent="Sprite3D/SubViewport" unique_id=1567189654]
 skeleton_data_res = SubResource("SpineSkeletonDataResource_vvw3o")
 preview_skin = "Default"
 preview_animation = "-- Empty --"
 preview_frame = false
 preview_time = 0.0
+position = Vector2(256, 512)

@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace Lime.App;
+namespace Lime.Game;
 
 public enum GameState
 {
@@ -20,6 +20,8 @@ public enum UiState
 
 public partial class FlowController : Node
 {
+    public event Action? StateChanged;
+
     public bool IsStarted { get; private set; }
     public GameState CurrentGameState { get; private set; } = GameState.Hub;
     public UiState CurrentUiState { get; private set; } = UiState.None;
@@ -37,18 +39,33 @@ public partial class FlowController : Node
         IsStarted = true;
         CurrentGameState = GameState.Explore;
         CurrentUiState = UiState.None;
+        StateChanged?.Invoke();
     }
 
     public void SetGameState(GameState state)
     {
         EnsureStarted();
+
+        if (CurrentGameState == state)
+        {
+            return;
+        }
+
         CurrentGameState = state;
+        StateChanged?.Invoke();
     }
 
     public void SetUiState(UiState state)
     {
         EnsureStarted();
+
+        if (CurrentUiState == state)
+        {
+            return;
+        }
+
         CurrentUiState = state;
+        StateChanged?.Invoke();
     }
 
     private void EnsureStarted()

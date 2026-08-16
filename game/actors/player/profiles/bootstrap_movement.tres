@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PlayerMovementProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/actors/player/PlayerMovementProfile.cs" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+WalkSpeed = 3.0
+RunSpeed = 5.0
+Acceleration = 18.0
+Deceleration = 22.0
+GravityScale = 1.0
+FloorSnapLength = 0.25
+FloorMaxAngleDegrees = 50.0

@@ -3,15 +3,28 @@
 [ext_resource type="SpineAtlasResource" uid="uid://dxi8b5o58q05b" path="res://assets/spine/4237_jcinta/build_char_4237_jcinta.atlas" id="1_60hln"]
 [ext_resource type="SpineSkeletonFileResource" uid="uid://d1hec4jpneoxx" path="res://assets/spine/4237_jcinta/build_char_4237_jcinta.skel" id="2_rhe6t"]
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_jacinta"]
+viewport_path = NodePath("Sprite3D/SubViewport")
+
 [sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_vvw3o"]
 atlas_res = ExtResource("1_60hln")
 skeleton_file_res = ExtResource("2_rhe6t")
 
-[node name="Jacinta" type="Node2D" unique_id=1124837893]
+[node name="Jacinta" type="Node3D" unique_id=1124837893]
 
-[node name="SpineSprite" type="SpineSprite" parent="." unique_id=975175761]
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1299741236]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+pixel_size = 0.002
+billboard = 1
+texture = SubResource("ViewportTexture_jacinta")
+
+[node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=1081270296]
+transparent_bg = true
+
+[node name="SpineSprite" type="SpineSprite" parent="Sprite3D/SubViewport" unique_id=975175761]
 skeleton_data_res = SubResource("SpineSkeletonDataResource_vvw3o")
 preview_skin = "Default"
 preview_animation = "-- Empty --"
 preview_frame = false
 preview_time = 0.0
+position = Vector2(256, 512)
