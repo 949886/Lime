@@ -94,12 +94,12 @@ public partial class ReferenceLevelSmoke : Node
         var plazaExtension = level.GetNode<MeshInstance3D>("Geometry/PlazaExtension");
         var lowerFrontPlatform = level.GetNode<MeshInstance3D>("Geometry/LowerFrontPlatform");
 
-        Require(upperPlatform.Mesh is BoxMesh upperMesh,
-            "UpperPlatform must use a BoxMesh graybox mass.");
-        Require(intermediatePlatform.Mesh is BoxMesh intermediateMesh,
-            "IntermediatePlatform must use a BoxMesh graybox mass.");
-        Require(lowerCorridor.Mesh is BoxMesh corridorMesh,
-            "LowerCorridor must use a BoxMesh graybox mass.");
+        var upperMesh = upperPlatform.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("UpperPlatform must use a BoxMesh graybox mass.");
+        var intermediateMesh = intermediatePlatform.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("IntermediatePlatform must use a BoxMesh graybox mass.");
+        var corridorMesh = lowerCorridor.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("LowerCorridor must use a BoxMesh graybox mass.");
 
         Require(Near(upperMesh.Size.X, 18.0f) && Near(upperMesh.Size.Z, 12.0f),
             "UpperPlatform bootstrap footprint must remain 18 x 12.");
