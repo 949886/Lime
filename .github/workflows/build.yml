@@ -1,227 +1,122 @@
 name: Build
 
-on: 
+on:
   workflow_call:
 
 env:
-  GODOT_ANDROID_KEYSTORE_RELEASE_PATH: ${{ github.workspace }}/release.keystore 
-  GODOT_ANDROID_KEYSTORE_RELEASE_USER: Unknown
-  GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: 123456
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+  GODOT_ANDROID_KEYSTORE_RELEASE_PATH: ${{ github.workspace }}/release.keystore
+  GODOT_ANDROID_KEYSTORE_RELEASE_USER: LimeCI
+  GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: lime-ci-only
 
 jobs:
-  check:
-    name: Check C# Status
-    runs-on: ubuntu-latest
-    outputs:
-      using_dotnet: ${{ steps.check_dotnet.outputs.using_dotnet }}
-      web_csharp: ${{ steps.check_dotnet.outputs.web_csharp }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Check if project is using C#
-        id: check_dotnet
-        run: | 
-          if [ -f *.csproj ]; then
-            echo "using_dotnet=true" >> $GITHUB_OUTPUT
-            echo "C# project found, C# workflow will be executed in the next job."
-          else
-            echo "using_dotnet=false" >> $GITHUB_OUTPUT
-            echo "Non-C# project, C# workflow will be skipped in the next job."
-          fi
-          
   build:
-    name: Build
-    needs: check
-    runs-on: ${{ matrix.platform.system }}
-    env:
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
-      DOTNET_NOLOGO: true
+    name: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        platform: 
-          - name: Windows
-            system: "ubuntu-latest"
-            extension: ".exe"
-            csharp: ${{ needs.check.outputs.using_dotnet }}
-          # - name: macOS
-          #   system: "macos-latest"
-          #   extension: ".app"
-          #   csharp: ${{ needs.check.outputs.using_dotnet }}
-          # - name: Linux
-          #   system: "macos-latest"
-          #   extension: ".x86_64"
-          #   csharp: ${{ needs.check.outputs.using_dotnet }}
-          - name: Web
-            system: "ubuntu-latest"
-            extension: ".html"
-            csharp: ${{ needs.check.outputs.using_dotnet }}
-          - name: Android
-            system: "ubuntu-latest"
-            extension: ".apk"
-            csharp: ${{ needs.check.outputs.using_dotnet }}
-          # - name: iOS
-          #   system: "macos-latest"
-          #   extension: ".ipa"
-        exclude:
-          # Web platform does not support C# projects.
-          - platform: 
-              name: Web
-              csharp: 'true'
+        platform:
+          - Windows
+          - Android
+
     steps:
-        # Checkout
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Blender
-        run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            sudo apt update
-            sudo apt install -y blender
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
-            brew install --cask blender
-          fi
-          blender --version
-
-      - name: Set Blender path
-        run: |
-          which blender
-          echo "BLENDER_PATH=$(which blender)" >> $GITHUB_ENV
-
-#      - name: Install xorg & xz-utils
-#        if: matrix.platform.name != 'macOS'
-#        run: |
-#          sudo apt update
-#          sudo apt install -y xorg
-#          sudo apt install -y xz-utils
-      
-      # Setup .NET
-      - name: Setup .NET SDK
-        if: needs.check.outputs.using_dotnet == 'true'
+      - name: Setup .NET 9
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.x
+          dotnet-version: 9.x
 
-      - name: Build C# Projects
-        if: needs.check.outputs.using_dotnet == 'true'
+      - name: Verify .NET
+        run: dotnet --info
+
+      - name: Restore and build C# project
         run: |
-            dotnet restore
-            dotnet build
+          dotnet restore
+          dotnet build --no-restore --configuration Debug
 
-      # Setup Godot
-      - name: Setup Godot
+      - name: Setup Godot 4.7.1 .NET
         uses: chickensoft-games/setup-godot@v2
         with:
-          # Version must include major, minor, and patch, and be >= 4.0.0
-          # Pre-release label is optional.
-          version: 4.7.1 # also valid: 4.0.0.rc1 or 4.0.0, etc
-          use-dotnet: ${{ needs.check.outputs.using_dotnet }}
+          version: 4.7.1
+          use-dotnet: true
           include-templates: true
 
-      - name: Verify Godot Version
-        run: |
-          godot --version
+      - name: Verify Godot
+        run: godot --version
 
-      # Setup android
-      - name: Set up JDK 17
-        if: matrix.platform.name == 'Android'
-        uses: actions/setup-java@v3
+      - name: Run Phantom Camera runtime smoke
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . -- --m1-spike
+
+      - name: Setup JDK 17
+        if: matrix.platform == 'Android'
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
 
       - name: Setup Android SDK
-        if: matrix.platform.name == 'Android'
+        if: matrix.platform == 'Android'
         uses: android-actions/setup-android@v3
 
-      - name: Generate Keystore
-        if: matrix.platform.name == 'Android'
-        run: |
-          if [ ! -f $GODOT_ANDROID_KEYSTORE_RELEASE_PATH ]; then
-            keytool -genkey -v -keystore release.keystore -alias $GODOT_ANDROID_KEYSTORE_RELEASE_USER -keyalg RSA -keysize 2048 -validity 10000 \
-              -storepass $GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD -keypass $GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD -dname "CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, S=Unknown, C=Unknown"
-          fi
-          env
-
-      # Build the project for each platform
-      # - name: Build Godot Solutions
-      #   run: godot --headless --build-solutions --quit || exit 0
-        
-      - name: Export Project
+      - name: Install Android export dependencies
+        if: matrix.platform == 'Android'
         shell: bash
         run: |
-          mkdir -p build
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager \
+            "platform-tools" \
+            "build-tools;35.0.1" \
+            "platforms;android-35" \
+            "cmake;3.10.2.4988404" \
+            "ndk;28.1.13356709"
 
-          if [[ "${{ matrix.platform.name }}" == "Web" ]]; then
-            godot --headless --verbose \
-              --export-release "Web" \
-              "./build/index.html"
-          else
-            godot --headless --verbose \
-              --export-release "${{ matrix.platform.name }}" \
-              "./build/${{ github.event.repository.name }}${{ matrix.platform.extension }}"
-          fi
-
-      # Godot exports the web entry html using the project name; rename it so static hosts can serve it as the default page (index.html).
-      # - name: Normalize web entry file
-      #   if: matrix.platform.name == 'Web'
-      #   shell: bash
-      #   run: |
-      #     set -euo pipefail
-
-      #     shopt -s nullglob
-      #     HTML_FILES=()
-      #     for file in build/*.html; do
-      #       if [[ "$(basename "${file}")" != *.offline.html ]]; then
-      #         HTML_FILES+=("${file}")
-      #       fi
-      #     done
-
-      #     if [[ ${#HTML_FILES[@]} -eq 0 ]]; then
-      #       echo "No html entry file found in build output."
-      #       exit 1
-      #     fi
-
-      #     if [[ ${#HTML_FILES[@]} -gt 1 ]]; then
-      #       echo "Expected exactly one html entry file, found ${#HTML_FILES[@]}."
-      #       printf '%s\n' "${HTML_FILES[@]}"
-      #       exit 1
-      #     fi
-
-      #     HTML_FILE="${HTML_FILES[0]}"
-      #     if [[ "$(basename "${HTML_FILE}")" != "index.html" ]]; then
-      #       mv "${HTML_FILE}" build/index.html
-      #       echo "Renamed $(basename "${HTML_FILE}") to index.html"
-      #     else
-      #       echo "Entry file is already index.html"
-      #     fi
-
-      # Compress the build files and upload them as an artifact
-      - name: Compress build files
+      - name: Generate Android release keystore
+        if: matrix.platform == 'Android'
+        shell: bash
         run: |
-          cd build
-          sudo zip -r ./${{ matrix.platform.name }}.zip *
+          keytool -genkeypair -v \
+            -keystore "$GODOT_ANDROID_KEYSTORE_RELEASE_PATH" \
+            -alias "$GODOT_ANDROID_KEYSTORE_RELEASE_USER" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass "$GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD" \
+            -keypass "$GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD" \
+            -dname "CN=Lime CI, OU=Lime, O=Lime, L=CI, S=CI, C=US"
 
-      - name: Display structure of build files
-        run: ls -R ./build
-
-      - name: Display structure of workspace
+      - name: Export Windows
+        if: matrix.platform == 'Windows'
         run: |
-          ls -aR | perl -ne 'if(/^(.+):$/){$d=$1;next}next if /^\s*$/||$_ eq ".\n"||$_ eq "..\n";chomp;$p=$d?"$d/$_":$_;$p=~s/[^-][^\/]*\//    /g;$p=~s/^    (\S)/└── \1/;$p=~s/(^    |    (?= ))/━E  /g;$p=~s/    (\S)/└── \1/;print "$p\n"'
-          echo "└── [END]"
+          mkdir -p build/windows
+          godot --headless --verbose --path . \
+            --export-release "Windows" \
+            "build/windows/Lime.exe"
 
-      # Upload artifact
-      - name : Upload Artifact
-        uses: actions/upload-artifact@v4
-        if: matrix.platform.name != 'Android'
-        with:
-          name: Build-${{ matrix.platform.name }}
-          path: ./build/${{ matrix.platform.name }}.zip
+      - name: Export Android
+        if: matrix.platform == 'Android'
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
+        run: |
+          mkdir -p build/android
+          godot --headless --verbose --path . \
+            --export-release "Android" \
+            "build/android/Lime.apk"
 
-      - name: Upload Artifact
+      - name: Upload Windows artifact
+        if: matrix.platform == 'Windows'
         uses: actions/upload-artifact@v4
-        if: matrix.platform.name == 'Android'
         with:
-          name: Build-${{ matrix.platform.name }}
-          path: ./build/${{ github.event.repository.name }}.apk
+          name: Build-Windows
+          path: build/windows/
+
+      - name: Upload Android artifact
+        if: matrix.platform == 'Android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-Android
+          path: build/android/Lime.apk
