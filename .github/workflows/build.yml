@@ -48,6 +48,9 @@ jobs:
       - name: Verify Godot
         run: godot --version
 
+      - name: Bootstrap Godot import and script class cache
+        run: godot --headless --editor --path . --quit-after 10
+
       - name: Run Phantom Camera runtime smoke
         if: matrix.platform == 'Windows'
         run: godot --headless --path . -- --m1-spike
