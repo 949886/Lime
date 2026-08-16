@@ -8,6 +8,10 @@ config/name="Lime"
 run/main_scene="res://spikes/platform_plugin/PlatformPluginSpike.tscn"
 config/features=PackedStringArray("4.7", "C#", "Mobile")
 
+[autoload]
+
+PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
+
 [display]
 
 window/size/viewport_width=2560
