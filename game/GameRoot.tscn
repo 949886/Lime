@@ -1,41 +1,41 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://bm7mwdhdv6bcn"]
 
-[ext_resource type="Script" path="res://game/GameRoot.cs" id="1_game_root"]
-[ext_resource type="Script" path="res://game/FlowController.cs" id="2_flow_controller"]
-[ext_resource type="PackedScene" path="res://game/actors/player/Player.tscn" id="3_player"]
+[ext_resource type="Script" uid="uid://it7f6pptwd0q" path="res://game/GameRoot.cs" id="1_game_root"]
+[ext_resource type="Script" uid="uid://c5u75wyqk0met" path="res://game/FlowController.cs" id="2_flow_controller"]
+[ext_resource type="PackedScene" uid="uid://diq54h6f7q6tj" path="res://game/actors/player/Player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://game/camera/CameraSystem.tscn" id="4_camera_system"]
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/ReferenceLevel.tscn" id="5_reference_level"]
 
-[node name="GameRoot" type="Node"]
+[node name="GameRoot" type="Node" unique_id=1213129076]
 script = ExtResource("1_game_root")
 
-[node name="FlowController" type="Node" parent="."]
+[node name="FlowController" type="Node" parent="." unique_id=1867690240]
 unique_name_in_owner = true
 script = ExtResource("2_flow_controller")
 
-[node name="WorldRoot" type="Node3D" parent="."]
+[node name="WorldRoot" type="Node3D" parent="." unique_id=499268191]
 unique_name_in_owner = true
 
-[node name="LevelRoot" type="Node3D" parent="WorldRoot"]
+[node name="LevelRoot" type="Node3D" parent="WorldRoot" unique_id=1452107624]
 unique_name_in_owner = true
 
-[node name="ReferenceLevel" parent="WorldRoot/LevelRoot" instance=ExtResource("5_reference_level")]
+[node name="ReferenceLevel" parent="WorldRoot/LevelRoot" unique_id=408257671 instance=ExtResource("5_reference_level")]
 unique_name_in_owner = true
 
-[node name="ActorRoot" type="Node3D" parent="WorldRoot"]
+[node name="ActorRoot" type="Node3D" parent="WorldRoot" unique_id=889044557]
 unique_name_in_owner = true
 
-[node name="Player" parent="WorldRoot/ActorRoot" instance=ExtResource("3_player")]
+[node name="Player" parent="WorldRoot/ActorRoot" unique_id=931668412 instance=ExtResource("3_player")]
 unique_name_in_owner = true
 
-[node name="CameraRoot" type="Node3D" parent="WorldRoot"]
+[node name="CameraRoot" type="Node3D" parent="WorldRoot" unique_id=1349881928]
 unique_name_in_owner = true
 
-[node name="CameraSystem" parent="WorldRoot/CameraRoot" instance=ExtResource("4_camera_system")]
+[node name="CameraSystem" parent="WorldRoot/CameraRoot" unique_id=270075299 instance=ExtResource("4_camera_system")]
 unique_name_in_owner = true
 
-[node name="UIRoot" type="CanvasLayer" parent="."]
+[node name="UIRoot" type="CanvasLayer" parent="." unique_id=1389870298]
 unique_name_in_owner = true
 
-[node name="AudioRoot" type="Node" parent="."]
+[node name="AudioRoot" type="Node" parent="." unique_id=81238963]
 unique_name_in_owner = true
