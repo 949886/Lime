@@ -1,28 +1,27 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://diq54h6f7q6tj"]
 
-[ext_resource type="Script" path="res://game/actors/player/PlayerController.cs" id="1_controller"]
-[ext_resource type="Script" path="res://game/actors/player/PlayerInput.cs" id="2_input"]
+[ext_resource type="Script" uid="uid://c2n2beewb75cp" path="res://game/actors/player/PlayerController.cs" id="1_controller"]
+[ext_resource type="Script" uid="uid://ce4ehvtn7mty4" path="res://game/actors/player/PlayerInput.cs" id="2_input"]
 [ext_resource type="Resource" path="res://game/actors/player/profiles/bootstrap_movement.tres" id="3_profile"]
-[ext_resource type="PackedScene" path="res://assets/spine/1015_aglna2/Angelina.tscn" id="4_angelina"]
+[ext_resource type="PackedScene" uid="uid://ban5w4l3jfpb5" path="res://assets/spine/1015_aglna2/Angelina.tscn" id="4_angelina"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.3
-height = 1.6
+height = 1.0
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" unique_id=831262513]
 collision_layer = 2
-collision_mask = 1
 script = ExtResource("1_controller")
 MovementProfile = ExtResource("3_profile")
 
-[node name="PlayerInput" type="Node" parent="."]
+[node name="PlayerInput" type="Node" parent="." unique_id=552918366]
 unique_name_in_owner = true
 script = ExtResource("2_input")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-position = Vector3(0, 0.8, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1533622149]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CapsuleShape3D_player")
 
-[node name="VisualRoot" type="Node3D" parent="."]
+[node name="VisualRoot" type="Node3D" parent="." unique_id=1110738553]
 
-[node name="CharacterVisual" parent="VisualRoot" instance=ExtResource("4_angelina")]
+[node name="CharacterVisual" parent="VisualRoot" unique_id=1543929585 instance=ExtResource("4_angelina")]

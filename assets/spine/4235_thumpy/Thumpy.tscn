@@ -10,15 +10,15 @@ viewport_path = NodePath("Sprite3D/SubViewport")
 atlas_res = ExtResource("1_jhuke")
 skeleton_file_res = ExtResource("2_0j00j")
 
-[node name="Thumpy3d" type="Node3D" unique_id=17446194]
+[node name="Thumpy" type="Node3D" unique_id=17446194]
 
-[node name="Sprite3D" type="Sprite3D" parent="."]
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=363769652]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 pixel_size = 0.002
 billboard = 1
 texture = SubResource("ViewportTexture_thumpy")
 
-[node name="SubViewport" type="SubViewport" parent="Sprite3D"]
+[node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=164997302]
 transparent_bg = true
 
 [node name="SpineSprite" type="SpineSprite" parent="Sprite3D/SubViewport" unique_id=1649877929]
