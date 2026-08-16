@@ -10,7 +10,7 @@ viewport_path = NodePath("Sprite3D/SubViewport")
 atlas_res = ExtResource("1_hut5m")
 skeleton_file_res = ExtResource("2_xamtj")
 
-[node name="Angelina3d" type="Node3D" unique_id=808440465]
+[node name="Angelina" type="Node3D" unique_id=808440465]
 
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=2032865837]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)

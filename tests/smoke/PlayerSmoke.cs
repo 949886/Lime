@@ -9,6 +9,14 @@ namespace Lime.Tests.Smoke;
 
 public partial class PlayerSmoke : Node3D
 {
+    private static readonly string[] CharacterScenePaths =
+    [
+        "res://assets/spine/1015_aglna2/Angelina.tscn",
+        "res://assets/spine/4235_thumpy/Thumpy.tscn",
+        "res://assets/spine/4236_tmslot/Timeslot.tscn",
+        "res://assets/spine/4237_jcinta/Jacinta.tscn",
+    ];
+
     public override async void _Ready()
     {
         try
@@ -23,6 +31,7 @@ public partial class PlayerSmoke : Node3D
             await WaitPhysicsFrames(6);
 
             ValidateSceneContract(player);
+            ValidateCharacterPresentationScenes();
             ValidateInputContract(player, playerInput);
             await ValidateCameraRelativeWalk(player, playerInput, movementReference);
             await ValidateSprint(player, playerInput);
@@ -79,6 +88,38 @@ public partial class PlayerSmoke : Node3D
             "Player VisualRoot must contain the 3D Angelina CharacterVisual scene.");
         Require(visualRoot.GetNodeOrNull<MeshInstance3D>("PlaceholderVisual") is null,
             "PlaceholderVisual must be removed after the 3D character scene is integrated.");
+    }
+
+    private static void ValidateCharacterPresentationScenes()
+    {
+        foreach (var scenePath in CharacterScenePaths)
+        {
+            var scene = GD.Load<PackedScene>(scenePath)
+                ?? throw new InvalidOperationException($"Character scene must load: {scenePath}");
+            var instance = scene.Instantiate();
+
+            try
+            {
+                var root = instance as Node3D
+                    ?? throw new InvalidOperationException($"Character scene root must be Node3D: {scenePath}");
+                var sprite = root.GetNodeOrNull<Sprite3D>("Sprite3D")
+                    ?? throw new InvalidOperationException($"Character scene must contain Sprite3D: {scenePath}");
+                Require(sprite.Texture is ViewportTexture,
+                    $"Character Sprite3D must render a ViewportTexture: {scenePath}");
+
+                var viewport = root.GetNodeOrNull<SubViewport>("Sprite3D/SubViewport")
+                    ?? throw new InvalidOperationException(
+                        $"Character scene must contain SubViewport: {scenePath}");
+                Require(viewport.TransparentBg,
+                    $"Character SubViewport must use transparent background: {scenePath}");
+                Require(root.GetNodeOrNull<Node>("Sprite3D/SubViewport/SpineSprite") is not null,
+                    $"Character SubViewport must contain SpineSprite: {scenePath}");
+            }
+            finally
+            {
+                instance.Free();
+            }
+        }
     }
 
     private static void ValidateInputContract(PlayerController player, PlayerInput playerInput)
