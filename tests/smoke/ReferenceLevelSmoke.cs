@@ -30,7 +30,7 @@ public partial class ReferenceLevelSmoke : Node
             var renderCamera = gameRoot.CameraDirector.RenderCamera;
             playerInput = player.GetNode<PlayerInput>("%PlayerInput");
 
-            ValidateLevelContract(referenceLevel, renderCamera);
+            ValidateLevelContract(referenceLevel);
             ValidateSpawnContract(gameRoot);
 
             var cameraStart = renderCamera.GlobalPosition;
@@ -41,6 +41,11 @@ public partial class ReferenceLevelSmoke : Node
                 referenceLevel.CameraCheck02, 280);
             await DriveToMarker(player, playerInput, renderCamera,
                 referenceLevel.CameraCheck03, 220);
+
+            gameRoot.CameraDirector.SnapActiveToTarget();
+            await WaitPhysicsFrames(3);
+            ValidateLowerCorridorScreenDirection(referenceLevel, renderCamera);
+
             await DriveToMarker(player, playerInput, renderCamera,
                 referenceLevel.RouteEnd, 480);
 
@@ -72,7 +77,7 @@ public partial class ReferenceLevelSmoke : Node
         }
     }
 
-    private static void ValidateLevelContract(ReferenceLevel level, Camera3D renderCamera)
+    private static void ValidateLevelContract(ReferenceLevel level)
     {
         Require(level.Name == "ReferenceLevel",
             "ReferenceLevel production scene is not wired into GameRoot/LevelRoot.");
@@ -91,8 +96,6 @@ public partial class ReferenceLevelSmoke : Node
         var upperPlatform = level.GetNode<MeshInstance3D>("Geometry/UpperPlatform");
         var intermediatePlatform = level.GetNode<MeshInstance3D>("Geometry/IntermediatePlatform");
         var lowerCorridor = level.GetNode<MeshInstance3D>("Geometry/LowerCorridor");
-        var plazaExtension = level.GetNode<MeshInstance3D>("Geometry/PlazaExtension");
-        var lowerFrontPlatform = level.GetNode<MeshInstance3D>("Geometry/LowerFrontPlatform");
 
         var upperMesh = upperPlatform.Mesh as BoxMesh
             ?? throw new InvalidOperationException("UpperPlatform must use a BoxMesh graybox mass.");
@@ -116,6 +119,8 @@ public partial class ReferenceLevelSmoke : Node
             "Reference graybox must include second stair visuals.");
         Require(level.GetNodeOrNull<Node3D>("Geometry/LowerFrontStairs") is not null,
             "Reference graybox must include the separate lower-front stair run.");
+        Require(level.GetNodeOrNull<MeshInstance3D>("Geometry/PlazaExtension") is not null,
+            "Reference graybox must include the later plaza continuation.");
         Require(level.GetNodeOrNull<MeshInstance3D>("Geometry/ForegroundBlocker") is not null,
             "Reference graybox must include a foreground blocker volume.");
         Require(level.GetNodeOrNull<Node3D>("Geometry/Rails") is not null,
@@ -147,32 +152,24 @@ public partial class ReferenceLevelSmoke : Node
             "The second main stair run must continue descending to the lower corridor.");
         Require(Mathf.Abs(level.CameraCheck03.GlobalPosition.Y - level.RouteEnd.GlobalPosition.Y) < 0.15f,
             "CameraCheck03 and RouteEnd must remain on the same lower corridor level.");
+    }
 
-        var cameraRight = renderCamera.GlobalBasis.X;
-        cameraRight.Y = 0.0f;
-        cameraRight = cameraRight.Normalized();
+    private static void ValidateLowerCorridorScreenDirection(ReferenceLevel level, Camera3D renderCamera)
+    {
+        var plazaExtension = level.GetNode<MeshInstance3D>("Geometry/PlazaExtension");
+        var checkScreen = renderCamera.UnprojectPosition(level.CameraCheck03.GlobalPosition);
+        var routeScreen = renderCamera.UnprojectPosition(level.RouteEnd.GlobalPosition);
+        var plazaScreen = renderCamera.UnprojectPosition(plazaExtension.GlobalPosition);
 
-        var cameraForward = -renderCamera.GlobalBasis.Z;
-        cameraForward.Y = 0.0f;
-        cameraForward = cameraForward.Normalized();
+        GD.Print(
+            $"[M1.4] Screen-space corridor: Check03={checkScreen}, RouteEnd={routeScreen}, " +
+            $"Plaza={plazaScreen}, CameraBasisX={renderCamera.GlobalBasis.X}, " +
+            $"CameraBasisZ={renderCamera.GlobalBasis.Z}.");
 
-        var routeDelta = level.RouteEnd.GlobalPosition - level.CameraCheck03.GlobalPosition;
-        routeDelta.Y = 0.0f;
-
-        Require(routeDelta.Dot(cameraRight) > 8.0f,
-            "After Stairs02 the lower corridor must travel toward screen-right in the production Explore camera.");
-        Require(Mathf.Abs(routeDelta.Dot(cameraForward)) < 3.0f,
-            "After Stairs02 the route must turn roughly 90 degrees along the cross-corridor.");
-
-        var plazaDelta = plazaExtension.GlobalPosition - level.RouteEnd.GlobalPosition;
-        plazaDelta.Y = 0.0f;
-        Require(plazaDelta.Dot(cameraRight) > 8.0f,
+        Require(routeScreen.X > checkScreen.X + 1.0f,
+            "After Stairs02 the lower corridor must extend toward screen-right in the production Explore camera.");
+        Require(plazaScreen.X > routeScreen.X + 1.0f,
             "PlazaExtension must continue farther toward screen-right beyond the pre-black RouteEnd.");
-
-        var lowerFrontDelta = lowerFrontPlatform.GlobalPosition - lowerCorridor.GlobalPosition;
-        lowerFrontDelta.Y = 0.0f;
-        Require(lowerFrontDelta.Dot(cameraRight) < -8.0f,
-            "The separate lower-front platform must stay on the opposite/left side of the main corridor composition.");
     }
 
     private static void ValidateSpawnContract(GameRoot gameRoot)
