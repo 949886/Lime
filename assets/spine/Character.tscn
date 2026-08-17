@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://bolnpfgoixqrg"]
+
+[ext_resource type="Script" uid="uid://qpipqgc6ut13" path="res://assets/spine/spine_sprite_2d_temp.gd" id="1_a6m02"]
+[ext_resource type="SpineAtlasResource" uid="uid://ctcxf5har35ot" path="res://assets/spine/4235_thumpy/build_char_4235_thumpy.atlas" id="2_h7e75"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://cv1mlcyah7ykf" path="res://assets/spine/4235_thumpy/build_char_4235_thumpy.skel" id="3_vokig"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_53g1e"]
+viewport_path = NodePath("Sprite3D/SubViewport")
+
+[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_ts7x6"]
+atlas_res = ExtResource("2_h7e75")
+skeleton_file_res = ExtResource("3_vokig")
+
+[node name="Character" type="Node3D" unique_id=178272724]
+script = ExtResource("1_a6m02")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=188709310]
+offset = Vector2(0, 256)
+pixel_size = 0.002
+billboard = 1
+alpha_cut = 1
+texture = SubResource("ViewportTexture_53g1e")
+
+[node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=2040691830]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+
+[node name="SpineSprite" type="SpineSprite" parent="Sprite3D/SubViewport" unique_id=1927152648]
+skeleton_data_res = SubResource("SpineSkeletonDataResource_ts7x6")
+preview_skin = "Default"
+preview_animation = "-- Empty --"
+preview_frame = false
+preview_time = 0.0
+position = Vector2(256, 512)

@@ -1,30 +1,20 @@
 [gd_scene format=3 uid="uid://321fbmqtr3o3"]
 
+[ext_resource type="PackedScene" uid="uid://bolnpfgoixqrg" path="res://assets/spine/Character.tscn" id="1_6wqs6"]
 [ext_resource type="SpineAtlasResource" uid="uid://bjt32nnecse0g" path="res://assets/spine/4236_tmslot/build_char_4236_tmslot.atlas" id="1_ylo3l"]
 [ext_resource type="SpineSkeletonFileResource" uid="uid://bvuflbl672wrs" path="res://assets/spine/4236_tmslot/build_char_4236_tmslot.skel" id="2_yovos"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_timeslot"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_ylo3l"]
 viewport_path = NodePath("Sprite3D/SubViewport")
 
-[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_g333h"]
+[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_yovos"]
 atlas_res = ExtResource("1_ylo3l")
 skeleton_file_res = ExtResource("2_yovos")
 
-[node name="Timeslot" type="Node3D" unique_id=1545763245]
+[node name="Character" unique_id=178272724 instance=ExtResource("1_6wqs6")]
 
-[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1416223593]
-offset = Vector2(0, 256)
-pixel_size = 0.002
-billboard = 1
-texture = SubResource("ViewportTexture_timeslot")
+[node name="Sprite3D" parent="." index="0" unique_id=188709310]
+texture = SubResource("ViewportTexture_ylo3l")
 
-[node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=1770565186]
-transparent_bg = true
-
-[node name="SpineSprite" type="SpineSprite" parent="Sprite3D/SubViewport" unique_id=1567189654]
-skeleton_data_res = SubResource("SpineSkeletonDataResource_g333h")
-preview_skin = "Default"
-preview_animation = "-- Empty --"
-preview_frame = false
-preview_time = 0.0
-position = Vector2(256, 512)
+[node name="SpineSprite" parent="Sprite3D/SubViewport" parent_id_path=PackedInt32Array(2040691830) index="0" unique_id=1927152648]
+skeleton_data_res = SubResource("SpineSkeletonDataResource_yovos")

@@ -1,30 +1,20 @@
-[gd_scene format=3 uid="uid://ban5w4l3jfpb5"]
+[gd_scene format=3 uid="uid://dhpxuww6i7ak4"]
 
-[ext_resource type="SpineAtlasResource" uid="uid://bsj5bikxwnee1" path="res://assets/spine/1015_aglna2/build_char_1015_aglna2.atlas" id="1_igmk7"]
-[ext_resource type="SpineSkeletonFileResource" uid="uid://kprmsnucwrgc" path="res://assets/spine/1015_aglna2/build_char_1015_aglna2.skel" id="2_yaxsa"]
+[ext_resource type="PackedScene" uid="uid://bolnpfgoixqrg" path="res://assets/spine/Character.tscn" id="1_3yqx4"]
+[ext_resource type="SpineAtlasResource" uid="uid://bsj5bikxwnee1" path="res://assets/spine/1015_aglna2/build_char_1015_aglna2.atlas" id="2_7re05"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://kprmsnucwrgc" path="res://assets/spine/1015_aglna2/build_char_1015_aglna2.skel" id="3_d3i2x"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_vvw3o"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_f8bjg"]
 viewport_path = NodePath("Sprite3D/SubViewport")
 
-[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_u6fi6"]
-atlas_res = ExtResource("1_igmk7")
-skeleton_file_res = ExtResource("2_yaxsa")
+[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_e6cpn"]
+atlas_res = ExtResource("2_7re05")
+skeleton_file_res = ExtResource("3_d3i2x")
 
-[node name="Angelina" type="Node3D" unique_id=808440465]
+[node name="Character" unique_id=178272724 instance=ExtResource("1_3yqx4")]
 
-[node name="Sprite3D" type="Sprite3D" parent="." unique_id=2032865837]
-offset = Vector2(0, 256)
-pixel_size = 0.002
-billboard = 1
-texture = SubResource("ViewportTexture_vvw3o")
+[node name="Sprite3D" parent="." index="0" unique_id=188709310]
+texture = SubResource("ViewportTexture_f8bjg")
 
-[node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=1894496024]
-transparent_bg = true
-
-[node name="SpineSprite" type="SpineSprite" parent="Sprite3D/SubViewport" unique_id=1382673406]
-skeleton_data_res = SubResource("SpineSkeletonDataResource_u6fi6")
-preview_skin = "Default"
-preview_animation = "-- Empty --"
-preview_frame = false
-preview_time = 0.0
-position = Vector2(256, 512)
+[node name="SpineSprite" parent="Sprite3D/SubViewport" parent_id_path=PackedInt32Array(2040691830) index="0" unique_id=1927152648]
+skeleton_data_res = SubResource("SpineSkeletonDataResource_e6cpn")
