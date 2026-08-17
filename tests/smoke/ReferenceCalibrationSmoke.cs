@@ -17,6 +17,8 @@ public partial class ReferenceCalibrationSmoke : Node
     {
         try
         {
+            DumpReferenceFrameForCalibration();
+
             var scene = GD.Load<PackedScene>("res://game/GameRoot.tscn")
                 ?? throw new InvalidOperationException("GameRoot.tscn could not be loaded.");
 
@@ -38,6 +40,20 @@ public partial class ReferenceCalibrationSmoke : Node
         {
             GD.PushError($"[M1.6] FAIL: {exception}");
             GetTree().Quit(1);
+        }
+    }
+
+    private static void DumpReferenceFrameForCalibration()
+    {
+        var bytes = FileAccess.GetFileAsBytes("res://diagnostics/reference/frames/check01.webp");
+        Require(bytes.Length > 0, "Check01 reference frame bytes must be readable.");
+
+        var encoded = Convert.ToBase64String(bytes);
+        GD.Print($"[M1.6][REF01] bytes={bytes.Length}, base64={encoded.Length}");
+        for (var offset = 0; offset < encoded.Length; offset += 120)
+        {
+            var length = Math.Min(120, encoded.Length - offset);
+            GD.Print($"[M1.6][REF01-B64 {offset / 120:D4}] {encoded.Substring(offset, length)}");
         }
     }
 
