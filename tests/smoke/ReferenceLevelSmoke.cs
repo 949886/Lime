@@ -119,8 +119,8 @@ public partial class ReferenceLevelSmoke : Node
         var lowerFrontStepMesh = lowerFrontStep.Mesh as BoxMesh
             ?? throw new InvalidOperationException("LowerFrontStairs must use BoxMesh graybox steps.");
 
-        Require(Near(upperMesh.Size.X, 8.0f) && Near(upperMesh.Size.Z, 4.0f),
-            "UpperPlatform footprint must use the Start-reference 8 x 4 calibration.");
+        Require(Near(upperMesh.Size.X, 4.5f) && Near(upperMesh.Size.Z, 4.0f),
+            "UpperPlatform footprint must use the Start-reference 4.5 x 4 calibration.");
         Require(upperPlatform.GlobalPosition.DistanceTo(new Vector3(1.4f, 1.85f, 3.0f)) < 0.01f,
             "UpperPlatform must be centered on the first stair axis and keep its front edge at Z=1.");
         Require(Near(intermediateMesh.Size.X, 8.0f) && Near(intermediateMesh.Size.Z, 5.0f),
