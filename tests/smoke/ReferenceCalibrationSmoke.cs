@@ -73,11 +73,11 @@ public partial class ReferenceCalibrationSmoke : Node
         Require(upper.GlobalPosition.DistanceTo(new Vector3(1.4f, 1.85f, 3.0f)) < 0.01f,
             "UpperPlatform must use the Start-reference center on the first stair axis.");
         Require(upper.Mesh is BoxMesh upperBox &&
-                upperBox.Size.DistanceTo(new Vector3(8.0f, 0.3f, 4.0f)) < 0.01f,
-            "UpperPlatform must use the measured 8x4m Start footprint.");
+                upperBox.Size.DistanceTo(new Vector3(4.5f, 0.3f, 4.0f)) < 0.01f,
+            "UpperPlatform must use the measured 4.5x4m Start footprint.");
         Require(upperCollision.Shape is BoxShape3D upperShape &&
-                upperShape.Size.DistanceTo(new Vector3(8.0f, 0.3f, 4.0f)) < 0.01f,
-            "UpperPlatform collision must match the 8x4m visual footprint.");
+                upperShape.Size.DistanceTo(new Vector3(4.5f, 0.3f, 4.0f)) < 0.01f,
+            "UpperPlatform collision must match the 4.5x4m visual footprint.");
         Require(upperCollision.GlobalPosition.DistanceTo(upper.GlobalPosition) < 0.01f,
             "UpperPlatform collision must share the calibrated visual center.");
         Require(level.PlayerStart.GlobalPosition.DistanceTo(new Vector3(1.4f, 2.02f, 1.65f)) < 0.01f,
@@ -142,12 +142,12 @@ public partial class ReferenceCalibrationSmoke : Node
 
         // Freeze the visible 8.5s platform silhouette rather than accepting a
         // single centre-point match. UpperPlatform top is Y=2.0, front Z=1 and
-        // back Z=5 after the 8x4m calibration.
+        // back Z=5 after the 4.5x4m calibration.
         MeasureNormalizedAnchor(camera, new Vector3(1.4f, 2.0f, 1.0f),
             new Vector2(0.500f, 0.867f), "Start platform front edge", StartAnchorTolerance);
-        MeasureNormalizedAnchor(camera, new Vector3(5.4f, 2.0f, 5.0f),
+        MeasureNormalizedAnchor(camera, new Vector3(3.65f, 2.0f, 5.0f),
             new Vector2(0.086f, 0.446f), "Start platform back screen-left", StartAnchorTolerance);
-        MeasureNormalizedAnchor(camera, new Vector3(-2.6f, 2.0f, 5.0f),
+        MeasureNormalizedAnchor(camera, new Vector3(-0.85f, 2.0f, 5.0f),
             new Vector2(0.914f, 0.446f), "Start platform back screen-right", StartAnchorTolerance);
     }
 
