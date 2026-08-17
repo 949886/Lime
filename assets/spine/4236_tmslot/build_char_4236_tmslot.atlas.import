@@ -2,7 +2,7 @@
 
 importer="spine.atlas"
 type="SpineAtlasResource"
-uid="uid://dtdvko803dj5m"
+uid="uid://bjt32nnecse0g"
 path="res://.godot/imported/build_char_4236_tmslot.atlas-6f0ba715a267bed27eb18addb8823b94.spatlas"
 
 [deps]
@@ -13,3 +13,4 @@ dest_files=["res://.godot/imported/build_char_4236_tmslot.atlas-6f0ba715a267bed2
 [params]
 
 normal_map_prefix="n"
+specular_map_prefix="s"

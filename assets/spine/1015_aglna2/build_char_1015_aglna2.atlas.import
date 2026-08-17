@@ -2,7 +2,7 @@
 
 importer="spine.atlas"
 type="SpineAtlasResource"
-uid="uid://ifit4hlu2f1n"
+uid="uid://bsj5bikxwnee1"
 path="res://.godot/imported/build_char_1015_aglna2.atlas-066e97970c1777253301f84432b353c9.spatlas"
 
 [deps]
@@ -13,3 +13,4 @@ dest_files=["res://.godot/imported/build_char_1015_aglna2.atlas-066e97970c177725
 [params]
 
 normal_map_prefix="n"
+specular_map_prefix="s"

@@ -2,7 +2,7 @@
 
 importer="spine.atlas"
 type="SpineAtlasResource"
-uid="uid://drcxynjaihg62"
+uid="uid://ctcxf5har35ot"
 path="res://.godot/imported/build_char_4235_thumpy.atlas-f8e7e70e0ef7d47967752a5ba8ffddbc.spatlas"
 
 [deps]
@@ -13,3 +13,4 @@ dest_files=["res://.godot/imported/build_char_4235_thumpy.atlas-f8e7e70e0ef7d479
 [params]
 
 normal_map_prefix="n"
+specular_map_prefix="s"

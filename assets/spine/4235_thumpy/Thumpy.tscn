@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://b8np4aaippsrp"]
 
-[ext_resource type="SpineAtlasResource" uid="uid://drcxynjaihg62" path="res://assets/spine/4235_thumpy/build_char_4235_thumpy.atlas" id="1_jhuke"]
-[ext_resource type="SpineSkeletonFileResource" uid="uid://bl82q16omkxqi" path="res://assets/spine/4235_thumpy/build_char_4235_thumpy.skel" id="2_0j00j"]
+[ext_resource type="SpineAtlasResource" uid="uid://ctcxf5har35ot" path="res://assets/spine/4235_thumpy/build_char_4235_thumpy.atlas" id="1_jhuke"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://cv1mlcyah7ykf" path="res://assets/spine/4235_thumpy/build_char_4235_thumpy.skel" id="2_0j00j"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_thumpy"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_tqlpi"]
 viewport_path = NodePath("Sprite3D/SubViewport")
 
-[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_k2hbt"]
+[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_vvw3o"]
 atlas_res = ExtResource("1_jhuke")
 skeleton_file_res = ExtResource("2_0j00j")
 
@@ -16,13 +16,13 @@ skeleton_file_res = ExtResource("2_0j00j")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 pixel_size = 0.002
 billboard = 1
-texture = SubResource("ViewportTexture_thumpy")
+texture = SubResource("ViewportTexture_tqlpi")
 
 [node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=164997302]
 transparent_bg = true
 
-[node name="SpineSprite" type="SpineSprite" parent="Sprite3D/SubViewport" unique_id=1649877929]
-skeleton_data_res = SubResource("SpineSkeletonDataResource_k2hbt")
+[node name="SpineSprite" type="SpineSprite" parent="Sprite3D/SubViewport" unique_id=655307616]
+skeleton_data_res = SubResource("SpineSkeletonDataResource_vvw3o")
 preview_skin = "Default"
 preview_animation = "-- Empty --"
 preview_frame = false
