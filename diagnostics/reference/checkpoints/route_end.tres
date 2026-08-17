@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ReferenceCheckpoint" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://diagnostics/reference/ReferenceCheckpoint.cs" id="1_checkpoint"]
+[ext_resource type="Script" path="res://diagnostics/reference/ReferenceFrame.cs" id="2_frame"]
+[ext_resource type="Texture2D" path="res://diagnostics/reference/frames/route_end.webp" id="3_image"]
+
+[sub_resource type="Resource" id="ReferenceFrame_route_end"]
+script = ExtResource("2_frame")
+TimestampSeconds = 20.80
+SourceFrame = 624
+SourceSize = Vector2i(2548, 1426)
+Image = ExtResource("3_image")
+
+[resource]
+script = ExtResource("1_checkpoint")
+Id = 4
+Frame = SubResource("ReferenceFrame_route_end")
+MarkerPath = NodePath("ReferenceMarkers/RouteEnd")

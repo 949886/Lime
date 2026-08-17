@@ -107,6 +107,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceLevelSmoke.tscn
 
+      - name: Run M1.5 reference comparator smoke
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/ReferenceComparatorSmoke.tscn
+
       - name: Setup JDK 17
         if: matrix.platform == 'Android'
         uses: actions/setup-java@v4
