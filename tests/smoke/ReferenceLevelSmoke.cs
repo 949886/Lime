@@ -39,6 +39,16 @@ public partial class ReferenceLevelSmoke : Node
                 referenceLevel.CameraCheck01, 240);
             await DriveToMarker(player, playerInput, renderCamera,
                 referenceLevel.CameraCheck02, 280);
+
+            // M1.6 calibrates the reference zig-zag so Stairs02 sits on the
+            // opposite side of the intermediate platform. Align horizontally
+            // with the stair entrance before crossing the platform edge instead
+            // of driving diagonally through empty space toward Check03.
+            var stairs02Top = referenceLevel.GetNode<MeshInstance3D>("Geometry/Stairs02/Step01");
+            var stairs02Approach = stairs02Top.GlobalPosition + new Vector3(0.0f, 0.0f, 0.65f);
+            await DriveToHorizontalPosition(
+                player, playerInput, renderCamera, stairs02Approach, "Stairs02Approach", 180);
+
             await DriveToMarker(player, playerInput, renderCamera,
                 referenceLevel.CameraCheck03, 220);
 
@@ -210,19 +220,32 @@ public partial class ReferenceLevelSmoke : Node
         Marker3D marker,
         int maxFrames)
     {
+        await DriveToHorizontalPosition(
+            player, playerInput, movementReference, marker.GlobalPosition, marker.Name.ToString(), maxFrames);
+
+        await WaitPhysicsFrames(8);
+        Require(Mathf.Abs(player.GlobalPosition.Y - marker.GlobalPosition.Y) < 0.40f,
+            $"Player reached {marker.Name} horizontally but not at the expected traversable height. " +
+            $"Player={player.GlobalPosition}, Target={marker.GlobalPosition}.");
+    }
+
+    private async Task DriveToHorizontalPosition(
+        PlayerController player,
+        PlayerInput playerInput,
+        Camera3D movementReference,
+        Vector3 target,
+        string targetName,
+        int maxFrames)
+    {
         for (var frame = 0; frame < maxFrames; frame++)
         {
-            var delta = marker.GlobalPosition - player.GlobalPosition;
+            var delta = target - player.GlobalPosition;
             var horizontalDelta = new Vector3(delta.X, 0.0f, delta.Z);
 
             if (horizontalDelta.Length() < 0.38f)
             {
                 playerInput.ClearVirtualMove();
-                await WaitPhysicsFrames(8);
-
-                Require(Mathf.Abs(player.GlobalPosition.Y - marker.GlobalPosition.Y) < 0.40f,
-                    $"Player reached {marker.Name} horizontally but not at the expected traversable height. " +
-                    $"Player={player.GlobalPosition}, Target={marker.GlobalPosition}.");
+                await WaitPhysicsFrames(4);
                 return;
             }
 
@@ -244,8 +267,8 @@ public partial class ReferenceLevelSmoke : Node
 
         playerInput.ClearVirtualMove();
         throw new InvalidOperationException(
-            $"Player could not reach traversal marker {marker.Name} within {maxFrames} physics frames. " +
-            $"Player={player.GlobalPosition}, Target={marker.GlobalPosition}, " +
+            $"Player could not reach traversal target {targetName} within {maxFrames} physics frames. " +
+            $"Player={player.GlobalPosition}, Target={target}, " +
             $"Velocity={player.Velocity}, IsOnFloor={player.IsOnFloor()}.");
     }
 
