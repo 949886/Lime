@@ -44,10 +44,10 @@ follow_mode = 2
 tween_resource = SubResource("Tween_perspective")
 tween_on_load = false
 camera_3d_resource = SubResource("CameraResource_perspective")
-follow_offset = Vector3(0, 3, 6)
+follow_offset = Vector3(0, 3, -6)
 follow_damping = true
 follow_damping_value = Vector3(0.2, 0.2, 0.2)
-rotation_degrees = Vector3(-25, 0, 0)
+rotation_degrees = Vector3(-25, 180, 0)
 
 [node name="ExploreOrthographic" type="Node3D" parent="PCams"]
 top_level = true
@@ -57,7 +57,7 @@ follow_mode = 2
 tween_resource = SubResource("Tween_orthographic")
 tween_on_load = false
 camera_3d_resource = SubResource("CameraResource_orthographic")
-follow_offset = Vector3(0, 3, 6)
+follow_offset = Vector3(0, 3, -6)
 follow_damping = true
 follow_damping_value = Vector3(0.2, 0.2, 0.2)
-rotation_degrees = Vector3(-25, 0, 0)
+rotation_degrees = Vector3(-25, 180, 0)

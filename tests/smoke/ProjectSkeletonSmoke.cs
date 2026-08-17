@@ -26,14 +26,15 @@ public partial class ProjectSkeletonSmoke : Node
 
             ValidateCompositionRoot(gameRoot);
             ValidateCameraWiring(gameRoot);
+            ValidateReferenceLevelWiring(gameRoot);
             ValidateFlowState(gameRoot);
 
-            GD.Print("[M1.1-M1.3] PASS: Project skeleton runtime smoke completed successfully.");
+            GD.Print("[M1.1-M1.4] PASS: Project skeleton runtime smoke completed successfully.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
         {
-            GD.PushError($"[M1.1-M1.3] FAIL: {exception}");
+            GD.PushError($"[M1.1-M1.4] FAIL: {exception}");
             GetTree().Quit(1);
         }
     }
@@ -72,6 +73,7 @@ public partial class ProjectSkeletonSmoke : Node
             "FlowController did not start when GameRoot became ready.");
         Require(gameRoot.WorldRoot.Name == "WorldRoot", "WorldRoot wiring is invalid.");
         Require(gameRoot.LevelRoot.Name == "LevelRoot", "LevelRoot wiring is invalid.");
+        Require(gameRoot.ReferenceLevel.Name == "ReferenceLevel", "ReferenceLevel wiring is invalid.");
         Require(gameRoot.ActorRoot.Name == "ActorRoot", "ActorRoot wiring is invalid.");
         Require(gameRoot.Player.Name == "Player", "Player wiring is invalid.");
         Require(gameRoot.CameraRoot.Name == "CameraRoot", "CameraRoot wiring is invalid.");
@@ -86,6 +88,19 @@ public partial class ProjectSkeletonSmoke : Node
             "CameraSystem RenderCamera must be the current Camera3D.");
         Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.ExplorePerspective,
             "GameRoot must bootstrap the ExplorePerspective camera.");
+    }
+
+    private static void ValidateReferenceLevelWiring(GameRoot gameRoot)
+    {
+        Require(
+            gameRoot.Player.GlobalPosition.DistanceTo(gameRoot.ReferenceLevel.PlayerStart.GlobalPosition) < 0.12f,
+            "GameRoot must place Player at ReferenceLevel.PlayerStart.");
+        Require(
+            gameRoot.ReferenceLevel.GetNodeOrNull<Node3D>("Geometry") is not null,
+            "ReferenceLevel Geometry is missing.");
+        Require(
+            gameRoot.ReferenceLevel.GetNodeOrNull<Node3D>("Collision") is not null,
+            "ReferenceLevel Collision is missing.");
     }
 
     private static void ValidateFlowState(GameRoot gameRoot)

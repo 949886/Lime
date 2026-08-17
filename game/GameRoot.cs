@@ -2,6 +2,7 @@ using Godot;
 using Lime.Game.Actors.Player;
 using Lime.Game.Camera;
 using Lime.Game.World;
+using Lime.Game.World.Levels.Reference;
 
 namespace Lime.Game;
 
@@ -10,6 +11,7 @@ public partial class GameRoot : Node
     public FlowController FlowController { get; private set; } = null!;
     public Node3D WorldRoot { get; private set; } = null!;
     public Node3D LevelRoot { get; private set; } = null!;
+    public ReferenceLevel ReferenceLevel { get; private set; } = null!;
     public Node3D ActorRoot { get; private set; } = null!;
     public PlayerController Player { get; private set; } = null!;
     public Node3D CameraRoot { get; private set; } = null!;
@@ -21,6 +23,7 @@ public partial class GameRoot : Node
     {
         ResolveOwnedNodes();
         ValidateProjectContracts();
+        PlacePlayerAtReferenceStart();
         WireCamera();
 
         FlowController.StateChanged += SyncGameplayInput;
@@ -41,6 +44,7 @@ public partial class GameRoot : Node
         FlowController = GetNode<FlowController>("%FlowController");
         WorldRoot = GetNode<Node3D>("%WorldRoot");
         LevelRoot = GetNode<Node3D>("%LevelRoot");
+        ReferenceLevel = GetNode<ReferenceLevel>("%ReferenceLevel");
         ActorRoot = GetNode<Node3D>("%ActorRoot");
         Player = GetNode<PlayerController>("%Player");
         CameraRoot = GetNode<Node3D>("%CameraRoot");
@@ -53,6 +57,12 @@ public partial class GameRoot : Node
     {
         InputActions.ValidateConfigured();
         CollisionLayers.ValidateConfigured();
+    }
+
+    private void PlacePlayerAtReferenceStart()
+    {
+        Player.GlobalPosition = ReferenceLevel.PlayerStart.GlobalPosition;
+        Player.Velocity = Vector3.Zero;
     }
 
     private void WireCamera()
