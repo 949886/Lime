@@ -8,6 +8,8 @@ namespace Lime.Game;
 
 public partial class GameRoot : Node
 {
+    private const float PullbackMovementThreshold = 0.05f;
+
     public FlowController FlowController { get; private set; } = null!;
     public Node3D WorldRoot { get; private set; } = null!;
     public Node3D LevelRoot { get; private set; } = null!;
@@ -29,6 +31,24 @@ public partial class GameRoot : Node
         FlowController.StateChanged += SyncGameplayInput;
         FlowController.Start();
         SyncGameplayInput();
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (CameraDirector.ActiveCameraId != CameraId.StartPerspective)
+        {
+            return;
+        }
+
+        var horizontalVelocity = new Vector2(Player.Velocity.X, Player.Velocity.Z);
+        if (horizontalVelocity.Length() > PullbackMovementThreshold)
+        {
+            // The reference video holds a close composition through ~9.0s,
+            // then pulls back as the player starts moving. ExplorePerspective's
+            // 1.5s Phantom Camera tween reproduces that transition without ever
+            // changing CharacterVisual scale.
+            CameraDirector.Activate(CameraId.ExplorePerspective);
+        }
     }
 
     public override void _ExitTree()
@@ -69,7 +89,7 @@ public partial class GameRoot : Node
     {
         CameraDirector.BindExploreTarget(Player);
         Player.SetMovementReference(CameraDirector.RenderCamera);
-        CameraDirector.ActivateInstant(CameraId.ExplorePerspective);
+        CameraDirector.ActivateInstant(CameraId.StartPerspective);
     }
 
     private void SyncGameplayInput()
