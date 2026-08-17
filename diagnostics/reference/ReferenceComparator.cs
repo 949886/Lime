@@ -133,7 +133,12 @@ public partial class ReferenceComparator : Control
         var marker = ResolveCurrentMarker();
         _player.GlobalPosition = marker.GlobalPosition;
         _player.Velocity = Vector3.Zero;
-        _cameraDirector.SnapActiveToTarget();
+
+        var cameraId = CurrentCheckpoint.Id == ReferenceCheckpointId.Start
+            ? CameraId.StartPerspective
+            : CameraId.ExplorePerspective;
+        _cameraDirector.ActivateInstant(cameraId);
+
         _statusLabel.Text = $"Teleported to {CurrentCheckpoint.Id}.";
     }
 
@@ -286,7 +291,10 @@ public partial class ReferenceComparator : Control
         return $"{checkpoint.Id}  |  {frame.TimestampSeconds:0.00}s  |  frame {frame.SourceFrame}";
     }
 
-    private void ActivatePerspective() => ActivateCamera(CameraId.ExplorePerspective);
+    private void ActivatePerspective() => ActivateCamera(
+        CurrentCheckpoint.Id == ReferenceCheckpointId.Start
+            ? CameraId.StartPerspective
+            : CameraId.ExplorePerspective);
     private void ActivateOrthographic() => ActivateCamera(CameraId.ExploreOrthographic);
     private void ActivateLiveMode() => SetComparisonMode(ReferenceComparisonMode.Live);
     private void ActivateReferenceMode() => SetComparisonMode(ReferenceComparisonMode.Reference);
