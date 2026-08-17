@@ -147,6 +147,12 @@ public partial class ReferenceComparator : Control
 
     public async Task<ImageTexture> CaptureCurrentAsync()
     {
+        if (string.Equals(DisplayServer.GetName(), "headless", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                "Viewport capture is unavailable while Godot uses the headless display server.");
+        }
+
         var wasVisible = Visible;
         Visible = false;
 
