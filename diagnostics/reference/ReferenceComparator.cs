@@ -82,7 +82,9 @@ public partial class ReferenceComparator : Control
         if (@event is InputEventKey keyEvent &&
             keyEvent.Pressed &&
             !keyEvent.Echo &&
-            keyEvent.Keycode == Key.F9)
+            keyEvent.Keycode == Key.F9 &&
+            keyEvent.CtrlPressed &&
+            keyEvent.ShiftPressed)
         {
             Visible = !Visible;
             GetViewport().SetInputAsHandled();
@@ -116,12 +118,14 @@ public partial class ReferenceComparator : Control
     {
         var index = (CurrentCheckpointIndex - 1 + _checkpoints.Length) % _checkpoints.Length;
         SelectCheckpoint(index);
+        TeleportToCurrentCheckpoint();
     }
 
     public void SelectNextCheckpoint()
     {
         var index = (CurrentCheckpointIndex + 1) % _checkpoints.Length;
         SelectCheckpoint(index);
+        TeleportToCurrentCheckpoint();
     }
 
     public void TeleportToCurrentCheckpoint()
