@@ -59,83 +59,93 @@ color = Color(1, 1, 1, 1)
 layout_mode = 0
 offset_left = 16.0
 offset_top = 16.0
-offset_right = 486.0
-offset_bottom = 300.0
+offset_right = 510.0
+offset_bottom = 324.0
 mouse_filter = 0
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="Title" type="Label" parent="Panel/VBox"]
+[node name="Title" type="Label" parent="Panel/Margin/VBox"]
 layout_mode = 2
-text = "M1.5 Reference Comparator  —  F9 toggle"
+text = "M1.5 Reference Comparator  —  Ctrl+Shift+F9 toggle"
 
-[node name="CheckpointLabel" type="Label" parent="Panel/VBox"]
+[node name="CheckpointLabel" type="Label" parent="Panel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Checkpoint"
 
-[node name="CheckpointRow" type="HBoxContainer" parent="Panel/VBox"]
+[node name="CheckpointRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 6
 
-[node name="PreviousButton" type="Button" parent="Panel/VBox/CheckpointRow"]
+[node name="PreviousButton" type="Button" parent="Panel/Margin/VBox/CheckpointRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Previous"
 
-[node name="NextButton" type="Button" parent="Panel/VBox/CheckpointRow"]
+[node name="NextButton" type="Button" parent="Panel/Margin/VBox/CheckpointRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Next"
 
-[node name="TeleportButton" type="Button" parent="Panel/VBox/CheckpointRow"]
+[node name="TeleportButton" type="Button" parent="Panel/Margin/VBox/CheckpointRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Teleport"
 
-[node name="CameraRow" type="HBoxContainer" parent="Panel/VBox"]
+[node name="CameraRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 6
 
-[node name="PerspectiveButton" type="Button" parent="Panel/VBox/CameraRow"]
+[node name="PerspectiveButton" type="Button" parent="Panel/Margin/VBox/CameraRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Perspective"
 
-[node name="OrthographicButton" type="Button" parent="Panel/VBox/CameraRow"]
+[node name="OrthographicButton" type="Button" parent="Panel/Margin/VBox/CameraRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Orthographic"
 
-[node name="CompareRow" type="HBoxContainer" parent="Panel/VBox"]
+[node name="CompareRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 6
 
-[node name="LiveButton" type="Button" parent="Panel/VBox/CompareRow"]
+[node name="LiveButton" type="Button" parent="Panel/Margin/VBox/CompareRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Live"
 
-[node name="ReferenceButton" type="Button" parent="Panel/VBox/CompareRow"]
+[node name="ReferenceButton" type="Button" parent="Panel/Margin/VBox/CompareRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Reference"
 
-[node name="OverlayButton" type="Button" parent="Panel/VBox/CompareRow"]
+[node name="OverlayButton" type="Button" parent="Panel/Margin/VBox/CompareRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50% Overlay"
 
-[node name="DifferenceButton" type="Button" parent="Panel/VBox/CompareRow"]
+[node name="DifferenceButton" type="Button" parent="Panel/Margin/VBox/CompareRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Difference"
 
-[node name="CaptureButton" type="Button" parent="Panel/VBox"]
+[node name="CaptureButton" type="Button" parent="Panel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Capture current viewport"
 
-[node name="StatusLabel" type="Label" parent="Panel/VBox"]
+[node name="StatusLabel" type="Label" parent="Panel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Ready"
