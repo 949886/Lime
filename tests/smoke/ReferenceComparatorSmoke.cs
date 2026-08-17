@@ -61,8 +61,10 @@ public partial class ReferenceComparatorSmoke : Node
             $"{expectedId} source frame is not locked to {expectedFrame}.");
         Require(checkpoint.Frame.SourceSize == new Vector2I(2548, 1426),
             $"{expectedId} source size must preserve the 2548 × 1426 reference capture metadata.");
-        Require(checkpoint.Frame.Image is not null, $"{expectedId} reference image is missing.");
-        Require(checkpoint.Frame.Image.GetWidth() == 320 && checkpoint.Frame.Image.GetHeight() == 179,
+
+        var image = checkpoint.Frame.Image
+            ?? throw new InvalidOperationException($"{expectedId} reference image is missing.");
+        Require(image.GetWidth() == 320 && image.GetHeight() == 179,
             $"{expectedId} diagnostic image must import at 320 × 179.");
     }
 
