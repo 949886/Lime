@@ -19,7 +19,7 @@ script = ExtResource("4_tween")
 [sub_resource type="Resource" id="CameraResource_orthographic"]
 script = ExtResource("5_camera_resource")
 projection = 1
-size = 6.0
+size = 11.1
 
 [node name="CameraSystem" type="Node3D"]
 script = ExtResource("1_director")
@@ -44,7 +44,7 @@ follow_mode = 2
 tween_resource = SubResource("Tween_perspective")
 tween_on_load = false
 camera_3d_resource = SubResource("CameraResource_perspective")
-follow_offset = Vector3(0, 3, -6)
+follow_offset = Vector3(0, 6, -12)
 follow_damping = true
 follow_damping_value = Vector3(0.2, 0.2, 0.2)
 rotation_degrees = Vector3(-25, 180, 0)
@@ -57,7 +57,7 @@ follow_mode = 2
 tween_resource = SubResource("Tween_orthographic")
 tween_on_load = false
 camera_3d_resource = SubResource("CameraResource_orthographic")
-follow_offset = Vector3(0, 3, -6)
+follow_offset = Vector3(0, 6, -12)
 follow_damping = true
 follow_damping_value = Vector3(0.2, 0.2, 0.2)
 rotation_degrees = Vector3(-25, 180, 0)
