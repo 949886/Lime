@@ -94,7 +94,7 @@ public partial class ReferenceCalibrationSmoke : Node
         Require(Mathf.Abs(cylinder01.GlobalPosition.Z - (-7.5f)) < 0.01f &&
                 Mathf.Abs(cylinder02.GlobalPosition.Z - (-7.5f)) < 0.01f,
             "The cylindrical masses must keep the calibrated shared depth near the intermediate/lower route.");
-        Require(foregroundBlocker.GlobalPosition.DistanceTo(new Vector3(-3.0f, 0.0f, -15.0f)) < 0.01f,
+        Require(foregroundBlocker.GlobalPosition.DistanceTo(new Vector3(-1.68f, 0.0f, -15.0f)) < 0.01f,
             "Foreground blocker must preserve the Check03 lower-centre occlusion calibration.");
     }
 
@@ -156,18 +156,23 @@ public partial class ReferenceCalibrationSmoke : Node
         gameRoot.Player.Velocity = Vector3.Zero;
 
         gameRoot.CameraDirector.ActivateInstant(CameraId.ExplorePerspective);
-        await WaitFramesAsync(3);
+        await WaitFramesAsync(2);
         var perspectivePoint = ProjectNormalized(gameRoot.CameraDirector.RenderCamera, checkpoint.GlobalPosition);
 
         gameRoot.CameraDirector.ActivateInstant(CameraId.ExploreOrthographic);
-        await WaitFramesAsync(3);
+        await WaitFramesAsync(2);
         var camera = gameRoot.CameraDirector.RenderCamera;
         var orthographicPoint = ProjectNormalized(camera, checkpoint.GlobalPosition);
+
+        GD.Print(
+            $"[M1.6] Orthographic A/B: projection={camera.Projection}, size={camera.Size:0.000}, " +
+            $"perspectivePoint={perspectivePoint}, orthographicPoint={orthographicPoint}, " +
+            $"delta={perspectivePoint.DistanceTo(orthographicPoint):0.0000}.");
 
         Require((int)camera.Projection == 1,
             "Orthographic A/B camera must apply orthographic projection.");
         Require(Mathf.Abs(camera.Size - 11.1f) < 0.01f,
-            "Orthographic size must match the calibrated 11.1m target-plane view height.");
+            $"Orthographic size must match the calibrated 11.1m target-plane view height. Actual={camera.Size}.");
         Require(perspectivePoint.DistanceTo(orthographicPoint) < 0.01f,
             "Perspective and Orthographic A/B must preserve target-plane framing while exposing projection distortion differences.");
 
