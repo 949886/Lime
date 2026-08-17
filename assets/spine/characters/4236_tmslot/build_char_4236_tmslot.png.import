@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bnkqq2366dn6d"
-path="res://.godot/imported/build_char_4236_tmslot.png-0ca158d332a044d79029bd5e35b5bf79.ctex"
+path="res://.godot/imported/build_char_4236_tmslot.png-3bad19d947e3eb56919ffb05340faa7d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/spine/4236_tmslot/build_char_4236_tmslot.png"
-dest_files=["res://.godot/imported/build_char_4236_tmslot.png-0ca158d332a044d79029bd5e35b5bf79.ctex"]
+source_file="res://assets/spine/characters/4236_tmslot/build_char_4236_tmslot.png"
+dest_files=["res://.godot/imported/build_char_4236_tmslot.png-3bad19d947e3eb56919ffb05340faa7d.ctex"]
 
 [params]
 

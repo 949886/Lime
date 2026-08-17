@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://c2n2beewb75cp" path="res://game/actors/player/PlayerController.cs" id="1_controller"]
 [ext_resource type="Script" uid="uid://ce4ehvtn7mty4" path="res://game/actors/player/PlayerInput.cs" id="2_input"]
 [ext_resource type="Resource" path="res://game/actors/player/profiles/bootstrap_movement.tres" id="3_profile"]
-[ext_resource type="PackedScene" uid="uid://ban5w4l3jfpb5" path="res://assets/spine/1015_aglna2/Angelina.tscn" id="4_angelina"]
+[ext_resource type="PackedScene" uid="uid://dhpxuww6i7ak4" path="res://assets/spine/characters/1015_aglna2/Angelina.tscn" id="4_angelina"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.3

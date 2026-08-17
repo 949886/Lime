@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://br757y7lf0vf8"
+path="res://.godot/imported/build_char_4237_jcinta.skel-e112bcc169ea5bdd311183b5ce5d0b3b.spskel"
+
+[deps]
+
+source_file="res://assets/spine/characters/4237_jcinta/build_char_4237_jcinta.skel"
+dest_files=["res://.godot/imported/build_char_4237_jcinta.skel-e112bcc169ea5bdd311183b5ce5d0b3b.spskel"]
+
+[params]
+

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://byl73whuagr21"
-path="res://.godot/imported/build_char_4237_jcinta.png-4563d7521b940e865089501b7d72fd91.ctex"
+path="res://.godot/imported/build_char_4237_jcinta.png-a2b37ec0006b2358cbdf98c3564642a5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/spine/4237_jcinta/build_char_4237_jcinta.png"
-dest_files=["res://.godot/imported/build_char_4237_jcinta.png-4563d7521b940e865089501b7d72fd91.ctex"]
+source_file="res://assets/spine/characters/4237_jcinta/build_char_4237_jcinta.png"
+dest_files=["res://.godot/imported/build_char_4237_jcinta.png-a2b37ec0006b2358cbdf98c3564642a5.ctex"]
 
 [params]
 

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://bolnpfgoixqrg"]
 
-[ext_resource type="Script" uid="uid://qpipqgc6ut13" path="res://assets/spine/spine_sprite_2d_temp.gd" id="1_a6m02"]
-[ext_resource type="SpineAtlasResource" uid="uid://ctcxf5har35ot" path="res://assets/spine/4235_thumpy/build_char_4235_thumpy.atlas" id="2_h7e75"]
-[ext_resource type="SpineSkeletonFileResource" uid="uid://cv1mlcyah7ykf" path="res://assets/spine/4235_thumpy/build_char_4235_thumpy.skel" id="3_vokig"]
+[ext_resource type="Script" uid="uid://qpipqgc6ut13" path="res://assets/spine/characters/spine_character.gd" id="1_a6m02"]
+[ext_resource type="SpineAtlasResource" uid="uid://ctcxf5har35ot" path="res://assets/spine/characters/4235_thumpy/build_char_4235_thumpy.atlas" id="2_h7e75"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://cv1mlcyah7ykf" path="res://assets/spine/characters/4235_thumpy/build_char_4235_thumpy.skel" id="3_vokig"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_53g1e"]
 viewport_path = NodePath("Sprite3D/SubViewport")

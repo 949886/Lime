@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://dhpxuww6i7ak4"]
 
-[ext_resource type="PackedScene" uid="uid://bolnpfgoixqrg" path="res://assets/spine/Character.tscn" id="1_3yqx4"]
-[ext_resource type="SpineAtlasResource" uid="uid://bsj5bikxwnee1" path="res://assets/spine/1015_aglna2/build_char_1015_aglna2.atlas" id="2_7re05"]
-[ext_resource type="SpineSkeletonFileResource" uid="uid://kprmsnucwrgc" path="res://assets/spine/1015_aglna2/build_char_1015_aglna2.skel" id="3_d3i2x"]
+[ext_resource type="PackedScene" uid="uid://bolnpfgoixqrg" path="res://assets/spine/characters/Character.tscn" id="1_3yqx4"]
+[ext_resource type="SpineAtlasResource" uid="uid://bsj5bikxwnee1" path="res://assets/spine/characters/1015_aglna2/build_char_1015_aglna2.atlas" id="2_7re05"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://kprmsnucwrgc" path="res://assets/spine/characters/1015_aglna2/build_char_1015_aglna2.skel" id="3_d3i2x"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_f8bjg"]
 viewport_path = NodePath("Sprite3D/SubViewport")

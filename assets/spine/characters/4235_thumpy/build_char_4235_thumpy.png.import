@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cgsykpuj088"
-path="res://.godot/imported/build_char_4235_thumpy.png-fae4a1f19e4bd1f2a4825243e84df7d3.ctex"
+path="res://.godot/imported/build_char_4235_thumpy.png-606a89a21baed4c6396eb795e8dd7f47.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/spine/4235_thumpy/build_char_4235_thumpy.png"
-dest_files=["res://.godot/imported/build_char_4235_thumpy.png-fae4a1f19e4bd1f2a4825243e84df7d3.ctex"]
+source_file="res://assets/spine/characters/4235_thumpy/build_char_4235_thumpy.png"
+dest_files=["res://.godot/imported/build_char_4235_thumpy.png-606a89a21baed4c6396eb795e8dd7f47.ctex"]
 
 [params]
 

@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://cttam1dk5jgfh"
+path="res://.godot/imported/build_char_4237_jcinta.atlas-f49332fd095178374631f256f7f741c4.spatlas"
+
+[deps]
+
+source_file="res://assets/spine/characters/4237_jcinta/build_char_4237_jcinta.atlas"
+dest_files=["res://.godot/imported/build_char_4237_jcinta.atlas-f49332fd095178374631f256f7f741c4.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"
