@@ -52,12 +52,12 @@ jobs:
       # export_presets.cfg may remember runnable platform presets (notably Android),
       # which starts device polling during editor import and is unnecessary here.
       #
-      # The checked-in Spine GDExtension also exposes a Linux editor binary. On the
+      # Checked-in Spine GDExtensions may expose a Linux editor binary. On the
       # Ubuntu CI host, loading that host-only editor library causes Godot 4.7.1 to
-      # segfault during editor/export shutdown after all work has completed. Remove
-      # ONLY the Linux x86_64 editor entry in the ephemeral checkout. Windows and
-      # Android debug/release entries stay intact and continue to participate in
-      # target-platform export.
+      # segfault during editor/export shutdown after all work has completed. Locate
+      # the descriptor independent of asset-folder layout and remove ONLY the Linux
+      # x86_64 editor entry in the ephemeral checkout. Windows and Android target
+      # entries stay intact and continue to participate in export.
       - name: Prepare headless CI editor environment
         shell: python
         run: |
@@ -72,18 +72,18 @@ jobs:
           text = text[:start] + header + "\n\n" + text[end:]
           presets_path.write_text(text, encoding="utf-8")
 
-          spine_path = Path("bin/spine/spine_godot_extension.gdextension")
-          lines = spine_path.read_text(encoding="utf-8").splitlines()
-          lines = [
-              line
-              for line in lines
-              if not line.lstrip().startswith("linux.editor.x86_64 =")
-          ]
-          spine_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          for spine_path in Path(".").rglob("spine_godot_extension.gdextension"):
+              lines = spine_path.read_text(encoding="utf-8").splitlines()
+              lines = [
+                  line
+                  for line in lines
+                  if not line.lstrip().startswith("linux.editor.x86_64 =")
+              ]
+              spine_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
       # Phantom Camera registers GDScript global classes. A fresh checkout has no
       # .godot/global_script_class_cache.cfg, so run Godot's normal import mode
-      # after isolating the CI host-only Spine editor binary.
+      # after isolating any CI host-only Spine editor binary.
       - name: Bootstrap Godot import and script class cache
         run: godot --headless --path . --import
 
