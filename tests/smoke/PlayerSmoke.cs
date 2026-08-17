@@ -11,10 +11,10 @@ public partial class PlayerSmoke : Node3D
 {
     private static readonly string[] CharacterScenePaths =
     [
-        "res://assets/spine/1015_aglna2/Angelina.tscn",
-        "res://assets/spine/4235_thumpy/Thumpy.tscn",
-        "res://assets/spine/4236_tmslot/Timeslot.tscn",
-        "res://assets/spine/4237_jcinta/Jacinta.tscn",
+        "res://assets/spine/characters/1015_aglna2/Angelina.tscn",
+        "res://assets/spine/characters/4235_thumpy/Thumpy.tscn",
+        "res://assets/spine/characters/4236_tmslot/Timeslot.tscn",
+        "res://assets/spine/characters/4237_jcinta/Jacinta.tscn",
     ];
 
     public override async void _Ready()
