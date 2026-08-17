@@ -45,8 +45,24 @@ public partial class CameraDirector : Node3D
 
     public void ActivateInstant(CameraId id)
     {
-        Activate(id);
-        GetCamera(id).TeleportPosition();
+        var active = GetCamera(id);
+        var duration = active.TweenDuration;
+
+        try
+        {
+            // Phantom Camera also tweens Camera3DResource properties such as
+            // FOV / projection size. Temporarily use its official zero-duration
+            // path so "Instant" means the complete camera state, not only the
+            // followed transform. The configured tween duration remains the
+            // single source of truth for normal Activate() transitions.
+            active.TweenDuration = 0.0f;
+            Activate(id);
+            active.TeleportPosition();
+        }
+        finally
+        {
+            active.TweenDuration = duration;
+        }
     }
 
     public void SnapActiveToTarget()
