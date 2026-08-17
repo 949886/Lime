@@ -22,6 +22,7 @@ public partial class ReferenceComparatorSmoke : Node
             var comparator = gameRoot.GetNode<ReferenceComparator>("UIRoot/ReferenceComparator");
 
             ValidateCheckpointCatalog(comparator);
+            ValidateReviewUx(gameRoot, comparator);
             ValidateComparisonModes(comparator);
             ValidateCheckpointTeleport(gameRoot, comparator);
             ValidateCameraAb(gameRoot, comparator);
@@ -67,6 +68,42 @@ public partial class ReferenceComparatorSmoke : Node
             ?? throw new InvalidOperationException($"{expectedId} reference image is missing.");
         Require(image.GetWidth() == 320 && image.GetHeight() == 179,
             $"{expectedId} diagnostic image must import at 320 × 179.");
+    }
+
+    private static void ValidateReviewUx(GameRoot gameRoot, ReferenceComparator comparator)
+    {
+        var margin = comparator.GetNode<MarginContainer>("Panel/Margin");
+        var title = comparator.GetNode<Label>("Panel/Margin/VBox/Title");
+
+        Require(margin.GetThemeConstant("margin_left") == 12,
+            "Comparator panel must keep 12 px left padding.");
+        Require(margin.GetThemeConstant("margin_right") == 12,
+            "Comparator panel must keep 12 px right padding.");
+        Require(margin.GetThemeConstant("margin_top") == 10,
+            "Comparator panel must keep 10 px top padding.");
+        Require(margin.GetThemeConstant("margin_bottom") == 10,
+            "Comparator panel must keep 10 px bottom padding.");
+        Require(title.Text.Contains("Ctrl+Shift+F9", StringComparison.Ordinal),
+            "Comparator title must advertise the non-conflicting Ctrl+Shift+F9 toggle.");
+
+        comparator.SelectCheckpoint(0);
+        comparator.SelectNextCheckpoint();
+        Require(comparator.CurrentCheckpoint.Id == ReferenceCheckpointId.Check01,
+            "Next must select Check01 from Start.");
+        Require(
+            gameRoot.Player.GlobalPosition.DistanceTo(gameRoot.ReferenceLevel.CameraCheck01.GlobalPosition) < 0.01f,
+            "Next must automatically teleport the real Player to CameraCheck01.");
+        Require(gameRoot.Player.Velocity.Length() < 0.001f,
+            "Next auto-teleport must clear Player velocity.");
+
+        comparator.SelectPreviousCheckpoint();
+        Require(comparator.CurrentCheckpoint.Id == ReferenceCheckpointId.Start,
+            "Previous must return from Check01 to Start.");
+        Require(
+            gameRoot.Player.GlobalPosition.DistanceTo(gameRoot.ReferenceLevel.PlayerStart.GlobalPosition) < 0.01f,
+            "Previous must automatically teleport the real Player to PlayerStart.");
+        Require(gameRoot.Player.Velocity.Length() < 0.001f,
+            "Previous auto-teleport must clear Player velocity.");
     }
 
     private static void ValidateComparisonModes(ReferenceComparator comparator)
