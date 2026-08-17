@@ -135,61 +135,61 @@ mesh = SubResource("Box_lower_front")
 [node name="Stairs01" type="Node3D" parent="Geometry"]
 
 [node name="Step01" type="MeshInstance3D" parent="Geometry/Stairs01"]
-position = Vector3(-2.5, 1.9, 0.75)
+position = Vector3(2.5, 1.9, 0.75)
 mesh = SubResource("Box_step")
 
 [node name="Step02" type="MeshInstance3D" parent="Geometry/Stairs01"]
-position = Vector3(-2.5, 1.7, 0.25)
+position = Vector3(2.5, 1.7, 0.25)
 mesh = SubResource("Box_step")
 
 [node name="Step03" type="MeshInstance3D" parent="Geometry/Stairs01"]
-position = Vector3(-2.5, 1.5, -0.25)
+position = Vector3(2.5, 1.5, -0.25)
 mesh = SubResource("Box_step")
 
 [node name="Step04" type="MeshInstance3D" parent="Geometry/Stairs01"]
-position = Vector3(-2.5, 1.3, -0.75)
+position = Vector3(2.5, 1.3, -0.75)
 mesh = SubResource("Box_step")
 
 [node name="Step05" type="MeshInstance3D" parent="Geometry/Stairs01"]
-position = Vector3(-2.5, 1.1, -1.25)
+position = Vector3(2.5, 1.1, -1.25)
 mesh = SubResource("Box_step")
 
 [node name="Step06" type="MeshInstance3D" parent="Geometry/Stairs01"]
-position = Vector3(-2.5, 0.9, -1.75)
+position = Vector3(2.5, 0.9, -1.75)
 mesh = SubResource("Box_step")
 
 [node name="Step07" type="MeshInstance3D" parent="Geometry/Stairs01"]
-position = Vector3(-2.5, 0.7, -2.25)
+position = Vector3(2.5, 0.7, -2.25)
 mesh = SubResource("Box_step")
 
 [node name="Stairs02" type="Node3D" parent="Geometry"]
 
 [node name="Step01" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(2.5, 0.7, -7.25)
+position = Vector3(-2.5, 0.7, -7.25)
 mesh = SubResource("Box_step")
 
 [node name="Step02" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(2.5, 0.5, -7.75)
+position = Vector3(-2.5, 0.5, -7.75)
 mesh = SubResource("Box_step")
 
 [node name="Step03" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(2.5, 0.3, -8.25)
+position = Vector3(-2.5, 0.3, -8.25)
 mesh = SubResource("Box_step")
 
 [node name="Step04" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(2.5, 0.1, -8.75)
+position = Vector3(-2.5, 0.1, -8.75)
 mesh = SubResource("Box_step")
 
 [node name="Step05" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(2.5, -0.1, -9.25)
+position = Vector3(-2.5, -0.1, -9.25)
 mesh = SubResource("Box_step")
 
 [node name="Step06" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(2.5, -0.3, -9.75)
+position = Vector3(-2.5, -0.3, -9.75)
 mesh = SubResource("Box_step")
 
 [node name="Step07" type="MeshInstance3D" parent="Geometry/Stairs02"]
-position = Vector3(2.5, -0.5, -10.25)
+position = Vector3(-2.5, -0.5, -10.25)
 mesh = SubResource("Box_step")
 
 [node name="LowerFrontStairs" type="Node3D" parent="Geometry"]
@@ -223,11 +223,11 @@ position = Vector3(4, -1.7, -17)
 mesh = SubResource("Box_step")
 
 [node name="CylinderBuilding01" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-5.5, 2.35, -8.5)
+position = Vector3(6, 2.35, -7.5)
 mesh = SubResource("Cylinder_tower")
 
 [node name="CylinderBuilding02" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-12, 2.35, -8.5)
+position = Vector3(-7.5, 2.35, -7.5)
 mesh = SubResource("Cylinder_tower")
 
 [node name="BackBuilding" type="MeshInstance3D" parent="Geometry"]
@@ -235,7 +235,7 @@ position = Vector3(-6, 3, 10)
 mesh = SubResource("Box_building_back")
 
 [node name="ForegroundBlocker" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-7, 0, -15)
+position = Vector3(-3, 0, -15)
 mesh = SubResource("Box_foreground")
 
 [node name="WaterPool" type="MeshInstance3D" parent="Geometry"]
@@ -308,12 +308,12 @@ position = Vector3(6, -1.75, -20.25)
 shape = SubResource("Shape_lower_front")
 
 [node name="StairRamp01" type="CollisionShape3D" parent="Collision/WorldCollision"]
-position = Vector3(-2.5, 1.4, -0.75)
+position = Vector3(2.5, 1.4, -0.75)
 rotation_degrees = Vector3(-18.925, 0, 0)
 shape = SubResource("Shape_ramp")
 
 [node name="StairRamp02" type="CollisionShape3D" parent="Collision/WorldCollision"]
-position = Vector3(2.5, 0.2, -8.75)
+position = Vector3(-2.5, 0.2, -8.75)
 rotation_degrees = Vector3(-18.925, 0, 0)
 shape = SubResource("Shape_ramp")
 
@@ -330,15 +330,15 @@ position = Vector3(0, 2.02, 8.5)
 
 [node name="CameraCheck01" type="Marker3D" parent="ReferenceMarkers"]
 unique_name_in_owner = true
-position = Vector3(-2.5, 0.82, -2.7)
+position = Vector3(2.5, 0.82, -2.7)
 
 [node name="CameraCheck02" type="Marker3D" parent="ReferenceMarkers"]
 unique_name_in_owner = true
-position = Vector3(2.5, 0.82, -6.5)
+position = Vector3(0, 0.82, -6.5)
 
 [node name="CameraCheck03" type="Marker3D" parent="ReferenceMarkers"]
 unique_name_in_owner = true
-position = Vector3(2.5, -0.38, -10.8)
+position = Vector3(-2.5, -0.38, -10.8)
 
 [node name="RouteEnd" type="Marker3D" parent="ReferenceMarkers"]
 unique_name_in_owner = true
