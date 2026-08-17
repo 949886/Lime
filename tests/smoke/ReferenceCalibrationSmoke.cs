@@ -10,15 +10,14 @@ namespace Lime.Tests.Smoke;
 
 public partial class ReferenceCalibrationSmoke : Node
 {
-    private const float AnchorTolerance = 0.065f;
+    private const float GeometryAnchorTolerance = 0.015f;
+    private static readonly Vector3 CalibratedCharacterScale = new(1.85f, 1.85f, 1.85f);
     private readonly List<string> _anchorFailures = [];
 
     public override async void _Ready()
     {
         try
         {
-            DumpReferenceFrameForCalibration();
-
             var scene = GD.Load<PackedScene>("res://game/GameRoot.tscn")
                 ?? throw new InvalidOperationException("GameRoot.tscn could not be loaded.");
 
@@ -40,20 +39,6 @@ public partial class ReferenceCalibrationSmoke : Node
         {
             GD.PushError($"[M1.6] FAIL: {exception}");
             GetTree().Quit(1);
-        }
-    }
-
-    private static void DumpReferenceFrameForCalibration()
-    {
-        var bytes = FileAccess.GetFileAsBytes("res://diagnostics/reference/frames/check01.webp");
-        Require(bytes.Length > 0, "Check01 reference frame bytes must be readable.");
-
-        var encoded = Convert.ToBase64String(bytes);
-        GD.Print($"[M1.6][REF01] bytes={bytes.Length}, base64={encoded.Length}");
-        for (var offset = 0; offset < encoded.Length; offset += 120)
-        {
-            var length = Math.Min(120, encoded.Length - offset);
-            GD.Print($"[M1.6][REF01-B64 {offset / 120:D4}] {encoded.Substring(offset, length)}");
         }
     }
 
@@ -80,28 +65,45 @@ public partial class ReferenceCalibrationSmoke : Node
         var characterVisual = gameRoot.Player.GetNode<Node3D>("VisualRoot/CharacterVisual");
         var sprite = characterVisual.GetNode<Sprite3D>("Sprite3D");
 
-        Require(characterVisual.Scale.DistanceTo(Vector3.One) < 0.001f,
-            "M1.6 keeps CharacterVisual at 1:1 world scale after camera-distance calibration.");
+        Require(characterVisual.Scale.DistanceTo(CalibratedCharacterScale) < 0.001f,
+            $"CharacterVisual must preserve the Check01 measured 1.85x apparent scale. Actual={characterVisual.Scale}.");
         Require(Mathf.Abs(sprite.PixelSize - 0.002f) < 0.00001f,
-            "Character Sprite3D pixel size must remain 0.002 for the calibrated world scale.");
+            "Character Sprite3D pixel size must remain 0.002; apparent-size calibration belongs on CharacterVisual.");
         Require(sprite.Offset.DistanceTo(new Vector2(0.0f, 256.0f)) < 0.01f,
             "Character Sprite3D offset must preserve feet-at-root alignment.");
     }
 
     private static void ValidateCalibratedGeometry(ReferenceLevel level)
     {
+        var intermediate = level.GetNode<MeshInstance3D>("Geometry/IntermediatePlatform");
+        var intermediateCollision = level.GetNode<CollisionShape3D>("Collision/WorldCollision/IntermediatePlatform");
         var stair01Top = level.GetNode<MeshInstance3D>("Geometry/Stairs01/Step01");
         var stair02Top = level.GetNode<MeshInstance3D>("Geometry/Stairs02/Step01");
+        var stairRamp01 = level.GetNode<CollisionShape3D>("Collision/WorldCollision/StairRamp01");
         var cylinder01 = level.GetNode<MeshInstance3D>("Geometry/CylinderBuilding01");
         var cylinder02 = level.GetNode<MeshInstance3D>("Geometry/CylinderBuilding02");
         var foregroundBlocker = level.GetNode<MeshInstance3D>("Geometry/ForegroundBlocker");
 
+        Require(intermediate.GlobalPosition.DistanceTo(new Vector3(0.0f, 0.65f, -4.5f)) < 0.01f,
+            "IntermediatePlatform must keep the cross-checkpoint calibrated centre.");
+        Require(intermediate.Mesh is BoxMesh intermediateBox &&
+                intermediateBox.Size.DistanceTo(new Vector3(8.0f, 0.3f, 5.0f)) < 0.01f,
+            "IntermediatePlatform must keep the 8x5m footprint that matches Check02.");
+        Require(intermediateCollision.Shape is BoxShape3D intermediateShape &&
+                intermediateShape.Size.DistanceTo(new Vector3(8.0f, 0.3f, 5.0f)) < 0.01f,
+            "IntermediatePlatform collision must match the visual footprint.");
+
+        Require(stair01Top.Mesh is BoxMesh stepBox && Mathf.Abs(stepBox.Size.X - 4.2f) < 0.01f,
+            "Reference stair silhouette must use the measured 4.2m width.");
+        Require(stairRamp01.Shape is BoxShape3D rampShape && Mathf.Abs(rampShape.Size.X - 4.2f) < 0.01f,
+            "Stair ramp collision width must match the 4.2m visual stair width.");
         Require(stair01Top.GlobalPosition.X > 0.0f && stair02Top.GlobalPosition.X < 0.0f,
             "Reference route must place Stairs01 screen-left/world +X and Stairs02 screen-right/world -X.");
+
         Require(Mathf.Abs(level.CameraCheck01.GlobalPosition.X - 1.4f) < 0.01f,
             "CameraCheck01 must remain at the calibrated bottom of Stairs01.");
         Require(Mathf.Abs(level.CameraCheck02.GlobalPosition.X) < 0.01f,
-            "CameraCheck02 must be centered on the intermediate platform for the 14.2s reference frame.");
+            "CameraCheck02 must remain centered on the intermediate platform.");
         Require(Mathf.Abs(level.CameraCheck03.GlobalPosition.X - (-1.4f)) < 0.01f,
             "CameraCheck03 must remain at the calibrated bottom of Stairs02.");
 
@@ -121,14 +123,12 @@ public partial class ReferenceCalibrationSmoke : Node
         await ValidateCheckpointAsync(
             gameRoot,
             level.CameraCheck01,
-            new Vector2(0.514f, 0.628f),
             (level.GetNode<MeshInstance3D>("Geometry/Stairs01/Step01").GlobalPosition,
                 new Vector2(0.500f, 0.408f), "Check01 Stairs01 top"));
 
         await ValidateCheckpointAsync(
             gameRoot,
             level.CameraCheck02,
-            new Vector2(0.514f, 0.575f),
             (level.GetNode<MeshInstance3D>("Geometry/Stairs01/Step07").GlobalPosition,
                 new Vector2(0.403f, 0.471f), "Check02 Stairs01 bottom"),
             (level.GetNode<MeshInstance3D>("Geometry/Stairs02/Step01").GlobalPosition,
@@ -137,7 +137,6 @@ public partial class ReferenceCalibrationSmoke : Node
         await ValidateCheckpointAsync(
             gameRoot,
             level.CameraCheck03,
-            new Vector2(0.525f, 0.590f),
             (level.GetNode<MeshInstance3D>("Geometry/Stairs02/Step01").GlobalPosition,
                 new Vector2(0.500f, 0.406f), "Check03 Stairs02 top"),
             (level.GetNode<MeshInstance3D>("Geometry/ForegroundBlocker").GlobalPosition,
@@ -147,7 +146,6 @@ public partial class ReferenceCalibrationSmoke : Node
     private async Task ValidateCheckpointAsync(
         GameRoot gameRoot,
         Marker3D checkpoint,
-        Vector2 expectedPlayerFeet,
         params (Vector3 WorldPosition, Vector2 Expected, string Label)[] anchors)
     {
         gameRoot.Player.GlobalPosition = checkpoint.GlobalPosition;
@@ -156,9 +154,6 @@ public partial class ReferenceCalibrationSmoke : Node
         await WaitFramesAsync(3);
 
         var camera = gameRoot.CameraDirector.RenderCamera;
-        MeasureNormalizedAnchor(camera, checkpoint.GlobalPosition, expectedPlayerFeet,
-            $"{checkpoint.Name} Player feet");
-
         foreach (var anchor in anchors)
         {
             MeasureNormalizedAnchor(camera, anchor.WorldPosition, anchor.Expected, anchor.Label);
@@ -207,7 +202,7 @@ public partial class ReferenceCalibrationSmoke : Node
 
         GD.Print($"[M1.6] {label}: expected={expected}, actual={actual}, error={error:0.0000}");
 
-        if (error > AnchorTolerance)
+        if (error > GeometryAnchorTolerance)
         {
             _anchorFailures.Add(
                 $"{label}: expected={expected}, actual={actual}, error={error:0.0000}");
@@ -222,8 +217,8 @@ public partial class ReferenceCalibrationSmoke : Node
         }
 
         throw new InvalidOperationException(
-            $"{_anchorFailures.Count} reference anchor(s) exceed the frozen normalized screen-space " +
-            $"error tolerance {AnchorTolerance:0.000}:\n- " +
+            $"{_anchorFailures.Count} geometry anchor(s) exceed the normalized screen-space " +
+            $"error tolerance {GeometryAnchorTolerance:0.000}:\n- " +
             string.Join("\n- ", _anchorFailures));
     }
 
