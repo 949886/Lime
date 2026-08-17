@@ -4,8 +4,6 @@ namespace Lime.Game.World.Levels.Reference;
 
 public partial class ReferenceLevel : Node3D
 {
-    private static readonly Vector3 Check01IntermediatePlatformPosition = new(0.5f, 0.65f, -3.65f);
-    private static readonly Vector3 Check01IntermediatePlatformSize = new(8.0f, 0.3f, 4.0f);
     private const float ReferenceStairWidth = 4.2f;
 
     public Marker3D PlayerStart { get; private set; } = null!;
@@ -27,31 +25,17 @@ public partial class ReferenceLevel : Node3D
 
     private void ApplyReferenceWhiteboxCalibration()
     {
-        // Check01 is the strongest scale reference in the captured sequence.  Projecting the
-        // original whitebox over check01.webp showed that the intermediate platform front edge
-        // landed ~17 px too low and the stair run was ~30% too narrow.  Keep the source scene
-        // topology intact and apply the measured whitebox dimensions here so mesh/collision stay
-        // paired while M1.6 converges.
-        var intermediateMesh = GetNode<MeshInstance3D>("Geometry/IntermediatePlatform");
-        intermediateMesh.Position = Check01IntermediatePlatformPosition;
-        if (intermediateMesh.Mesh is BoxMesh intermediateBox)
-        {
-            intermediateBox.Size = Check01IntermediatePlatformSize;
-        }
-
-        var intermediateCollision = GetNode<CollisionShape3D>("Collision/WorldCollision/IntermediatePlatform");
-        intermediateCollision.Position = Check01IntermediatePlatformPosition;
-        if (intermediateCollision.Shape is BoxShape3D intermediateShape)
-        {
-            intermediateShape.Size = Check01IntermediatePlatformSize;
-        }
-
+        // The original 3m stair width only covered ~41 px at Check01 while the captured
+        // stair run is ~57-60 px wide.  4.2m matches that projected silhouette across
+        // Check01/02 without moving the already-calibrated route centres.
         var firstStep = GetNode<MeshInstance3D>("Geometry/Stairs01/Step01");
         if (firstStep.Mesh is BoxMesh stepBox)
         {
             stepBox.Size = new Vector3(ReferenceStairWidth, stepBox.Size.Y, stepBox.Size.Z);
         }
 
+        // All stair meshes share Box_step and all three ramps share Shape_ramp, but keep
+        // the collision update explicit so the traversable whitebox stays visually honest.
         foreach (var rampPath in new[]
                  {
                      "Collision/WorldCollision/StairRamp01",
@@ -65,10 +49,5 @@ public partial class ReferenceLevel : Node3D
                 rampShape.Size = new Vector3(ReferenceStairWidth, rampShape.Size.Y, rampShape.Size.Z);
             }
         }
-
-        // Keep the existing left-side guide rail attached to the corrected platform footprint.
-        var intermediateRail = GetNode<MeshInstance3D>("Geometry/Rails/IntermediateLeft");
-        intermediateRail.Position = new Vector3(-3.5f, 1.2f, -3.65f);
-        intermediateRail.Scale = new Vector3(0.8f, 1.0f, 1.0f);
     }
 }
