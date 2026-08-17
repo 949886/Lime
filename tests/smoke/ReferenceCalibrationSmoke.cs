@@ -11,7 +11,6 @@ namespace Lime.Tests.Smoke;
 public partial class ReferenceCalibrationSmoke : Node
 {
     private const float GeometryAnchorTolerance = 0.015f;
-    private static readonly Vector3 CalibratedCharacterScale = new(1.85f, 1.85f, 1.85f);
     private readonly List<string> _anchorFailures = [];
 
     public override async void _Ready()
@@ -65,10 +64,10 @@ public partial class ReferenceCalibrationSmoke : Node
         var characterVisual = gameRoot.Player.GetNode<Node3D>("VisualRoot/CharacterVisual");
         var sprite = characterVisual.GetNode<Sprite3D>("Sprite3D");
 
-        Require(characterVisual.Scale.DistanceTo(CalibratedCharacterScale) < 0.001f,
-            $"CharacterVisual must preserve the Check01 measured 1.85x apparent scale. Actual={characterVisual.Scale}.");
+        Require(characterVisual.Scale.DistanceTo(Vector3.One) < 0.001f,
+            $"CharacterVisual is the canonical scale reference and must remain 1.0. Actual={characterVisual.Scale}.");
         Require(Mathf.Abs(sprite.PixelSize - 0.002f) < 0.00001f,
-            "Character Sprite3D pixel size must remain 0.002; apparent-size calibration belongs on CharacterVisual.");
+            "Character Sprite3D pixel size must remain 0.002; apparent size must be calibrated with world proportions and camera framing.");
         Require(sprite.Offset.DistanceTo(new Vector2(0.0f, 256.0f)) < 0.01f,
             "Character Sprite3D offset must preserve feet-at-root alignment.");
     }
