@@ -126,8 +126,31 @@ public partial class ReferenceComparatorSmoke : Node
     private static async System.Threading.Tasks.Task ValidateViewportCapture(ReferenceComparator comparator)
     {
         comparator.Visible = true;
-        var capture = await comparator.CaptureCurrentAsync();
 
+        if (string.Equals(DisplayServer.GetName(), "headless", StringComparison.OrdinalIgnoreCase))
+        {
+            var rejectedHeadlessCapture = false;
+
+            try
+            {
+                await comparator.CaptureCurrentAsync();
+            }
+            catch (InvalidOperationException exception)
+            {
+                rejectedHeadlessCapture = exception.Message.Contains(
+                    "headless", StringComparison.OrdinalIgnoreCase);
+            }
+
+            Require(rejectedHeadlessCapture,
+                "Headless CI must reject viewport capture immediately instead of waiting for FramePostDraw.");
+            Require(comparator.Visible,
+                "Rejected headless capture must preserve the comparator visibility state.");
+            Require(comparator.CurrentCapture is null,
+                "Rejected headless capture must not publish a fake CurrentCapture.");
+            return;
+        }
+
+        var capture = await comparator.CaptureCurrentAsync();
         Require(comparator.Visible,
             "Viewport capture must restore the comparator visibility state after rendering completes.");
         Require(comparator.CurrentCapture == capture,
