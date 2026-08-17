@@ -5,12 +5,14 @@ using Godot;
 using Lime.Game;
 using Lime.Game.Camera;
 using Lime.Game.World.Levels.Reference;
+using PhantomCamera;
 
 namespace Lime.Tests.Smoke;
 
 public partial class ReferenceCalibrationSmoke : Node
 {
     private const float GeometryAnchorTolerance = 0.015f;
+    private const float StartAnchorTolerance = 0.025f;
     private readonly List<string> _anchorFailures = [];
 
     public override async void _Ready()
@@ -24,9 +26,10 @@ public partial class ReferenceCalibrationSmoke : Node
             AddChild(gameRoot);
             await WaitFramesAsync(4);
 
-            ValidateProductionCamera(gameRoot);
             ValidateCharacterVisual(gameRoot);
             ValidateCalibratedGeometry(gameRoot.ReferenceLevel);
+            await ValidateStartFraming(gameRoot);
+            await ValidateExploreCamera(gameRoot);
             await ValidatePerspectiveAnchors(gameRoot);
             await ValidateProjectionAb(gameRoot);
             ValidateAnchorBudget();
@@ -41,39 +44,23 @@ public partial class ReferenceCalibrationSmoke : Node
         }
     }
 
-    private static void ValidateProductionCamera(GameRoot gameRoot)
-    {
-        var camera = gameRoot.CameraDirector.RenderCamera;
-
-        Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.ExplorePerspective,
-            "M1.6 keeps Perspective as the production Explore projection after reference comparison.");
-        Require((int)camera.Projection == 0,
-            "Production Explore camera must start in Perspective projection.");
-        Require(Mathf.Abs(camera.Fov - 45.0f) < 0.01f,
-            "Perspective FOV must stay at the calibrated 45 degree baseline.");
-
-        var offset = camera.GlobalPosition - gameRoot.Player.GlobalPosition;
-        Require(offset.DistanceTo(new Vector3(0.0f, 6.0f, -12.0f)) < 0.05f,
-            $"Production camera follow offset must be calibrated to (0, 6, -12). Actual={offset}.");
-        Require(Mathf.Abs(camera.GlobalRotationDegrees.X - (-22.0f)) < 0.1f,
-            $"Production camera pitch must be calibrated to -22 degrees. Actual={camera.GlobalRotationDegrees.X}.");
-    }
-
     private static void ValidateCharacterVisual(GameRoot gameRoot)
     {
         var characterVisual = gameRoot.Player.GetNode<Node3D>("VisualRoot/CharacterVisual");
         var sprite = characterVisual.GetNode<Sprite3D>("Sprite3D");
 
         Require(characterVisual.Scale.DistanceTo(Vector3.One) < 0.001f,
-            $"CharacterVisual is the canonical scale reference and must remain 1.0. Actual={characterVisual.Scale}.");
+            $"CharacterVisual is the M1.6 world-scale ruler and must stay at 1:1. Actual={characterVisual.Scale}.");
         Require(Mathf.Abs(sprite.PixelSize - 0.002f) < 0.00001f,
-            "Character Sprite3D pixel size must remain 0.002; apparent size must be calibrated with world proportions and camera framing.");
+            "Character Sprite3D pixel size must remain 0.002; apparent size is calibrated with camera/world scale.");
         Require(sprite.Offset.DistanceTo(new Vector2(0.0f, 256.0f)) < 0.01f,
             "Character Sprite3D offset must preserve feet-at-root alignment.");
     }
 
     private static void ValidateCalibratedGeometry(ReferenceLevel level)
     {
+        var upper = level.GetNode<MeshInstance3D>("Geometry/UpperPlatform");
+        var upperCollision = level.GetNode<CollisionShape3D>("Collision/WorldCollision/UpperPlatform");
         var intermediate = level.GetNode<MeshInstance3D>("Geometry/IntermediatePlatform");
         var intermediateCollision = level.GetNode<CollisionShape3D>("Collision/WorldCollision/IntermediatePlatform");
         var stair01Top = level.GetNode<MeshInstance3D>("Geometry/Stairs01/Step01");
@@ -82,6 +69,19 @@ public partial class ReferenceCalibrationSmoke : Node
         var cylinder01 = level.GetNode<MeshInstance3D>("Geometry/CylinderBuilding01");
         var cylinder02 = level.GetNode<MeshInstance3D>("Geometry/CylinderBuilding02");
         var foregroundBlocker = level.GetNode<MeshInstance3D>("Geometry/ForegroundBlocker");
+
+        Require(upper.GlobalPosition.DistanceTo(new Vector3(1.4f, 1.85f, 3.0f)) < 0.01f,
+            "UpperPlatform must use the Start-reference center on the first stair axis.");
+        Require(upper.Mesh is BoxMesh upperBox &&
+                upperBox.Size.DistanceTo(new Vector3(8.0f, 0.3f, 4.0f)) < 0.01f,
+            "UpperPlatform must use the measured 8x4m Start footprint.");
+        Require(upperCollision.Shape is BoxShape3D upperShape &&
+                upperShape.Size.DistanceTo(new Vector3(8.0f, 0.3f, 4.0f)) < 0.01f,
+            "UpperPlatform collision must match the 8x4m visual footprint.");
+        Require(upperCollision.GlobalPosition.DistanceTo(upper.GlobalPosition) < 0.01f,
+            "UpperPlatform collision must share the calibrated visual center.");
+        Require(level.PlayerStart.GlobalPosition.DistanceTo(new Vector3(1.4f, 2.02f, 1.65f)) < 0.01f,
+            "PlayerStart must sit 0.65m behind the first stair on its centerline.");
 
         Require(intermediate.GlobalPosition.DistanceTo(new Vector3(0.0f, 0.65f, -4.5f)) < 0.01f,
             "IntermediatePlatform must keep the cross-checkpoint calibrated centre.");
@@ -92,10 +92,10 @@ public partial class ReferenceCalibrationSmoke : Node
                 intermediateShape.Size.DistanceTo(new Vector3(8.0f, 0.3f, 5.0f)) < 0.01f,
             "IntermediatePlatform collision must match the visual footprint.");
 
-        Require(stair01Top.Mesh is BoxMesh stepBox && Mathf.Abs(stepBox.Size.X - 4.2f) < 0.01f,
-            "Reference stair silhouette must use the measured 4.2m width.");
-        Require(stairRamp01.Shape is BoxShape3D rampShape && Mathf.Abs(rampShape.Size.X - 4.2f) < 0.01f,
-            "Stair ramp collision width must match the 4.2m visual stair width.");
+        Require(stair01Top.Mesh is BoxMesh stepBox && Mathf.Abs(stepBox.Size.X - 3.0f) < 0.01f,
+            "Reference stair width must stay at the player-relative 3.0m baseline.");
+        Require(stairRamp01.Shape is BoxShape3D rampShape && Mathf.Abs(rampShape.Size.X - 3.0f) < 0.01f,
+            "Stair ramp collision width must match the 3.0m visual stair width.");
         Require(stair01Top.GlobalPosition.X > 0.0f && stair02Top.GlobalPosition.X < 0.0f,
             "Reference route must place Stairs01 screen-left/world +X and Stairs02 screen-right/world -X.");
 
@@ -113,6 +113,68 @@ public partial class ReferenceCalibrationSmoke : Node
             "The cylindrical masses must keep the calibrated shared depth near the intermediate/lower route.");
         Require(foregroundBlocker.GlobalPosition.DistanceTo(new Vector3(-1.68f, 0.0f, -15.0f)) < 0.01f,
             "Foreground blocker must preserve the Check03 lower-centre occlusion calibration.");
+    }
+
+    private async Task ValidateStartFraming(GameRoot gameRoot)
+    {
+        var level = gameRoot.ReferenceLevel;
+        gameRoot.Player.GlobalPosition = level.PlayerStart.GlobalPosition;
+        gameRoot.Player.Velocity = Vector3.Zero;
+        gameRoot.CameraDirector.ActivateInstant(CameraId.StartPerspective);
+        await WaitFramesAsync(3);
+
+        var camera = gameRoot.CameraDirector.RenderCamera;
+        Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.StartPerspective,
+            "The 8.50s Start checkpoint must use the close StartPerspective camera.");
+        Require((int)camera.Projection == 0,
+            "StartPerspective must remain a perspective camera.");
+        Require(Mathf.Abs(camera.Fov - 45.0f) < 0.01f,
+            "StartPerspective FOV must stay at 45 degrees.");
+
+        var offset = camera.GlobalPosition - gameRoot.Player.GlobalPosition;
+        Require(offset.DistanceTo(new Vector3(0.0f, 1.5f, -3.0f)) < 0.05f,
+            $"Start camera offset must match the 8.5s player-size solve (0, 1.5, -3). Actual={offset}.");
+        Require(Mathf.Abs(camera.GlobalRotationDegrees.X - (-16.0f)) < 0.1f,
+            $"Start camera pitch must place the player's feet at the 8.5s reference height. Actual={camera.GlobalRotationDegrees.X}.");
+
+        MeasureNormalizedAnchor(camera, level.PlayerStart.GlobalPosition,
+            new Vector2(0.500f, 0.725f), "Start Player feet", StartAnchorTolerance);
+
+        // Freeze the visible 8.5s platform silhouette rather than accepting a
+        // single centre-point match. UpperPlatform top is Y=2.0, front Z=1 and
+        // back Z=5 after the 8x4m calibration.
+        MeasureNormalizedAnchor(camera, new Vector3(1.4f, 2.0f, 1.0f),
+            new Vector2(0.500f, 0.867f), "Start platform front edge", StartAnchorTolerance);
+        MeasureNormalizedAnchor(camera, new Vector3(5.4f, 2.0f, 5.0f),
+            new Vector2(0.086f, 0.446f), "Start platform back screen-left", StartAnchorTolerance);
+        MeasureNormalizedAnchor(camera, new Vector3(-2.6f, 2.0f, 5.0f),
+            new Vector2(0.914f, 0.446f), "Start platform back screen-right", StartAnchorTolerance);
+    }
+
+    private async Task ValidateExploreCamera(GameRoot gameRoot)
+    {
+        gameRoot.CameraDirector.ActivateInstant(CameraId.ExplorePerspective);
+        await WaitFramesAsync(3);
+
+        var camera = gameRoot.CameraDirector.RenderCamera;
+        Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.ExplorePerspective,
+            "ExplorePerspective must be the post-pullback production camera.");
+        Require((int)camera.Projection == 0,
+            "ExplorePerspective must remain a perspective camera.");
+        Require(Mathf.Abs(camera.Fov - 45.0f) < 0.01f,
+            "ExplorePerspective FOV must stay at the calibrated 45 degree baseline.");
+
+        var offset = camera.GlobalPosition - gameRoot.Player.GlobalPosition;
+        Require(offset.DistanceTo(new Vector3(0.0f, 6.0f, -12.0f)) < 0.05f,
+            $"Explore camera follow offset must remain (0, 6, -12). Actual={offset}.");
+        Require(Mathf.Abs(camera.GlobalRotationDegrees.X - (-22.0f)) < 0.1f,
+            $"Explore camera pitch must remain -22 degrees. Actual={camera.GlobalRotationDegrees.X}.");
+
+        var explorePcam = gameRoot.CameraDirector
+            .GetNode<Node3D>("PCams/ExplorePerspective")
+            .AsPhantomCamera3D();
+        Require(Mathf.Abs(explorePcam.TweenDuration - 1.5f) < 0.01f,
+            "Start-to-Explore pullback must use the measured 1.5 second camera transition.");
     }
 
     private async Task ValidatePerspectiveAnchors(GameRoot gameRoot)
@@ -155,7 +217,8 @@ public partial class ReferenceCalibrationSmoke : Node
         var camera = gameRoot.CameraDirector.RenderCamera;
         foreach (var anchor in anchors)
         {
-            MeasureNormalizedAnchor(camera, anchor.WorldPosition, anchor.Expected, anchor.Label);
+            MeasureNormalizedAnchor(camera, anchor.WorldPosition, anchor.Expected, anchor.Label,
+                GeometryAnchorTolerance);
         }
     }
 
@@ -194,17 +257,18 @@ public partial class ReferenceCalibrationSmoke : Node
         Camera3D camera,
         Vector3 worldPosition,
         Vector2 expected,
-        string label)
+        string label,
+        float tolerance)
     {
         var actual = ProjectNormalized(camera, worldPosition);
         var error = actual.DistanceTo(expected);
 
         GD.Print($"[M1.6] {label}: expected={expected}, actual={actual}, error={error:0.0000}");
 
-        if (error > GeometryAnchorTolerance)
+        if (error > tolerance)
         {
             _anchorFailures.Add(
-                $"{label}: expected={expected}, actual={actual}, error={error:0.0000}");
+                $"{label}: expected={expected}, actual={actual}, error={error:0.0000}, tolerance={tolerance:0.000}");
         }
     }
 
@@ -216,9 +280,8 @@ public partial class ReferenceCalibrationSmoke : Node
         }
 
         throw new InvalidOperationException(
-            $"{_anchorFailures.Count} geometry anchor(s) exceed the normalized screen-space " +
-            $"error tolerance {GeometryAnchorTolerance:0.000}:\n- " +
-            string.Join("\n- ", _anchorFailures));
+            $"{_anchorFailures.Count} reference silhouette/geometry anchor(s) exceeded their normalized " +
+            "screen-space tolerance:\n- " + string.Join("\n- ", _anchorFailures));
     }
 
     private static Vector2 ProjectNormalized(Camera3D camera, Vector3 worldPosition)
