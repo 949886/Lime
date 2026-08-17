@@ -119,9 +119,9 @@ public partial class ReferenceLevelSmoke : Node
         var lowerFrontStepMesh = lowerFrontStep.Mesh as BoxMesh
             ?? throw new InvalidOperationException("LowerFrontStairs must use BoxMesh graybox steps.");
 
-        Require(Near(upperMesh.Size.X, 10.0f) && Near(upperMesh.Size.Z, 6.0f),
-            "UpperPlatform footprint must use the Start-reference 10 x 6 calibration.");
-        Require(upperPlatform.GlobalPosition.DistanceTo(new Vector3(1.4f, 1.85f, 4.0f)) < 0.01f,
+        Require(Near(upperMesh.Size.X, 8.0f) && Near(upperMesh.Size.Z, 4.0f),
+            "UpperPlatform footprint must use the Start-reference 8 x 4 calibration.");
+        Require(upperPlatform.GlobalPosition.DistanceTo(new Vector3(1.4f, 1.85f, 3.0f)) < 0.01f,
             "UpperPlatform must be centered on the first stair axis and keep its front edge at Z=1.");
         Require(Near(intermediateMesh.Size.X, 8.0f) && Near(intermediateMesh.Size.Z, 5.0f),
             "IntermediatePlatform bootstrap footprint must remain 8 x 5.");
@@ -194,8 +194,9 @@ public partial class ReferenceLevelSmoke : Node
             "UpperPlatform front edge must meet the first stair top at Z=1.");
         Require(Mathf.Abs(level.PlayerStart.GlobalPosition.X - 1.4f) < 0.01f,
             "PlayerStart must sit on the first stair centerline.");
-        Require(level.PlayerStart.GlobalPosition.Z - upperFrontZ is > 0.35f and < 0.55f,
-            "PlayerStart must sit immediately behind the first stair instead of deep inside the upper platform.");
+        var startToStair = level.PlayerStart.GlobalPosition.Z - upperFrontZ;
+        Require(startToStair > 0.55f && startToStair < 0.75f,
+            "PlayerStart must sit about 0.65m behind the first stair instead of deep inside the upper platform.");
         Require(level.PlayerStart.GlobalPosition.Y > level.CameraCheck01.GlobalPosition.Y + 1.0f,
             "The first stair run must descend from the starting upper platform.");
         Require(Mathf.Abs(level.CameraCheck01.GlobalPosition.Y - level.CameraCheck02.GlobalPosition.Y) < 0.15f,
