@@ -14,6 +14,9 @@ public partial class CameraSmoke : Node3D
         {
             var cameraDirector = GetNode<CameraDirector>("%CameraSystem");
             var followTarget = GetNode<Node3D>("%FollowTarget");
+            var start = cameraDirector
+                .GetNode<Node3D>("PCams/StartPerspective")
+                .AsPhantomCamera3D();
             var perspective = cameraDirector
                 .GetNode<Node3D>("PCams/ExplorePerspective")
                 .AsPhantomCamera3D();
@@ -22,10 +25,22 @@ public partial class CameraSmoke : Node3D
                 .AsPhantomCamera3D();
 
             cameraDirector.BindExploreTarget(followTarget);
+            Require(start.FollowTarget.GetInstanceId() == followTarget.GetInstanceId(),
+                "Start Perspective PCam must follow the bound Explore target.");
             Require(perspective.FollowTarget.GetInstanceId() == followTarget.GetInstanceId(),
                 "Perspective PCam must follow the bound Explore target.");
             Require(orthographic.FollowTarget.GetInstanceId() == followTarget.GetInstanceId(),
                 "Orthographic PCam must follow the bound Explore target.");
+
+            cameraDirector.ActivateInstant(CameraId.StartPerspective);
+            await WaitFramesAsync(3);
+
+            Require(cameraDirector.ActiveCameraId == CameraId.StartPerspective,
+                "StartPerspective must be the active semantic camera after instant activation.");
+            Require(start.IsActive,
+                "Start Perspective PhantomCamera3D must become active.");
+            Require((int)cameraDirector.RenderCamera.Projection == 0,
+                "StartPerspective must apply perspective projection to RenderCamera.");
 
             cameraDirector.ActivateInstant(CameraId.ExplorePerspective);
             await WaitFramesAsync(3);
@@ -48,8 +63,8 @@ public partial class CameraSmoke : Node3D
             cameraDirector.Activate(CameraId.ExploreOrthographic);
             Require(cameraDirector.ActiveCameraId == CameraId.ExploreOrthographic,
                 "Activate must update the active semantic camera id.");
-            Require(orthographic.Priority == 100 && perspective.Priority == 0,
-                "Activate must apply the gameplay priority policy.");
+            Require(orthographic.Priority == 100 && perspective.Priority == 0 && start.Priority == 0,
+                "Activate must apply the gameplay priority policy across all camera states.");
 
             cameraDirector.ActivateInstant(CameraId.ExploreOrthographic);
             await WaitFramesAsync(3);
