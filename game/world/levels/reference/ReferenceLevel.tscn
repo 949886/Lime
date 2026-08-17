@@ -27,7 +27,7 @@ background_color = Color(0.13, 0.14, 0.16, 1)
 
 [sub_resource type="BoxMesh" id="Box_upper"]
 material = SubResource("Material_ground")
-size = Vector3(18, 0.3, 12)
+size = Vector3(10, 0.3, 6)
 
 [sub_resource type="BoxMesh" id="Box_intermediate"]
 material = SubResource("Material_ground")
@@ -80,7 +80,7 @@ bottom_radius = 2.2
 height = 5.5
 
 [sub_resource type="BoxShape3D" id="Shape_upper"]
-size = Vector3(18, 0.3, 12)
+size = Vector3(10, 0.3, 6)
 
 [sub_resource type="BoxShape3D" id="Shape_intermediate"]
 size = Vector3(8, 0.3, 5)
@@ -113,7 +113,7 @@ shadow_enabled = true
 [node name="Geometry" type="Node3D" parent="."]
 
 [node name="UpperPlatform" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(0, 1.85, 7)
+position = Vector3(1.4, 1.85, 4)
 mesh = SubResource("Box_upper")
 
 [node name="IntermediatePlatform" type="MeshInstance3D" parent="Geometry"]
@@ -245,11 +245,13 @@ mesh = SubResource("Box_water")
 [node name="Rails" type="Node3D" parent="Geometry"]
 
 [node name="UpperFrontLeft" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(-6.5, 2.45, 1.1)
+position = Vector3(-1.85, 2.45, 1.1)
+scale = Vector3(0.7, 1, 1)
 mesh = SubResource("Box_rail_long")
 
 [node name="UpperFrontRight" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(5.5, 2.45, 1.1)
+position = Vector3(4.65, 2.45, 1.1)
+scale = Vector3(0.7, 1, 1)
 mesh = SubResource("Box_rail_long")
 
 [node name="IntermediateLeft" type="MeshInstance3D" parent="Geometry/Rails"]
@@ -266,11 +268,11 @@ position = Vector3(-11, 0.05, -10.2)
 mesh = SubResource("Box_rail_long")
 
 [node name="Post01" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(-9, 2.4, 1.1)
+position = Vector3(-3.6, 2.4, 1.1)
 mesh = SubResource("Box_rail_post")
 
 [node name="Post02" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(9, 2.4, 1.1)
+position = Vector3(6.4, 2.4, 1.1)
 mesh = SubResource("Box_rail_post")
 
 [node name="Post03" type="MeshInstance3D" parent="Geometry/Rails"]
@@ -288,7 +290,7 @@ collision_layer = 1
 collision_mask = 0
 
 [node name="UpperPlatform" type="CollisionShape3D" parent="Collision/WorldCollision"]
-position = Vector3(0, 1.85, 7)
+position = Vector3(1.4, 1.85, 4)
 shape = SubResource("Shape_upper")
 
 [node name="IntermediatePlatform" type="CollisionShape3D" parent="Collision/WorldCollision"]
@@ -326,7 +328,7 @@ shape = SubResource("Shape_ramp")
 
 [node name="PlayerStart" type="Marker3D" parent="ReferenceMarkers"]
 unique_name_in_owner = true
-position = Vector3(0, 2.02, 8.5)
+position = Vector3(1.4, 2.02, 1.45)
 
 [node name="CameraCheck01" type="Marker3D" parent="ReferenceMarkers"]
 unique_name_in_owner = true
