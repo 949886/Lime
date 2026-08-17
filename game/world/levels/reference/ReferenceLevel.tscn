@@ -235,7 +235,7 @@ position = Vector3(-6, 3, 10)
 mesh = SubResource("Box_building_back")
 
 [node name="ForegroundBlocker" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-3, 0, -15)
+position = Vector3(-1.68, 0, -15)
 mesh = SubResource("Box_foreground")
 
 [node name="WaterPool" type="MeshInstance3D" parent="Geometry"]
