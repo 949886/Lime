@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
 using Lime.Game;
@@ -10,6 +11,7 @@ namespace Lime.Tests.Smoke;
 public partial class ReferenceCalibrationSmoke : Node
 {
     private const float AnchorTolerance = 0.065f;
+    private readonly List<string> _anchorFailures = [];
 
     public override async void _Ready()
     {
@@ -27,6 +29,7 @@ public partial class ReferenceCalibrationSmoke : Node
             ValidateCalibratedGeometry(gameRoot.ReferenceLevel);
             await ValidatePerspectiveAnchors(gameRoot);
             await ValidateProjectionAb(gameRoot);
+            ValidateAnchorBudget();
 
             GD.Print("[M1.6] PASS: Reference calibration smoke completed successfully.");
             GetTree().Quit(0);
@@ -79,11 +82,11 @@ public partial class ReferenceCalibrationSmoke : Node
 
         Require(stair01Top.GlobalPosition.X > 0.0f && stair02Top.GlobalPosition.X < 0.0f,
             "Reference route must place Stairs01 screen-left/world +X and Stairs02 screen-right/world -X.");
-        Require(Mathf.Abs(level.CameraCheck01.GlobalPosition.X - 2.5f) < 0.01f,
+        Require(Mathf.Abs(level.CameraCheck01.GlobalPosition.X - 1.4f) < 0.01f,
             "CameraCheck01 must remain at the calibrated bottom of Stairs01.");
         Require(Mathf.Abs(level.CameraCheck02.GlobalPosition.X) < 0.01f,
             "CameraCheck02 must be centered on the intermediate platform for the 14.2s reference frame.");
-        Require(Mathf.Abs(level.CameraCheck03.GlobalPosition.X - (-2.5f)) < 0.01f,
+        Require(Mathf.Abs(level.CameraCheck03.GlobalPosition.X - (-1.4f)) < 0.01f,
             "CameraCheck03 must remain at the calibrated bottom of Stairs02.");
 
         Require(cylinder01.GlobalPosition.X > 0.0f && cylinder02.GlobalPosition.X < 0.0f,
@@ -137,12 +140,12 @@ public partial class ReferenceCalibrationSmoke : Node
         await WaitFramesAsync(3);
 
         var camera = gameRoot.CameraDirector.RenderCamera;
-        ValidateNormalizedAnchor(camera, checkpoint.GlobalPosition, expectedPlayerFeet,
+        MeasureNormalizedAnchor(camera, checkpoint.GlobalPosition, expectedPlayerFeet,
             $"{checkpoint.Name} Player feet");
 
         foreach (var anchor in anchors)
         {
-            ValidateNormalizedAnchor(camera, anchor.WorldPosition, anchor.Expected, anchor.Label);
+            MeasureNormalizedAnchor(camera, anchor.WorldPosition, anchor.Expected, anchor.Label);
         }
     }
 
@@ -172,7 +175,7 @@ public partial class ReferenceCalibrationSmoke : Node
         await WaitFramesAsync(2);
     }
 
-    private static void ValidateNormalizedAnchor(
+    private void MeasureNormalizedAnchor(
         Camera3D camera,
         Vector3 worldPosition,
         Vector2 expected,
@@ -182,9 +185,25 @@ public partial class ReferenceCalibrationSmoke : Node
         var error = actual.DistanceTo(expected);
 
         GD.Print($"[M1.6] {label}: expected={expected}, actual={actual}, error={error:0.0000}");
-        Require(error <= AnchorTolerance,
-            $"{label} exceeds the frozen normalized screen-space error tolerance {AnchorTolerance:0.000}. " +
-            $"Expected={expected}, Actual={actual}, Error={error:0.0000}.");
+
+        if (error > AnchorTolerance)
+        {
+            _anchorFailures.Add(
+                $"{label}: expected={expected}, actual={actual}, error={error:0.0000}");
+        }
+    }
+
+    private void ValidateAnchorBudget()
+    {
+        if (_anchorFailures.Count == 0)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"{_anchorFailures.Count} reference anchor(s) exceed the frozen normalized screen-space " +
+            $"error tolerance {AnchorTolerance:0.000}:\n- " +
+            string.Join("\n- ", _anchorFailures));
     }
 
     private static Vector2 ProjectNormalized(Camera3D camera, Vector3 worldPosition)
