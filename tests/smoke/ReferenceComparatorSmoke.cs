@@ -25,6 +25,7 @@ public partial class ReferenceComparatorSmoke : Node
             ValidateComparisonModes(comparator);
             ValidateCheckpointTeleport(gameRoot, comparator);
             ValidateCameraAb(gameRoot, comparator);
+            await ValidateViewportCapture(comparator);
 
             GD.Print("[M1.5] PASS: Reference Comparator runtime smoke completed successfully.");
             GetTree().Quit(0);
@@ -120,6 +121,19 @@ public partial class ReferenceComparatorSmoke : Node
         comparator.ActivateCamera(CameraId.ExplorePerspective);
         Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.ExplorePerspective,
             "Comparator must switch back to ExplorePerspective through CameraDirector.");
+    }
+
+    private static async System.Threading.Tasks.Task ValidateViewportCapture(ReferenceComparator comparator)
+    {
+        comparator.Visible = true;
+        var capture = await comparator.CaptureCurrentAsync();
+
+        Require(comparator.Visible,
+            "Viewport capture must restore the comparator visibility state after rendering completes.");
+        Require(comparator.CurrentCapture == capture,
+            "Viewport capture must publish the latest ImageTexture through CurrentCapture.");
+        Require(capture.GetWidth() > 0 && capture.GetHeight() > 0,
+            "Viewport capture must contain a non-empty rendered image.");
     }
 
     private static void Require(bool condition, string message)
