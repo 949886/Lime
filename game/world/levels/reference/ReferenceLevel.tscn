@@ -27,7 +27,7 @@ background_color = Color(0.13, 0.14, 0.16, 1)
 
 [sub_resource type="BoxMesh" id="Box_upper"]
 material = SubResource("Material_ground")
-size = Vector3(8, 0.3, 4)
+size = Vector3(4.5, 0.3, 4)
 
 [sub_resource type="BoxMesh" id="Box_intermediate"]
 material = SubResource("Material_ground")
@@ -80,7 +80,7 @@ bottom_radius = 2.2
 height = 5.5
 
 [sub_resource type="BoxShape3D" id="Shape_upper"]
-size = Vector3(8, 0.3, 4)
+size = Vector3(4.5, 0.3, 4)
 
 [sub_resource type="BoxShape3D" id="Shape_intermediate"]
 size = Vector3(8, 0.3, 5)
@@ -245,13 +245,13 @@ mesh = SubResource("Box_water")
 [node name="Rails" type="Node3D" parent="Geometry"]
 
 [node name="UpperFrontLeft" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(-1.35, 2.45, 1.1)
-scale = Vector3(0.5, 1, 1)
+position = Vector3(-0.475, 2.45, 1.1)
+scale = Vector3(0.15, 1, 1)
 mesh = SubResource("Box_rail_long")
 
 [node name="UpperFrontRight" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(4.15, 2.45, 1.1)
-scale = Vector3(0.5, 1, 1)
+position = Vector3(3.275, 2.45, 1.1)
+scale = Vector3(0.15, 1, 1)
 mesh = SubResource("Box_rail_long")
 
 [node name="IntermediateLeft" type="MeshInstance3D" parent="Geometry/Rails"]
@@ -268,11 +268,11 @@ position = Vector3(-11, 0.05, -10.2)
 mesh = SubResource("Box_rail_long")
 
 [node name="Post01" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(-2.6, 2.4, 1.1)
+position = Vector3(-0.85, 2.4, 1.1)
 mesh = SubResource("Box_rail_post")
 
 [node name="Post02" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(5.4, 2.4, 1.1)
+position = Vector3(3.65, 2.4, 1.1)
 mesh = SubResource("Box_rail_post")
 
 [node name="Post03" type="MeshInstance3D" parent="Geometry/Rails"]
