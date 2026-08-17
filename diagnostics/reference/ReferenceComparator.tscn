@@ -1,0 +1,151 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://diagnostics/reference/ReferenceComparator.cs" id="1_comparator"]
+[ext_resource type="Resource" path="res://diagnostics/reference/checkpoints/start.tres" id="2_start"]
+[ext_resource type="Resource" path="res://diagnostics/reference/checkpoints/check01.tres" id="3_check01"]
+[ext_resource type="Resource" path="res://diagnostics/reference/checkpoints/check02.tres" id="4_check02"]
+[ext_resource type="Resource" path="res://diagnostics/reference/checkpoints/check03.tres" id="5_check03"]
+[ext_resource type="Resource" path="res://diagnostics/reference/checkpoints/route_end.tres" id="6_route_end"]
+[ext_resource type="Shader" path="res://diagnostics/reference/reference_difference.gdshader" id="7_difference"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_difference"]
+shader = ExtResource("7_difference")
+
+[node name="ReferenceComparator" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_comparator")
+PlayerPath = NodePath("../../WorldRoot/ActorRoot/Player")
+ReferenceLevelPath = NodePath("../../WorldRoot/LevelRoot/ReferenceLevel")
+CameraDirectorPath = NodePath("../../WorldRoot/CameraRoot/CameraSystem")
+StartCheckpoint = ExtResource("2_start")
+Check01Checkpoint = ExtResource("3_check01")
+Check02Checkpoint = ExtResource("4_check02")
+Check03Checkpoint = ExtResource("5_check03")
+RouteEndCheckpoint = ExtResource("6_route_end")
+
+[node name="ReferenceLayer" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="DifferenceLayer" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+material = SubResource("ShaderMaterial_difference")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 510.0
+offset_bottom = 324.0
+mouse_filter = 0
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+text = "M1.5 Reference Comparator  —  Ctrl+Shift+F9 toggle"
+
+[node name="CheckpointLabel" type="Label" parent="Panel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Checkpoint"
+
+[node name="CheckpointRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="PreviousButton" type="Button" parent="Panel/Margin/VBox/CheckpointRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Previous"
+
+[node name="NextButton" type="Button" parent="Panel/Margin/VBox/CheckpointRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Next"
+
+[node name="TeleportButton" type="Button" parent="Panel/Margin/VBox/CheckpointRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Teleport"
+
+[node name="CameraRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="PerspectiveButton" type="Button" parent="Panel/Margin/VBox/CameraRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Perspective"
+
+[node name="OrthographicButton" type="Button" parent="Panel/Margin/VBox/CameraRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Orthographic"
+
+[node name="CompareRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="LiveButton" type="Button" parent="Panel/Margin/VBox/CompareRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Live"
+
+[node name="ReferenceButton" type="Button" parent="Panel/Margin/VBox/CompareRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reference"
+
+[node name="OverlayButton" type="Button" parent="Panel/Margin/VBox/CompareRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "50% Overlay"
+
+[node name="DifferenceButton" type="Button" parent="Panel/Margin/VBox/CompareRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Difference"
+
+[node name="CaptureButton" type="Button" parent="Panel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Capture current viewport"
+
+[node name="StatusLabel" type="Label" parent="Panel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Ready"
