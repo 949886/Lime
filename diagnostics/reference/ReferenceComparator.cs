@@ -150,20 +150,26 @@ public partial class ReferenceComparator : Control
         var wasVisible = Visible;
         Visible = false;
 
-        await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
-
-        var image = GetViewport().GetTexture().GetImage()
-            ?? throw new InvalidOperationException("Viewport capture returned no image.");
-
-        CurrentCapture = ImageTexture.CreateFromImage(image);
-
-        Visible = wasVisible;
-        if (_statusLabel is not null)
+        try
         {
-            _statusLabel.Text = $"Captured {image.GetWidth()} × {image.GetHeight()}.";
-        }
+            await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
 
-        return CurrentCapture;
+            var image = GetViewport().GetTexture().GetImage()
+                ?? throw new InvalidOperationException("Viewport capture returned no image.");
+            var capture = ImageTexture.CreateFromImage(image);
+
+            CurrentCapture = capture;
+            if (_statusLabel is not null)
+            {
+                _statusLabel.Text = $"Captured {image.GetWidth()} × {image.GetHeight()}.";
+            }
+
+            return capture;
+        }
+        finally
+        {
+            Visible = wasVisible;
+        }
     }
 
     private void ResolveDependencies()
