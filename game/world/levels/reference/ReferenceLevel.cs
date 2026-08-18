@@ -38,9 +38,6 @@ public partial class ReferenceLevel : Node3D
         CameraCheck02 = GetNode<Marker3D>("%CameraCheck02");
         CameraCheck03 = GetNode<Marker3D>("%CameraCheck03");
 
-        // User-edited whitebox meshes are the geometry source of truth.  Collision
-        // follows those meshes at runtime so an editor resize/translate cannot leave
-        // gameplay on the previous calibration.
         ApplyCheck03ReferenceTopology();
         RebuildReferenceStairs();
         SynchronizePlatformCollisions();
@@ -51,10 +48,6 @@ public partial class ReferenceLevel : Node3D
         var lowerCorridor = GetNode<MeshInstance3D>("Geometry/LowerCorridor");
         var groundMaterial = (lowerCorridor.Mesh as BoxMesh)?.Material;
 
-        // Check03 in the reference is not one broad rectangle.  A wider rear neck
-        // receives Stairs02, then a narrower mass projects toward the camera.  The
-        // left side of that projecting mass is where the lateral descending stair
-        // begins.
         EnsurePlatform(
             "Check03BackPlatform",
             new Vector3(Check03CenterX, Check03BodyY, (Check03BackZ + Check03NeckFrontZ) * 0.5f),
@@ -67,9 +60,6 @@ public partial class ReferenceLevel : Node3D
             new Vector3(Check03ProjectionWidth, 0.30f, Check03NeckFrontZ - Check03ProjectionFrontZ),
             groundMaterial);
 
-        // Re-use the existing lower-front mass as the lower-left landing.  This keeps
-        // the user's scene node contract intact while moving the mass to the topology
-        // visible in the 16.2s frame.
         var sideLanding = GetNode<MeshInstance3D>("Geometry/LowerFrontPlatform");
         if (sideLanding.Mesh is not BoxMesh sideLandingBox)
         {
@@ -113,19 +103,25 @@ public partial class ReferenceLevel : Node3D
             new Vector3(stairs02AxisX, check03BackTopY, check03BackEdgeZ),
             3.0f);
 
-        // Screen-left is world +X in the Explore camera.  This lateral run therefore
-        // descends from the projection's +X edge toward the lower-left landing.
         var projectionTopY = check03Projection.Node.GlobalPosition.Y + check03Projection.Box.Size.Y * 0.5f;
         var projectionLeftWorldX = check03Projection.Node.GlobalPosition.X + check03Projection.Box.Size.X * 0.5f;
         var landingTopY = sideLanding.Node.GlobalPosition.Y + sideLanding.Box.Size.Y * 0.5f;
         var landingRightWorldX = sideLanding.Node.GlobalPosition.X - sideLanding.Box.Size.X * 0.5f;
 
+        var sideTopEdge = new Vector3(projectionLeftWorldX, projectionTopY, SideStairZ);
+        var sideBottomEdge = new Vector3(landingRightWorldX, landingTopY, SideStairZ);
         RebuildStairRun(
             "Geometry/LowerFrontStairs",
             "Collision/WorldCollision/LowerFrontRamp",
-            new Vector3(projectionLeftWorldX, projectionTopY, SideStairZ),
-            new Vector3(landingRightWorldX, landingTopY, SideStairZ),
+            sideTopEdge,
+            sideBottomEdge,
             3.0f);
+
+        var sideSteps = GetStepNodes(GetNode<Node3D>("Geometry/LowerFrontStairs"));
+        GD.Print(
+            $"[M1.6][SIDE-STAIR] requested={sideTopEdge}->{sideBottomEdge}, " +
+            $"parent={GetNode<Node3D>("Geometry/LowerFrontStairs").GlobalTransform}, " +
+            $"actual={sideSteps[0].GlobalPosition}->{sideSteps[^1].GlobalPosition}.");
     }
 
     private void RebuildStairRun(
