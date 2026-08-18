@@ -320,7 +320,7 @@ public partial class ReferenceLevelSmoke : Node
         playerInput.ClearVirtualMove();
         throw new InvalidOperationException(
             $"Player could not reach {targetName} within {maxFrames} physics frames. " +
-            $"Player={player.GlobalPosition}, Target={target}, Velocity={player.Velocity}, IsOnFloor={player.IsOnFloor}.");
+            $"Player={player.GlobalPosition}, Target={target}, Velocity={player.Velocity}, IsOnFloor={player.IsOnFloor()}.");
     }
 
     private async Task WaitPhysicsFrames(int count)
