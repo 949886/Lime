@@ -2,6 +2,7 @@ namespace Lime.Game.Camera;
 
 public enum CameraId
 {
-    ExplorePerspective,
-    ExploreOrthographic,
+    ExplorePerspective = 0,
+    ExploreOrthographic = 1,
+    StartPerspective = 2,
 }

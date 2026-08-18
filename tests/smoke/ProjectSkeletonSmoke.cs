@@ -86,8 +86,8 @@ public partial class ProjectSkeletonSmoke : Node
     {
         Require(gameRoot.CameraDirector.RenderCamera.Current,
             "CameraSystem RenderCamera must be the current Camera3D.");
-        Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.ExplorePerspective,
-            "GameRoot must bootstrap the ExplorePerspective camera.");
+        Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.StartPerspective,
+            "GameRoot must bootstrap the close StartPerspective camera before movement begins.");
     }
 
     private static void ValidateReferenceLevelWiring(GameRoot gameRoot)

@@ -4,6 +4,8 @@ namespace Lime.Game.World.Levels.Reference;
 
 public partial class ReferenceLevel : Node3D
 {
+    public const int ReferenceStairStepCount = 12;
+
     public Marker3D PlayerStart { get; private set; } = null!;
     public Marker3D RouteEnd { get; private set; } = null!;
     public Marker3D CameraCheck01 { get; private set; } = null!;

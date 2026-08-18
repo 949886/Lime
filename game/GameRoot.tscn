@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://c5u75wyqk0met" path="res://game/FlowController.cs" id="2_flow_controller"]
 [ext_resource type="PackedScene" uid="uid://diq54h6f7q6tj" path="res://game/actors/player/Player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://game/camera/CameraSystem.tscn" id="4_camera_system"]
-[ext_resource type="PackedScene" path="res://game/world/levels/reference/ReferenceLevel.tscn" id="5_reference_level"]
+[ext_resource type="PackedScene" uid="uid://c8ke6na1upvww" path="res://game/world/levels/reference/ReferenceLevel.tscn" id="5_reference_level"]
 [ext_resource type="PackedScene" path="res://diagnostics/reference/ReferenceComparator.tscn" id="6_reference_comparator"]
 
 [node name="GameRoot" type="Node" unique_id=1213129076]
@@ -22,6 +22,7 @@ unique_name_in_owner = true
 
 [node name="ReferenceLevel" parent="WorldRoot/LevelRoot" unique_id=408257671 instance=ExtResource("5_reference_level")]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0808392, -1.7934661, -2.390955)
 
 [node name="ActorRoot" type="Node3D" parent="WorldRoot" unique_id=889044557]
 unique_name_in_owner = true
@@ -38,7 +39,7 @@ unique_name_in_owner = true
 [node name="UIRoot" type="CanvasLayer" parent="." unique_id=1389870298]
 unique_name_in_owner = true
 
-[node name="ReferenceComparator" parent="UIRoot" instance=ExtResource("6_reference_comparator")]
+[node name="ReferenceComparator" parent="UIRoot" unique_id=166185172 instance=ExtResource("6_reference_comparator")]
 unique_name_in_owner = true
 
 [node name="AudioRoot" type="Node" parent="." unique_id=81238963]

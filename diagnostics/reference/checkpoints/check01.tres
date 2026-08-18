@@ -1,14 +1,13 @@
-[gd_resource type="Resource" script_class="ReferenceCheckpoint" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ReferenceCheckpoint" format=3 uid="uid://qahdhc2v4pa"]
 
-[ext_resource type="Script" path="res://diagnostics/reference/ReferenceCheckpoint.cs" id="1_checkpoint"]
-[ext_resource type="Script" path="res://diagnostics/reference/ReferenceFrame.cs" id="2_frame"]
-[ext_resource type="Texture2D" path="res://diagnostics/reference/frames/check01.webp" id="3_image"]
+[ext_resource type="Script" uid="uid://l01jtfc08uyo" path="res://diagnostics/reference/ReferenceCheckpoint.cs" id="1_checkpoint"]
+[ext_resource type="Script" uid="uid://d3xllopjicrcu" path="res://diagnostics/reference/ReferenceFrame.cs" id="2_frame"]
+[ext_resource type="Texture2D" uid="uid://b5ditp28dmry1" path="res://diagnostics/reference/frames/check01.webp" id="3_image"]
 
 [sub_resource type="Resource" id="ReferenceFrame_check01"]
 script = ExtResource("2_frame")
-TimestampSeconds = 11.70
+TimestampSeconds = 11.7
 SourceFrame = 351
-SourceSize = Vector2i(2548, 1426)
 Image = ExtResource("3_image")
 
 [resource]
