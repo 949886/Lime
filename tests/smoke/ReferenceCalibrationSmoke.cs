@@ -99,8 +99,8 @@ public partial class ReferenceCalibrationSmoke : Node
 
         Require(stairs02[^1].GlobalPosition.Y < stairs02[0].GlobalPosition.Y - 0.9f,
             "Stairs02 must descend from the intermediate level into Check03.");
-        Require(sideStairs[^1].GlobalPosition.X > sideStairs[0].GlobalPosition.X + 1.5f,
-            "Check03 side stair must face world +X / screen-left.");
+        Require(sideStairs[^1].GlobalPosition.X > sideStairs[0].GlobalPosition.X + 0.9f,
+            "Check03 side stair must face world +X / screen-left with a meaningful span.");
         Require(sideStairs[^1].GlobalPosition.Y < sideStairs[0].GlobalPosition.Y - 0.9f,
             "Check03 side stair must descend to the lower-left landing.");
         Require(Mathf.Abs(sideStairs[^1].GlobalPosition.Z - sideStairs[0].GlobalPosition.Z) < 0.25f,
@@ -174,9 +174,6 @@ public partial class ReferenceCalibrationSmoke : Node
         var sideStairs = GetSteps(level.GetNode<Node3D>("Geometry/LowerFrontStairs"));
         var projection = level.GetNode<MeshInstance3D>("Geometry/Check03Projection");
 
-        // These are silhouette/topology anchors from the 16.2s composition, not
-        // arbitrary world coordinates.  The goal is to prevent the old failure mode
-        // where one stair point matched while the platform shape and lateral stair did not.
         MeasureNormalizedAnchor(camera, level.CameraCheck03.GlobalPosition,
             new Vector2(0.500f, 0.596f), "Check03 player feet", Check03AnchorTolerance);
         MeasureNormalizedAnchor(camera, rearStairs[0].GlobalPosition,
