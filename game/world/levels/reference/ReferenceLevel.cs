@@ -16,11 +16,11 @@ public partial class ReferenceLevel : Node3D
     private const float Check03ProjectionFrontZ = -16.00f;
     private const float Check03CenterX = -1.40f;
     private const float Check03NeckWidth = 6.00f;
-    private const float Check03ProjectionWidth = 4.60f;
+    private const float Check03ProjectionWidth = 2.60f;
     private const float SideLandingTopY = -1.60f;
     private const float SideLandingBodyY = -1.75f;
-    private const float SideLandingCenterX = 5.00f;
-    private const float SideLandingWidth = 4.00f;
+    private const float SideLandingCenterX = 2.60f;
+    private const float SideLandingWidth = 3.00f;
     private const float SideLandingDepth = 4.00f;
     private const float SideStairZ = -13.10f;
 
@@ -38,6 +38,9 @@ public partial class ReferenceLevel : Node3D
         CameraCheck02 = GetNode<Marker3D>("%CameraCheck02");
         CameraCheck03 = GetNode<Marker3D>("%CameraCheck03");
 
+        // The edited whitebox remains the source of truth for existing masses.
+        // Check03 adds its measured topology, then collision is rebuilt from the
+        // resulting visual geometry so editor changes cannot leave stale shapes.
         ApplyCheck03ReferenceTopology();
         RebuildReferenceStairs();
         SynchronizePlatformCollisions();
@@ -48,6 +51,9 @@ public partial class ReferenceLevel : Node3D
         var lowerCorridor = GetNode<MeshInstance3D>("Geometry/LowerCorridor");
         var groundMaterial = (lowerCorridor.Mesh as BoxMesh)?.Material;
 
+        // The 16.2s reference has a broad rear landing under Stairs02 and a much
+        // narrower mass projecting toward the camera.  The screen-left stair begins
+        // directly on that projection's +X edge.
         EnsurePlatform(
             "Check03BackPlatform",
             new Vector3(Check03CenterX, Check03BodyY, (Check03BackZ + Check03NeckFrontZ) * 0.5f),
@@ -60,6 +66,9 @@ public partial class ReferenceLevel : Node3D
             new Vector3(Check03ProjectionWidth, 0.30f, Check03NeckFrontZ - Check03ProjectionFrontZ),
             groundMaterial);
 
+        // Re-use the existing lower-front mass as the lower-left landing.  Its closer
+        // X placement is solved from the real Godot projection so the 12-tread stair
+        // stays inside the reference silhouette instead of running off screen-left.
         var sideLanding = GetNode<MeshInstance3D>("Geometry/LowerFrontPlatform");
         if (sideLanding.Mesh is not BoxMesh sideLandingBox)
         {
@@ -103,25 +112,19 @@ public partial class ReferenceLevel : Node3D
             new Vector3(stairs02AxisX, check03BackTopY, check03BackEdgeZ),
             3.0f);
 
+        // Explore camera screen-left maps to world +X.  The lateral run therefore
+        // leaves the projection's +X edge and descends toward the lower-left landing.
         var projectionTopY = check03Projection.Node.GlobalPosition.Y + check03Projection.Box.Size.Y * 0.5f;
         var projectionLeftWorldX = check03Projection.Node.GlobalPosition.X + check03Projection.Box.Size.X * 0.5f;
         var landingTopY = sideLanding.Node.GlobalPosition.Y + sideLanding.Box.Size.Y * 0.5f;
         var landingRightWorldX = sideLanding.Node.GlobalPosition.X - sideLanding.Box.Size.X * 0.5f;
 
-        var sideTopEdge = new Vector3(projectionLeftWorldX, projectionTopY, SideStairZ);
-        var sideBottomEdge = new Vector3(landingRightWorldX, landingTopY, SideStairZ);
         RebuildStairRun(
             "Geometry/LowerFrontStairs",
             "Collision/WorldCollision/LowerFrontRamp",
-            sideTopEdge,
-            sideBottomEdge,
+            new Vector3(projectionLeftWorldX, projectionTopY, SideStairZ),
+            new Vector3(landingRightWorldX, landingTopY, SideStairZ),
             3.0f);
-
-        var sideSteps = GetStepNodes(GetNode<Node3D>("Geometry/LowerFrontStairs"));
-        GD.Print(
-            $"[M1.6][SIDE-STAIR] requested={sideTopEdge}->{sideBottomEdge}, " +
-            $"parent={GetNode<Node3D>("Geometry/LowerFrontStairs").GlobalTransform}, " +
-            $"actual={sideSteps[0].GlobalPosition}->{sideSteps[^1].GlobalPosition}.");
     }
 
     private void RebuildStairRun(
