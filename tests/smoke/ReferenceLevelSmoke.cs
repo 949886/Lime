@@ -106,9 +106,18 @@ public partial class ReferenceLevelSmoke : Node
         ValidateStairCount(level, "Geometry/Stairs02");
         ValidateStairCount(level, "Geometry/LowerFrontStairs");
 
-        ValidateRamp(level, "Collision/WorldCollision/StairRamp01");
-        ValidateRamp(level, "Collision/WorldCollision/StairRamp02");
-        ValidateRamp(level, "Collision/WorldCollision/LowerFrontRamp");
+        ValidateRampCoversStairs(
+            level,
+            "Collision/WorldCollision/StairRamp01",
+            "Geometry/Stairs01");
+        ValidateRampCoversStairs(
+            level,
+            "Collision/WorldCollision/StairRamp02",
+            "Geometry/Stairs02");
+        ValidateRampCoversStairs(
+            level,
+            "Collision/WorldCollision/LowerFrontRamp",
+            "Geometry/LowerFrontStairs");
 
         var sideSteps = GetSteps(level.GetNode<Node3D>("Geometry/LowerFrontStairs"));
         var sideTop = sideSteps[0].GlobalPosition;
@@ -163,13 +172,68 @@ public partial class ReferenceLevelSmoke : Node
             $"{path} must use the frozen M1.6 {ReferenceLevel.ReferenceStairStepCount}-tread calibration.");
     }
 
-    private static void ValidateRamp(ReferenceLevel level, string path)
+    private static void ValidateRampCoversStairs(
+        ReferenceLevel level,
+        string rampPath,
+        string stairsPath)
     {
-        var ramp = level.GetNode<CollisionShape3D>(path);
+        var ramp = level.GetNode<CollisionShape3D>(rampPath);
         var shape = ramp.Shape as BoxShape3D
-            ?? throw new InvalidOperationException($"{path} must use a hidden BoxShape3D ramp.");
-        Require(shape.Size.Z > 1.5f && shape.Size.X > 2.5f,
-            $"{path} must span the corresponding multi-step visual run.");
+            ?? throw new InvalidOperationException($"{rampPath} must use a hidden BoxShape3D ramp.");
+        var steps = GetSteps(level.GetNode<Node3D>(stairsPath));
+
+        Require(steps.Count >= 2,
+            $"{stairsPath} must contain enough steps to validate ramp coverage.");
+
+        var first = steps[0];
+        var last = steps[^1];
+        var firstMesh = first.Mesh as BoxMesh
+            ?? throw new InvalidOperationException($"{stairsPath}/{first.Name} must use BoxMesh.");
+        var lastMesh = last.Mesh as BoxMesh
+            ?? throw new InvalidOperationException($"{stairsPath}/{last.Name} must use BoxMesh.");
+
+        var runVector = last.GlobalPosition - first.GlobalPosition;
+        var centerRunLength = runVector.Length();
+        Require(centerRunLength > 0.5f,
+            $"{stairsPath} must have a meaningful multi-step run.");
+
+        var runDirection = runVector / centerRunLength;
+        var requiredRunLength = centerRunLength +
+                                ProjectedBoxLength(first.GlobalBasis, firstMesh.Size, runDirection) * 0.5f +
+                                ProjectedBoxLength(last.GlobalBasis, lastMesh.Size, runDirection) * 0.5f;
+        var rampRunLength = ProjectedBoxLength(ramp.GlobalBasis, shape.Size, runDirection);
+
+        Require(rampRunLength + 0.20f >= requiredRunLength,
+            $"{rampPath} must cover the full oriented stair run. " +
+            $"Ramp={rampRunLength:0.000}, Required={requiredRunLength:0.000}, Stairs={stairsPath}.");
+
+        var expectedCenter = (first.GlobalPosition + last.GlobalPosition) * 0.5f;
+        var centerOffsetAlongRun = Mathf.Abs((ramp.GlobalPosition - expectedCenter).Dot(runDirection));
+        Require(centerOffsetAlongRun < 0.25f,
+            $"{rampPath} must remain centered under its stair run. " +
+            $"OffsetAlongRun={centerOffsetAlongRun:0.000}, Stairs={stairsPath}.");
+
+        var horizontalRun = new Vector3(runVector.X, 0.0f, runVector.Z);
+        Require(horizontalRun.Length() > 0.1f,
+            $"{stairsPath} must have a horizontal direction for width validation.");
+
+        horizontalRun = horizontalRun.Normalized();
+        var crossDirection = new Vector3(-horizontalRun.Z, 0.0f, horizontalRun.X);
+        var requiredWidth = Mathf.Max(
+            ProjectedBoxLength(first.GlobalBasis, firstMesh.Size, crossDirection),
+            ProjectedBoxLength(last.GlobalBasis, lastMesh.Size, crossDirection));
+        var rampWidth = ProjectedBoxLength(ramp.GlobalBasis, shape.Size, crossDirection);
+
+        Require(rampWidth + 0.10f >= requiredWidth,
+            $"{rampPath} must cover the visible tread width. " +
+            $"Ramp={rampWidth:0.000}, Required={requiredWidth:0.000}, Stairs={stairsPath}.");
+    }
+
+    private static float ProjectedBoxLength(Basis basis, Vector3 size, Vector3 unitDirection)
+    {
+        return Mathf.Abs(unitDirection.Dot(basis.X)) * size.X +
+               Mathf.Abs(unitDirection.Dot(basis.Y)) * size.Y +
+               Mathf.Abs(unitDirection.Dot(basis.Z)) * size.Z;
     }
 
     private static void ValidateCheck03ScreenTopology(ReferenceLevel level, Camera3D camera)
