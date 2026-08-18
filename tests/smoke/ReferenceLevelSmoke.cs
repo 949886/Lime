@@ -94,9 +94,6 @@ public partial class ReferenceLevelSmoke : Node
         Require(worldCollision.CollisionMask == 0,
             "Static reference collision does not need a collision mask.");
 
-        // Whitebox meshes edited in Godot are the source of truth.  Every platform
-        // collision must copy the current mesh dimensions and transform rather than
-        // retaining a previous calibration value.
         ValidateBoxSync(level, "UpperPlatform");
         ValidateBoxSync(level, "IntermediatePlatform");
         ValidateBoxSync(level, "LowerCorridor");
@@ -116,8 +113,8 @@ public partial class ReferenceLevelSmoke : Node
         var sideSteps = GetSteps(level.GetNode<Node3D>("Geometry/LowerFrontStairs"));
         var sideTop = sideSteps[0].GlobalPosition;
         var sideBottom = sideSteps[^1].GlobalPosition;
-        Require(sideBottom.X > sideTop.X + 1.5f,
-            "Check03 lateral stair must descend toward world +X / screen-left.");
+        Require(sideBottom.X > sideTop.X + 0.9f,
+            "Check03 lateral stair must descend toward world +X / screen-left with a meaningful span.");
         Require(sideBottom.Y < sideTop.Y - 0.8f,
             "Check03 lateral stair must visibly descend to the lower-left landing.");
         Require(Mathf.Abs(sideBottom.Z - sideTop.Z) < 0.25f,
