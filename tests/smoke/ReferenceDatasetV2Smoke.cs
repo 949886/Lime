@@ -35,8 +35,10 @@ public partial class ReferenceDatasetV2Smoke : Node
             "Reference Dataset v2 must preserve the original capture size.");
         Require(Math.Abs(dataset.SourceFps - 30.0) < 0.001,
             "Reference Dataset v2 must preserve the 30 FPS capture timeline.");
-        Require(dataset.DurationSeconds >= 64.0,
-            "Reference Dataset v2 must describe the complete source clip duration.");
+        Require(Math.Abs(dataset.DurationSeconds - 64.40) < 0.001,
+            "Reference Dataset v2 must preserve the measured 64.40 s source duration.");
+        Require(dataset.SourceFrameCount == 1932,
+            "Reference Dataset v2 must preserve the measured 1932-frame source count.");
     }
 
     private static void ValidateSegments(ReferenceDatasetV2 dataset)
@@ -90,6 +92,10 @@ public partial class ReferenceDatasetV2Smoke : Node
     private static void ValidateTrajectory(ReferenceDatasetV2 dataset)
     {
         var frames = new HashSet<int>();
+        var measuredTotal = 0;
+        var sampleCountBySegment = new Dictionary<ReferenceExploreSegmentId, int>();
+        var measuredCountBySegment = new Dictionary<ReferenceExploreSegmentId, int>();
+
         foreach (var sample in dataset.Trajectory)
         {
             Require(frames.Add(sample.SourceFrame),
@@ -97,13 +103,31 @@ public partial class ReferenceDatasetV2Smoke : Node
             Require(IsInsideSegment(dataset, sample.SegmentId, sample.TimestampSeconds),
                 $"Trajectory frame {sample.SourceFrame} is outside its Explore segment.");
 
-            if (sample.HasMeasuredPlayerFeet)
+            sampleCountBySegment[sample.SegmentId] =
+                sampleCountBySegment.GetValueOrDefault(sample.SegmentId) + 1;
+
+            if (sample.HasMeasuredPlayerFeet || sample.HasMeasuredPlayerHeight)
             {
-                Require(sample.PlayerFeetPixel.X < dataset.SourceSize.X &&
-                        sample.PlayerFeetPixel.Y < dataset.SourceSize.Y,
+                Require(sample.HasMeasuredPlayerFeet && sample.HasMeasuredPlayerHeight,
+                    $"Trajectory frame {sample.SourceFrame} must measure player feet and height together.");
+                Require(sample.PlayerFeetPixel.X >= 0.0f && sample.PlayerFeetPixel.X < dataset.SourceSize.X &&
+                        sample.PlayerFeetPixel.Y >= 0.0f && sample.PlayerFeetPixel.Y < dataset.SourceSize.Y,
                     $"Measured trajectory frame {sample.SourceFrame} is outside the source frame.");
+                Require(sample.PlayerPixelHeight >= 100.0f && sample.PlayerPixelHeight <= 700.0f,
+                    $"Measured trajectory frame {sample.SourceFrame} has implausible apparent height.");
+                Require(sample.Confidence > 0.0f && sample.Confidence <= 1.0f,
+                    $"Measured trajectory frame {sample.SourceFrame} needs confidence in (0, 1].");
+
+                measuredTotal++;
+                measuredCountBySegment[sample.SegmentId] =
+                    measuredCountBySegment.GetValueOrDefault(sample.SegmentId) + 1;
             }
         }
+
+        Require(dataset.Trajectory.Count == 59,
+            "M1.6.2 Pass A currently expects 59 trajectory samples across all Explore segments.");
+        Require(measuredTotal >= 56,
+            "M1.6.2 Pass A must retain at least 56 source-frame player measurements.");
 
         foreach (var segment in dataset.ExploreSegments)
         {
@@ -128,6 +152,11 @@ public partial class ReferenceDatasetV2Smoke : Node
                 $"Segment {segment.Id} trajectory starts too late.");
             Require(last >= segment.EndSeconds - 0.50,
                 $"Segment {segment.Id} trajectory ends too early.");
+
+            var measured = measuredCountBySegment.GetValueOrDefault(segment.Id);
+            var total = sampleCountBySegment.GetValueOrDefault(segment.Id);
+            Require(measured >= Math.Max(4, total - 2),
+                $"Segment {segment.Id} must keep dense measured player coverage; measured {measured}/{total}.");
         }
     }
 
