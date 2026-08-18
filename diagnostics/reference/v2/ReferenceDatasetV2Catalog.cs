@@ -104,12 +104,21 @@ public static class ReferenceDatasetV2Catalog
             }
         }
 
-        dataset.Trajectory.Add(new ReferenceTrajectorySample
+        var sample = new ReferenceTrajectorySample
         {
             SegmentId = segmentId,
             TimestampSeconds = timestampSeconds,
             SourceFrame = frame,
-        });
+        };
+
+        if (ReferencePlayerTrajectoryMeasurements.TryGet(frame, out var measurement))
+        {
+            sample.PlayerFeetPixel = measurement.FeetPixel;
+            sample.PlayerPixelHeight = measurement.PixelHeight;
+            sample.Confidence = measurement.Confidence;
+        }
+
+        dataset.Trajectory.Add(sample);
     }
 
     private static int ToFrame(double timestampSeconds) =>
