@@ -139,11 +139,11 @@ public partial class ReferenceLevelSmoke : Node
         Require(projection.GlobalPosition.Z < backPlatform.GlobalPosition.Z,
             "Check03 projection must extend toward the camera/screen-bottom.");
 
-        var backRearEdgeZ = backPlatform.GlobalPosition.Z + backBox.Size.Z * 0.5f;
-        Require(Mathf.Abs(backRearEdgeZ - level.CameraCheck03.GlobalPosition.Z) < 0.05f,
-            "CameraCheck03 must sit at the rear edge of the reconstructed Check03 platform, just below Stairs02.");
-        Require(Mathf.Abs(level.CameraCheck03.GlobalPosition.Y - (-0.38f)) < 0.05f,
-            "CameraCheck03 feet marker must stay on the lower platform surface.");
+        var check03SurfacePoint = backPlatform.ToGlobal(
+            new Vector3(0.0f, backBox.Size.Y * 0.5f, backBox.Size.Z * 0.5f));
+        Require(level.CameraCheck03.GlobalPosition.DistanceTo(check03SurfacePoint) < 0.08f,
+            $"CameraCheck03 must stay on the rear top edge of Check03BackPlatform. " +
+            $"Marker={level.CameraCheck03.GlobalPosition}, Surface={check03SurfacePoint}.");
     }
 
     private static void ValidateBoxSync(ReferenceLevel level, string name)
@@ -320,7 +320,7 @@ public partial class ReferenceLevelSmoke : Node
         playerInput.ClearVirtualMove();
         throw new InvalidOperationException(
             $"Player could not reach {targetName} within {maxFrames} physics frames. " +
-            $"Player={player.GlobalPosition}, Target={target}, Velocity={player.Velocity}, IsOnFloor={player.IsOnFloor()}.");
+            $"Player={player.GlobalPosition}, Target={target}, Velocity={player.Velocity}, IsOnFloor={player.IsOnFloor}.");
     }
 
     private async Task WaitPhysicsFrames(int count)
