@@ -32,8 +32,10 @@ public partial class ReferenceLevel : Node3D
     {
         // M1.6.3 starts from geometry points that have an unambiguous whitebox
         // correspondence. The foreground stair pair is the top/front edge of
-        // Stairs01/Step01. The far gate landmarks remain intentionally unmapped
-        // until M1.6.4 reconstructs a real matching gate structure.
+        // Stairs01/Step01. Dataset Left/Right names are SCREEN-space names. The
+        // Start camera has 180-degree yaw, so world +X projects to screen-left.
+        // The far gate landmarks remain intentionally unmapped until M1.6.4
+        // reconstructs a real matching gate structure.
         var step = GetNode<MeshInstance3D>("Geometry/Stairs01/Step01");
         var mesh = step.Mesh as BoxMesh;
         if (mesh is null)
@@ -45,11 +47,11 @@ public partial class ReferenceLevel : Node3D
         AddCalibrationMarker(
             step,
             ReferenceCalibrationLandmarkId.StartForegroundStairTopLeft,
-            new Vector3(-half.X, half.Y, -half.Z));
+            new Vector3(half.X, half.Y, -half.Z));
         AddCalibrationMarker(
             step,
             ReferenceCalibrationLandmarkId.StartForegroundStairTopRight,
-            new Vector3(half.X, half.Y, -half.Z));
+            new Vector3(-half.X, half.Y, -half.Z));
     }
 
     private void AddCalibrationMarker(
