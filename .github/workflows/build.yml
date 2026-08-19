@@ -110,6 +110,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceProjectionEvaluatorSmoke.tscn
 
+      - name: Measure M1.6.3 real Start camera baseline
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/ReferenceStartCameraBaselineSmoke.tscn
+
       - name: Setup JDK 17
         if: matrix.platform == 'Android'
         uses: actions/setup-java@v4
