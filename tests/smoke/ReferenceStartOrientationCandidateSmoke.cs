@@ -156,6 +156,26 @@ public partial class ReferenceStartOrientationCandidateSmoke : Node
             }
         }
 
+        // A 0.01 world-unit step is several solve pixels at this close Start camera.
+        // Refine once more so the framing threshold measures geometry, not grid quantization.
+        var medium = best;
+        for (var rightOffset = medium.RightOffset - 0.015f;
+             rightOffset <= medium.RightOffset + 0.0151f;
+             rightOffset += 0.001f)
+        {
+            for (var upOffset = medium.UpOffset - 0.015f;
+                 upOffset <= medium.UpOffset + 0.0151f;
+                 upOffset += 0.001f)
+            {
+                var candidate = EvaluateCompensation(camera, baselinePosition, right, up, sourceSize,
+                    playerReferencePixel, playerWorldPosition, rightOffset, upOffset);
+                if (candidate.PlayerProjection.PixelError < best.PlayerProjection.PixelError)
+                {
+                    best = candidate;
+                }
+            }
+        }
+
         return best;
     }
 
