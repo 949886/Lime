@@ -17,7 +17,6 @@ public static class ReferenceProjectionEvaluator
         ArgumentNullException.ThrowIfNull(shot);
         ArgumentNullException.ThrowIfNull(worldLandmarks);
 
-        var viewportSize = camera.GetViewport().GetVisibleRect().Size;
         var errors = new List<ReferenceProjectionError>(shot.Landmarks.Count);
 
         foreach (var observation in shot.Landmarks)
@@ -27,21 +26,39 @@ public static class ReferenceProjectionEvaluator
                 continue;
             }
 
-            var projectedPixel = camera.UnprojectPosition(landmark.GlobalPosition);
-            var referencePixel = ScaleSourcePixelToViewport(observation.Pixel, sourceSize, viewportSize);
-            var delta = projectedPixel - referencePixel;
+            var point = EvaluatePoint(camera, sourceSize, observation.Pixel, landmark.GlobalPosition);
             var weight = observation.IsOccluded ? observation.Confidence * 0.5f : observation.Confidence;
 
             errors.Add(new ReferenceProjectionError(
                 observation.LandmarkId,
-                referencePixel,
-                projectedPixel,
-                delta,
-                delta.Length(),
+                point.ReferencePixel,
+                point.ProjectedPixel,
+                point.Delta,
+                point.PixelError,
                 weight));
         }
 
         return new ReferenceProjectionErrorReport(errors);
+    }
+
+    public static ReferencePointProjection EvaluatePoint(
+        Camera3D camera,
+        Vector2I sourceSize,
+        Vector2 sourceReferencePixel,
+        Vector3 worldPosition)
+    {
+        ArgumentNullException.ThrowIfNull(camera);
+
+        var viewportSize = camera.GetViewport().GetVisibleRect().Size;
+        var referencePixel = ScaleSourcePixelToViewport(sourceReferencePixel, sourceSize, viewportSize);
+        var projectedPixel = camera.UnprojectPosition(worldPosition);
+        var delta = projectedPixel - referencePixel;
+
+        return new ReferencePointProjection(
+            referencePixel,
+            projectedPixel,
+            delta,
+            delta.Length());
     }
 
     public static Vector2 ScaleSourcePixelToViewport(
