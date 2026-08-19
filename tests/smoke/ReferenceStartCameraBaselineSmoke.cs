@@ -43,31 +43,40 @@ public partial class ReferenceStartCameraBaselineSmoke : Node
             var rightObservation = FindLandmark(sample, ReferenceCalibrationLandmarkId.StartForegroundStairTopRight);
 
             var left = ReferenceProjectionEvaluator.EvaluatePoint(
-                camera, dataset.SourceSize, leftObservation.Pixel, stairLeft.GlobalPosition);
+                camera, dataset.SourceSize, leftObservation.Pixel, stairLeft!.GlobalPosition);
             var right = ReferenceProjectionEvaluator.EvaluatePoint(
-                camera, dataset.SourceSize, rightObservation.Pixel, stairRight.GlobalPosition);
+                camera, dataset.SourceSize, rightObservation.Pixel, stairRight!.GlobalPosition);
             var player = ReferenceProjectionEvaluator.EvaluatePoint(
                 camera, dataset.SourceSize, sample.PlayerFeetPixel, gameRoot.Player.GlobalPosition);
 
-            var report = new ReferenceProjectionErrorReport(new List<ReferenceProjectionError>
+            var worldReport = new ReferenceProjectionErrorReport(new List<ReferenceProjectionError>
             {
                 ToError(ReferenceCalibrationLandmarkId.StartForegroundStairTopLeft, left, leftObservation.Confidence),
                 ToError(ReferenceCalibrationLandmarkId.StartForegroundStairTopRight, right, rightObservation.Confidence),
+            });
+            var cameraFramingReport = new ReferenceProjectionErrorReport(new List<ReferenceProjectionError>
+            {
                 ToError(ReferenceCalibrationLandmarkId.Unknown, player, sample.PlayerConfidence),
             });
 
-            PrintPoint("stair-left", left);
-            PrintPoint("stair-right", right);
-            PrintPoint("player-feet", player);
-            GD.Print($"[M1.6.3 BASELINE] start_hold_8.80 count={report.Count} " +
-                     $"mean={report.MeanPixelError:0.00}px rms={report.RmsPixelError:0.00}px " +
-                     $"max={report.MaxPixelError:0.00}px");
+            PrintPoint("world/stair-left", left);
+            PrintPoint("world/stair-right", right);
+            PrintPoint("camera/player-feet", player);
+            GD.Print($"[M1.6.3 BASELINE] solve_viewport={ReferenceProjectionEvaluator.SolveViewportSize}");
+            GD.Print($"[M1.6.3 BASELINE] CAMERA_ONLY start_hold_8.80 " +
+                     $"rms={cameraFramingReport.RmsPixelError:0.00}px max={cameraFramingReport.MaxPixelError:0.00}px");
+            GD.Print($"[M1.6.3 BASELINE] WORLD_LAYOUT start_hold_8.80 count={worldReport.Count} " +
+                     $"mean={worldReport.MeanPixelError:0.00}px rms={worldReport.RmsPixelError:0.00}px " +
+                     $"max={worldReport.MaxPixelError:0.00}px");
 
-            Require(report.Count == 3, "Start baseline must contain two stair points plus Player feet.");
-            Require(float.IsFinite(report.RmsPixelError) && report.RmsPixelError > 1.0f,
-                "Start baseline RMS must be finite and non-trivial; a near-zero value would indicate an invalid self-reference.");
+            Require(worldReport.Count == 2, "World-layout baseline must contain both stair points.");
+            Require(cameraFramingReport.Count == 1, "Camera-only baseline must contain Player feet independently.");
+            Require(float.IsFinite(worldReport.RmsPixelError) && worldReport.RmsPixelError > 1.0f,
+                "World-layout RMS must be finite and non-trivial.");
+            Require(float.IsFinite(cameraFramingReport.RmsPixelError),
+                "Camera framing RMS must be finite.");
 
-            GD.Print("[M1.6.3] PASS: real Start camera baseline measured.");
+            GD.Print("[M1.6.3] PASS: normalized Start camera/world baselines measured separately.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
