@@ -43,6 +43,50 @@ public static class ReferenceProjectionEvaluator
         return new ReferenceProjectionErrorReport(errors);
     }
 
+    public static ReferencePointProjection EvaluateWorldDirectionVanishingPoint(
+        Camera3D camera,
+        Vector2I sourceSize,
+        Vector2 sourceReferenceVanishingPoint,
+        Vector3 worldDirection) =>
+        EvaluateWorldDirectionVanishingPoint(
+            camera,
+            sourceSize,
+            sourceReferenceVanishingPoint,
+            worldDirection,
+            SolveViewportSize);
+
+    public static ReferencePointProjection EvaluateWorldDirectionVanishingPoint(
+        Camera3D camera,
+        Vector2I sourceSize,
+        Vector2 sourceReferenceVanishingPoint,
+        Vector3 worldDirection,
+        Vector2 solveViewportSize)
+    {
+        ArgumentNullException.ThrowIfNull(camera);
+        if (worldDirection.LengthSquared() < 0.000001f)
+        {
+            throw new ArgumentException("World direction must be non-zero.", nameof(worldDirection));
+        }
+
+        var direction = worldDirection.Normalized();
+        var cameraForward = -camera.GlobalBasis.Z.Normalized();
+        if (cameraForward.Dot(direction) < 0.0f)
+        {
+            direction = -direction;
+        }
+
+        // A point arbitrarily far along a world direction approaches that
+        // direction's projective vanishing point. Starting at Camera position
+        // removes translation from the objective entirely.
+        var pointAtInfinity = camera.GlobalPosition + direction * 100000.0f;
+        return EvaluatePoint(
+            camera,
+            sourceSize,
+            sourceReferenceVanishingPoint,
+            pointAtInfinity,
+            solveViewportSize);
+    }
+
     public static ReferencePointProjection EvaluatePoint(
         Camera3D camera,
         Vector2I sourceSize,
