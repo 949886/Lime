@@ -16,10 +16,12 @@ public partial class ReferenceDatasetV2Smoke : Node
             ValidateSegments(dataset);
             ValidateShots(dataset);
             ValidateTrajectory(dataset);
+            ValidateCameraTransition(dataset);
             ValidateLegacyComparatorAssets();
 
             GD.Print($"[M1.6.2] PASS: {dataset.Shots.Count} structure shots / " +
-                     $"{dataset.Trajectory.Count} trajectory samples cover all Explore segments.");
+                     $"{dataset.Trajectory.Count} trajectory samples / " +
+                     $"{dataset.CameraTransitionSamples.Count} dense camera-transition samples.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
@@ -88,15 +90,9 @@ public partial class ReferenceDatasetV2Smoke : Node
             var shotLandmarks = new HashSet<ReferenceCalibrationLandmarkId>();
             foreach (var landmark in shot.Landmarks)
             {
-                Require(landmark.LandmarkId != ReferenceCalibrationLandmarkId.Unknown,
-                    $"Shot {shot.Id} contains an unnamed calibration landmark.");
+                ValidateLandmark(dataset, landmark, $"Shot {shot.Id}");
                 Require(shotLandmarks.Add(landmark.LandmarkId),
                     $"Shot {shot.Id} repeats landmark {landmark.LandmarkId}.");
-                Require(landmark.Pixel.X >= 0.0f && landmark.Pixel.X < dataset.SourceSize.X &&
-                        landmark.Pixel.Y >= 0.0f && landmark.Pixel.Y < dataset.SourceSize.Y,
-                    $"Shot {shot.Id} landmark {landmark.LandmarkId} is outside the source frame.");
-                Require(landmark.Confidence > 0.0f && landmark.Confidence <= 1.0f,
-                    $"Shot {shot.Id} landmark {landmark.LandmarkId} needs confidence in (0, 1].");
 
                 totalLandmarkObservations++;
                 landmarkObservationCounts[landmark.LandmarkId] =
@@ -194,6 +190,95 @@ public partial class ReferenceDatasetV2Smoke : Node
             Require(measured >= Math.Max(4, total - 2),
                 $"Segment {segment.Id} must keep dense measured player coverage; measured {measured}/{total}.");
         }
+    }
+
+    private static void ValidateCameraTransition(ReferenceDatasetV2 dataset)
+    {
+        Require(dataset.CameraTransitionSamples.Count == 18,
+            "M1.6.2 Pass C must retain the 8.8-10.5 s transition at 0.1 s cadence.");
+
+        var previousFrame = -1;
+        var previousTimestamp = double.NegativeInfinity;
+        var firstGateWidth = -1.0f;
+        var finalGateWidth = -1.0f;
+        var firstNearWidth = -1.0f;
+        var finalNearWidth = -1.0f;
+
+        foreach (var sample in dataset.CameraTransitionSamples)
+        {
+            Require(sample.SourceFrame > previousFrame,
+                "Camera transition source frames must be strictly increasing.");
+            Require(sample.TimestampSeconds > previousTimestamp,
+                "Camera transition timestamps must be strictly increasing.");
+            Require(sample.HasMeasuredPlayer,
+                $"Camera transition frame {sample.SourceFrame} needs measured Player framing.");
+            Require(sample.PlayerFeetPixel.X >= 0.0f && sample.PlayerFeetPixel.X < dataset.SourceSize.X &&
+                    sample.PlayerFeetPixel.Y >= 0.0f && sample.PlayerFeetPixel.Y < dataset.SourceSize.Y,
+                $"Camera transition frame {sample.SourceFrame} Player feet are outside the source frame.");
+            Require(sample.PlayerPixelHeight >= 150.0f && sample.PlayerPixelHeight <= 600.0f,
+                $"Camera transition frame {sample.SourceFrame} Player height is implausible.");
+            Require(sample.PlayerConfidence > 0.0f && sample.PlayerConfidence <= 1.0f,
+                $"Camera transition frame {sample.SourceFrame} needs Player confidence in (0, 1].");
+            Require(sample.Landmarks.Count == 5,
+                $"Camera transition frame {sample.SourceFrame} must carry 3 far + 2 near landmarks.");
+
+            var byId = new Dictionary<ReferenceCalibrationLandmarkId, Vector2>();
+            foreach (var landmark in sample.Landmarks)
+            {
+                ValidateLandmark(dataset, landmark, $"Transition frame {sample.SourceFrame}");
+                Require(byId.TryAdd(landmark.LandmarkId, landmark.Pixel),
+                    $"Transition frame {sample.SourceFrame} repeats {landmark.LandmarkId}.");
+            }
+
+            Require(byId.ContainsKey(ReferenceCalibrationLandmarkId.StartGateGridUpperLeft) &&
+                    byId.ContainsKey(ReferenceCalibrationLandmarkId.StartGateGridUpperRight) &&
+                    byId.ContainsKey(ReferenceCalibrationLandmarkId.StartForegroundStairTopLeft) &&
+                    byId.ContainsKey(ReferenceCalibrationLandmarkId.StartForegroundStairTopRight),
+                $"Transition frame {sample.SourceFrame} is missing depth-baseline landmarks.");
+
+            var gateWidth = byId[ReferenceCalibrationLandmarkId.StartGateGridUpperLeft]
+                .DistanceTo(byId[ReferenceCalibrationLandmarkId.StartGateGridUpperRight]);
+            var nearWidth = byId[ReferenceCalibrationLandmarkId.StartForegroundStairTopLeft]
+                .DistanceTo(byId[ReferenceCalibrationLandmarkId.StartForegroundStairTopRight]);
+
+            if (firstGateWidth < 0.0f)
+            {
+                firstGateWidth = gateWidth;
+                firstNearWidth = nearWidth;
+            }
+
+            finalGateWidth = gateWidth;
+            finalNearWidth = nearWidth;
+            previousFrame = sample.SourceFrame;
+            previousTimestamp = sample.TimestampSeconds;
+        }
+
+        Require(Math.Abs(dataset.CameraTransitionSamples[0].TimestampSeconds - 8.80) < 0.001 &&
+                Math.Abs(dataset.CameraTransitionSamples[^1].TimestampSeconds - 10.50) < 0.001,
+            "Camera transition measurements must cover the measured 8.8-10.5 s window.");
+        Require(finalGateWidth < firstGateWidth * 0.55f,
+            "Far gate span must show the measured pullback shrink.");
+        Require(finalNearWidth < firstNearWidth * 0.40f,
+            "Near stair span must show the stronger measured pullback shrink.");
+
+        var farScale = finalGateWidth / firstGateWidth;
+        var nearScale = finalNearWidth / firstNearWidth;
+        Require(Math.Abs(farScale - nearScale) > 0.05f,
+            "Depth baselines must preserve non-uniform scaling; the transition is not a pure image-space zoom.");
+    }
+
+    private static void ValidateLandmark(
+        ReferenceDatasetV2 dataset,
+        ReferenceLandmarkObservation landmark,
+        string owner)
+    {
+        Require(landmark.LandmarkId != ReferenceCalibrationLandmarkId.Unknown,
+            $"{owner} contains an unnamed calibration landmark.");
+        Require(landmark.Pixel.X >= 0.0f && landmark.Pixel.X < dataset.SourceSize.X &&
+                landmark.Pixel.Y >= 0.0f && landmark.Pixel.Y < dataset.SourceSize.Y,
+            $"{owner} landmark {landmark.LandmarkId} is outside the source frame.");
+        Require(landmark.Confidence > 0.0f && landmark.Confidence <= 1.0f,
+            $"{owner} landmark {landmark.LandmarkId} needs confidence in (0, 1].");
     }
 
     private static void ValidateLegacyComparatorAssets()
