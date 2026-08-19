@@ -118,6 +118,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceStartOrientationSweepSmoke.tscn
 
+      - name: Validate M1.6.3 Start orientation candidate
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/ReferenceStartOrientationCandidateSmoke.tscn
+
       - name: Measure M1.6.3 real Start camera baseline
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceStartCameraBaselineSmoke.tscn
