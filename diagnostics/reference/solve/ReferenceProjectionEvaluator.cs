@@ -7,6 +7,8 @@ namespace Lime.Diagnostics.Reference.Solve;
 
 public static class ReferenceProjectionEvaluator
 {
+    public static readonly Vector2 SolveViewportSize = new(2560.0f, 1440.0f);
+
     public static ReferenceProjectionErrorReport EvaluateShot(
         Camera3D camera,
         Vector2I sourceSize,
@@ -45,13 +47,32 @@ public static class ReferenceProjectionEvaluator
         Camera3D camera,
         Vector2I sourceSize,
         Vector2 sourceReferencePixel,
-        Vector3 worldPosition)
+        Vector3 worldPosition) =>
+        EvaluatePoint(camera, sourceSize, sourceReferencePixel, worldPosition, SolveViewportSize);
+
+    public static ReferencePointProjection EvaluatePoint(
+        Camera3D camera,
+        Vector2I sourceSize,
+        Vector2 sourceReferencePixel,
+        Vector3 worldPosition,
+        Vector2 solveViewportSize)
     {
         ArgumentNullException.ThrowIfNull(camera);
 
-        var viewportSize = camera.GetViewport().GetVisibleRect().Size;
-        var referencePixel = ScaleSourcePixelToViewport(sourceReferencePixel, sourceSize, viewportSize);
-        var projectedPixel = camera.UnprojectPosition(worldPosition);
+        if (solveViewportSize.X <= 0.0f || solveViewportSize.Y <= 0.0f)
+        {
+            throw new ArgumentOutOfRangeException(nameof(solveViewportSize), "Solve viewport must be positive.");
+        }
+
+        var runtimeViewportSize = camera.GetViewport().GetVisibleRect().Size;
+        if (runtimeViewportSize.X <= 0.0f || runtimeViewportSize.Y <= 0.0f)
+        {
+            throw new InvalidOperationException("Camera viewport must be positive before projection evaluation.");
+        }
+
+        var referencePixel = ScalePixel(sourceReferencePixel, new Vector2(sourceSize.X, sourceSize.Y), solveViewportSize);
+        var runtimeProjectedPixel = camera.UnprojectPosition(worldPosition);
+        var projectedPixel = ScalePixel(runtimeProjectedPixel, runtimeViewportSize, solveViewportSize);
         var delta = projectedPixel - referencePixel;
 
         return new ReferencePointProjection(
@@ -71,8 +92,18 @@ public static class ReferenceProjectionEvaluator
             throw new ArgumentOutOfRangeException(nameof(sourceSize), "Source size must be positive.");
         }
 
+        return ScalePixel(sourcePixel, new Vector2(sourceSize.X, sourceSize.Y), viewportSize);
+    }
+
+    private static Vector2 ScalePixel(Vector2 pixel, Vector2 fromSize, Vector2 toSize)
+    {
+        if (fromSize.X <= 0.0f || fromSize.Y <= 0.0f)
+        {
+            throw new ArgumentOutOfRangeException(nameof(fromSize), "Source viewport must be positive.");
+        }
+
         return new Vector2(
-            sourcePixel.X * viewportSize.X / sourceSize.X,
-            sourcePixel.Y * viewportSize.Y / sourceSize.Y);
+            pixel.X * toSize.X / fromSize.X,
+            pixel.Y * toSize.Y / fromSize.Y);
     }
 }
