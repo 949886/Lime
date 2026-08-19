@@ -67,14 +67,17 @@ public static class ReferenceDatasetV2Catalog
         double timestampSeconds,
         ReferenceCameraPhase cameraPhase)
     {
-        dataset.Shots.Add(new ReferenceShot
+        var shot = new ReferenceShot
         {
             Id = id,
             SegmentId = segmentId,
             TimestampSeconds = timestampSeconds,
             SourceFrame = ToFrame(timestampSeconds),
             CameraPhase = cameraPhase,
-        });
+        };
+
+        ReferenceStructuralLandmarkMeasurements.Populate(shot);
+        dataset.Shots.Add(shot);
     }
 
     private static void AddTrajectoryRange(
