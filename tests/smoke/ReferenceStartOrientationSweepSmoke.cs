@@ -42,6 +42,8 @@ public partial class ReferenceStartOrientationSweepSmoke : Node
             Require(float.IsFinite(best.Projection.PixelError), "Orientation sweep must produce a finite best error.");
             Require(best.Projection.PixelError <= baseline.PixelError + 0.01f,
                 "Orientation sweep must not be worse than the M1.6.1 baseline.");
+            Require(best.Pitch > -39.5f && best.Pitch < -8.5f,
+                "Best pitch must not be pinned to the expanded search boundary.");
 
             GD.Print("[M1.6.3] PASS: Start orientation sweep measured without modifying production Camera resources.");
             GetTree().Quit(0);
@@ -55,11 +57,12 @@ public partial class ReferenceStartOrientationSweepSmoke : Node
 
     private static SweepResult Search(Camera3D camera, Vector2 referenceVp)
     {
-        // Coarse search around the current StartPerspective orientation.
+        // The measured 8.80s VP is far above the M1.6.1 baseline, so search a deliberately
+        // wider pitch window instead of allowing the optimum to pin at the old -28 deg edge.
         var best = new SweepResult(180.0f, -16.0f, Evaluate(camera, referenceVp, 180.0f, -16.0f));
         for (var yaw = 176.0f; yaw <= 184.0001f; yaw += 0.25f)
         {
-            for (var pitch = -28.0f; pitch <= -8.0001f; pitch += 0.25f)
+            for (var pitch = -40.0f; pitch <= -8.0001f; pitch += 0.25f)
             {
                 var projection = Evaluate(camera, referenceVp, yaw, pitch);
                 if (projection.PixelError < best.Projection.PixelError)
