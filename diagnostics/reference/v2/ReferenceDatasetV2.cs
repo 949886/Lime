@@ -13,4 +13,5 @@ public partial class ReferenceDatasetV2 : Resource
     [Export] public Array<ReferenceExploreSegment> ExploreSegments { get; set; } = new();
     [Export] public Array<ReferenceShot> Shots { get; set; } = new();
     [Export] public Array<ReferenceTrajectorySample> Trajectory { get; set; } = new();
+    [Export] public Array<ReferenceCameraTransitionSample> CameraTransitionSamples { get; set; } = new();
 }
