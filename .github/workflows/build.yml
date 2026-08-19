@@ -115,6 +115,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceCalibrationSmoke.tscn
 
+      - name: Run M1.6.2 reference dataset v2 smoke
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/ReferenceDatasetV2Smoke.tscn
+
       - name: Setup JDK 17
         if: matrix.platform == 'Android'
         uses: actions/setup-java@v4
