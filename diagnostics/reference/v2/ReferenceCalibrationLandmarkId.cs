@@ -13,6 +13,8 @@ public enum ReferenceCalibrationLandmarkId
     StartGateGridUpperLeft = 100,
     StartGateGridUpperRight = 101,
     StartGateGridLowerLeft = 102,
+    StartForegroundStairTopLeft = 110,
+    StartForegroundStairTopRight = 111,
 
     StairsATopLeft = 200,
     StairsATopRight = 201,
