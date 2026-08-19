@@ -67,6 +67,9 @@ public partial class ReferenceDatasetV2Smoke : Node
 
         var ids = new HashSet<string>(StringComparer.Ordinal);
         var observedSegments = new HashSet<ReferenceExploreSegmentId>();
+        var landmarkObservationCounts = new Dictionary<ReferenceCalibrationLandmarkId, int>();
+        var totalLandmarkObservations = 0;
+        var measuredShotCount = 0;
 
         foreach (var shot in dataset.Shots)
         {
@@ -77,16 +80,49 @@ public partial class ReferenceDatasetV2Smoke : Node
                 $"Shot {shot.Id} is outside its Explore segment.");
             observedSegments.Add(shot.SegmentId);
 
+            if (shot.Landmarks.Count > 0)
+            {
+                measuredShotCount++;
+            }
+
+            var shotLandmarks = new HashSet<ReferenceCalibrationLandmarkId>();
             foreach (var landmark in shot.Landmarks)
             {
+                Require(landmark.LandmarkId != ReferenceCalibrationLandmarkId.Unknown,
+                    $"Shot {shot.Id} contains an unnamed calibration landmark.");
+                Require(shotLandmarks.Add(landmark.LandmarkId),
+                    $"Shot {shot.Id} repeats landmark {landmark.LandmarkId}.");
                 Require(landmark.Pixel.X >= 0.0f && landmark.Pixel.X < dataset.SourceSize.X &&
                         landmark.Pixel.Y >= 0.0f && landmark.Pixel.Y < dataset.SourceSize.Y,
-                    $"Shot {shot.Id} landmark {landmark.AnchorId} is outside the source frame.");
+                    $"Shot {shot.Id} landmark {landmark.LandmarkId} is outside the source frame.");
+                Require(landmark.Confidence > 0.0f && landmark.Confidence <= 1.0f,
+                    $"Shot {shot.Id} landmark {landmark.LandmarkId} needs confidence in (0, 1].");
+
+                totalLandmarkObservations++;
+                landmarkObservationCounts[landmark.LandmarkId] =
+                    landmarkObservationCounts.GetValueOrDefault(landmark.LandmarkId) + 1;
             }
         }
 
         Require(observedSegments.Count == 3,
             "Structure shots must cover Explore A / B / C, not only the first segment.");
+        Require(measuredShotCount >= 17,
+            "M1.6.2 Pass B must retain structural measurements on at least 17 structure shots.");
+        Require(totalLandmarkObservations >= 60,
+            "M1.6.2 Pass B must retain at least 60 source-frame structural observations.");
+        Require(landmarkObservationCounts.Count >= 12,
+            "M1.6.2 Pass B needs at least 12 distinct precise calibration landmarks.");
+
+        foreach (var pair in landmarkObservationCounts)
+        {
+            Require(pair.Value >= 2,
+                $"Calibration landmark {pair.Key} must be observed in multiple shots; found {pair.Value}.");
+        }
+
+        Require(landmarkObservationCounts.GetValueOrDefault(ReferenceCalibrationLandmarkId.BlueFormationPeak) >= 7,
+            "The later blue formation must bridge Explore B and Explore C with repeated observations.");
+        Require(landmarkObservationCounts.GetValueOrDefault(ReferenceCalibrationLandmarkId.WorkerUpperStairsTopLeft) >= 5,
+            "Worker-area geometry must remain observable through the late route.");
     }
 
     private static void ValidateTrajectory(ReferenceDatasetV2 dataset)
