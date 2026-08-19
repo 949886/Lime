@@ -47,6 +47,8 @@ public static class ReferenceDatasetV2Catalog
         AddTrajectorySample(dataset, ReferenceExploreSegmentId.ExploreA, 9.50);
         AddTrajectorySample(dataset, ReferenceExploreSegmentId.ExploreA, 9.75);
 
+        ReferenceCameraTransitionMeasurements.Populate(dataset);
+
         return dataset;
     }
 
