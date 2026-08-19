@@ -110,6 +110,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceProjectionEvaluatorSmoke.tscn
 
+      - name: Run M1.6.3 vanishing point smoke
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/ReferenceVanishingPointSmoke.tscn
+
       - name: Measure M1.6.3 real Start camera baseline
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceStartCameraBaselineSmoke.tscn
