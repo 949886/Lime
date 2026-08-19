@@ -49,6 +49,14 @@ public partial class ReferenceStartCameraBaselineSmoke : Node
             var player = ReferenceProjectionEvaluator.EvaluatePoint(
                 camera, dataset.SourceSize, sample.PlayerFeetPixel, gameRoot.Player.GlobalPosition);
 
+            var referenceVp = ReferenceVanishingPointEvaluator.Solve(
+                ReferenceStartFloorGridMeasurements.LongitudinalLines);
+            var longitudinalVp = ReferenceProjectionEvaluator.EvaluateWorldDirectionVanishingPoint(
+                camera,
+                dataset.SourceSize,
+                referenceVp.Pixel,
+                Vector3.Forward);
+
             var worldReport = new ReferenceProjectionErrorReport(new List<ReferenceProjectionError>
             {
                 ToError(ReferenceCalibrationLandmarkId.StartForegroundStairTopLeft, left, leftObservation.Confidence),
@@ -62,21 +70,28 @@ public partial class ReferenceStartCameraBaselineSmoke : Node
             PrintPoint("world/stair-left", left);
             PrintPoint("world/stair-right", right);
             PrintPoint("camera/player-feet", player);
+            PrintPoint("camera/longitudinal-vp", longitudinalVp);
+            GD.Print($"[M1.6.3 BASELINE] reference_grid_line_rms={referenceVp.WeightedRmsLineDistance:0.00}px");
             GD.Print($"[M1.6.3 BASELINE] solve_viewport={ReferenceProjectionEvaluator.SolveViewportSize}");
-            GD.Print($"[M1.6.3 BASELINE] CAMERA_ONLY start_hold_8.80 " +
+            GD.Print($"[M1.6.3 BASELINE] CAMERA_FRAMING start_hold_8.80 " +
                      $"rms={cameraFramingReport.RmsPixelError:0.00}px max={cameraFramingReport.MaxPixelError:0.00}px");
+            GD.Print($"[M1.6.3 BASELINE] CAMERA_ORIENTATION start_hold_8.80 " +
+                     $"longitudinal_vp_error={longitudinalVp.PixelError:0.00}px " +
+                     $"delta={longitudinalVp.Delta}");
             GD.Print($"[M1.6.3 BASELINE] WORLD_LAYOUT start_hold_8.80 count={worldReport.Count} " +
                      $"mean={worldReport.MeanPixelError:0.00}px rms={worldReport.RmsPixelError:0.00}px " +
                      $"max={worldReport.MaxPixelError:0.00}px");
 
             Require(worldReport.Count == 2, "World-layout baseline must contain both stair points.");
-            Require(cameraFramingReport.Count == 1, "Camera-only baseline must contain Player feet independently.");
+            Require(cameraFramingReport.Count == 1, "Camera framing baseline must contain Player feet independently.");
             Require(float.IsFinite(worldReport.RmsPixelError) && worldReport.RmsPixelError > 1.0f,
                 "World-layout RMS must be finite and non-trivial.");
             Require(float.IsFinite(cameraFramingReport.RmsPixelError),
                 "Camera framing RMS must be finite.");
+            Require(float.IsFinite(longitudinalVp.PixelError),
+                "Camera orientation vanishing-point error must be finite.");
 
-            GD.Print("[M1.6.3] PASS: normalized Start camera/world baselines measured separately.");
+            GD.Print("[M1.6.3] PASS: Start camera framing/orientation and world-layout baselines measured separately.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
