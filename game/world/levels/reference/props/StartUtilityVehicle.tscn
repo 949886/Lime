@@ -1,0 +1,58 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartOrangeMaterial.tres" id="1_orange"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartEquipmentMaterial.tres" id="2_metal"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartRubberMaterial.tres" id="3_rubber"]
+
+[sub_resource type="BoxMesh" id="Body"]
+material = ExtResource("1_orange")
+size = Vector3(1.8, 0.62, 2.25)
+[sub_resource type="BoxMesh" id="Cabin"]
+material = ExtResource("2_metal")
+size = Vector3(1.55, 0.95, 1.05)
+[sub_resource type="BoxMesh" id="Hood"]
+material = ExtResource("1_orange")
+size = Vector3(1.55, 0.4, 0.78)
+[sub_resource type="CylinderMesh" id="Wheel"]
+material = ExtResource("3_rubber")
+top_radius = 0.36
+bottom_radius = 0.36
+height = 0.22
+radial_segments = 16
+[sub_resource type="CylinderMesh" id="Spare"]
+material = ExtResource("3_rubber")
+top_radius = 0.38
+bottom_radius = 0.38
+height = 0.18
+radial_segments = 16
+
+[node name="StartUtilityVehicle" type="Node3D"]
+[node name="Body" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.68, 0)
+mesh = SubResource("Body")
+[node name="Cabin" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.33, 0.32)
+mesh = SubResource("Cabin")
+[node name="Hood" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.92, -1.1)
+mesh = SubResource("Hood")
+[node name="WheelFL" type="MeshInstance3D" parent="."]
+position = Vector3(-0.92, 0.42, -0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Wheel")
+[node name="WheelFR" type="MeshInstance3D" parent="."]
+position = Vector3(0.92, 0.42, -0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Wheel")
+[node name="WheelRL" type="MeshInstance3D" parent="."]
+position = Vector3(-0.92, 0.42, 0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Wheel")
+[node name="WheelRR" type="MeshInstance3D" parent="."]
+position = Vector3(0.92, 0.42, 0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Wheel")
+[node name="SpareWheel" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.95, 1.22)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Spare")
