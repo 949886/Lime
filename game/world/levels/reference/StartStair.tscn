@@ -1,0 +1,99 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartStepMaterial.tres" id="1_step"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartConcreteMaterial.tres" id="2_concrete"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartRailMaterial.tres" id="3_rail"]
+
+[sub_resource type="BoxMesh" id="Step"]
+material = ExtResource("1_step")
+size = Vector3(3.4, 0.105, 0.302444)
+
+[sub_resource type="BoxMesh" id="SideWall"]
+material = ExtResource("2_concrete")
+size = Vector3(0.42, 0.78, 3.75)
+
+[sub_resource type="BoxMesh" id="StairRail"]
+material = ExtResource("3_rail")
+size = Vector3(0.12, 0.12, 3.72)
+
+[sub_resource type="BoxShape3D" id="RampCollision"]
+size = Vector3(3.4, 0.16, 3.6861238)
+
+[node name="StartStair" type="Node3D"]
+
+[node name="StairVisual" type="Node3D" parent="."]
+
+[node name="Step01" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 1.9485, 0.3401057)
+mesh = SubResource("Step")
+
+[node name="Step02" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 1.8394, 0.0496618)
+mesh = SubResource("Step")
+
+[node name="Step03" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 1.7303, -0.24078226)
+mesh = SubResource("Step")
+
+[node name="Step04" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 1.6212, -0.5312262)
+mesh = SubResource("Step")
+
+[node name="Step05" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 1.5121, -0.8216702)
+mesh = SubResource("Step")
+
+[node name="Step06" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 1.403, -1.1121142)
+mesh = SubResource("Step")
+
+[node name="Step07" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 1.2939, -1.4025581)
+mesh = SubResource("Step")
+
+[node name="Step08" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 1.1848, -1.6930021)
+mesh = SubResource("Step")
+
+[node name="Step09" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 1.0757, -1.9834461)
+mesh = SubResource("Step")
+
+[node name="Step10" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 0.9666, -2.27389)
+mesh = SubResource("Step")
+
+[node name="Step11" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 0.8575, -2.564334)
+mesh = SubResource("Step")
+
+[node name="Step12" type="MeshInstance3D" parent="StairVisual"]
+position = Vector3(0, 0.7485, -2.854778)
+mesh = SubResource("Step")
+
+[node name="OuterSideWall" type="MeshInstance3D" parent="."]
+position = Vector3(-1.93, 1.38, -1.24)
+rotation_degrees = Vector3(-20, 0, 0)
+mesh = SubResource("SideWall")
+
+[node name="InnerSideWall" type="MeshInstance3D" parent="."]
+position = Vector3(1.93, 1.38, -1.24)
+rotation_degrees = Vector3(-20, 0, 0)
+mesh = SubResource("SideWall")
+
+[node name="OuterRail" type="MeshInstance3D" parent="."]
+position = Vector3(-1.93, 2.02, -1.24)
+rotation_degrees = Vector3(-20, 0, 0)
+mesh = SubResource("StairRail")
+
+[node name="InnerRail" type="MeshInstance3D" parent="."]
+position = Vector3(1.93, 2.02, -1.24)
+rotation_degrees = Vector3(-20, 0, 0)
+mesh = SubResource("StairRail")
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Ramp" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(-1, 0, 0, 0, 0.9455265, -0.32554522, 0, -0.32554522, -0.9455265, 0, 1.3243579, -1.2312925)
+shape = SubResource("RampCollision")

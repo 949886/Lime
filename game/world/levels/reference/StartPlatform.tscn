@@ -1,0 +1,165 @@
+[gd_scene load_steps=22 format=3]
+
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartDeckMaterial.tres" id="1_deck"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartConcreteMaterial.tres" id="2_concrete"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartRailMaterial.tres" id="3_rail"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartRecessMaterial.tres" id="4_recess"]
+[ext_resource type="PackedScene" path="res://game/world/levels/reference/StartStair.tscn" id="5_stair"]
+
+[sub_resource type="BoxMesh" id="RearDeck"]
+material = ExtResource("1_deck")
+size = Vector3(20.0, 0.3, 5.85)
+[sub_resource type="BoxMesh" id="FrontRightDeck"]
+material = ExtResource("1_deck")
+size = Vector3(4.98, 0.3, 1.35)
+[sub_resource type="BoxMesh" id="FrontCenterDeck"]
+material = ExtResource("1_deck")
+size = Vector3(5.32, 0.3, 1.35)
+[sub_resource type="BoxMesh" id="FrontLeftDeck"]
+material = ExtResource("1_deck")
+size = Vector3(2.90, 0.3, 1.35)
+[sub_resource type="BoxMesh" id="FrontNub"]
+material = ExtResource("1_deck")
+size = Vector3(1.35, 0.3, 1.05)
+
+[sub_resource type="BoxMesh" id="CenterWall"]
+material = ExtResource("2_concrete")
+size = Vector3(5.32, 1.45, 0.42)
+[sub_resource type="BoxMesh" id="RightWall"]
+material = ExtResource("2_concrete")
+size = Vector3(4.72, 1.45, 0.42)
+[sub_resource type="BoxMesh" id="LeftWall"]
+material = ExtResource("2_concrete")
+size = Vector3(2.65, 1.45, 0.42)
+
+[sub_resource type="BoxMesh" id="CenterRail"]
+material = ExtResource("3_rail")
+size = Vector3(5.32, 0.12, 0.12)
+[sub_resource type="BoxMesh" id="RightRail"]
+material = ExtResource("3_rail")
+size = Vector3(4.72, 0.12, 0.12)
+[sub_resource type="BoxMesh" id="LeftRail"]
+material = ExtResource("3_rail")
+size = Vector3(2.65, 0.12, 0.12)
+[sub_resource type="BoxMesh" id="RailPost"]
+material = ExtResource("3_rail")
+size = Vector3(0.12, 0.9, 0.12)
+[sub_resource type="BoxMesh" id="RearRail"]
+material = ExtResource("3_rail")
+size = Vector3(10.4, 0.12, 0.12)
+[sub_resource type="BoxMesh" id="SideRail"]
+material = ExtResource("3_rail")
+size = Vector3(0.12, 0.12, 6.7)
+
+[sub_resource type="BoxMesh" id="RecessFloor"]
+material = ExtResource("4_recess")
+size = Vector3(3.0, 0.25, 3.6)
+[sub_resource type="BoxMesh" id="RecessWall"]
+material = ExtResource("2_concrete")
+size = Vector3(3.0, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="RearDeckCollision"]
+size = Vector3(20.0, 0.3, 5.85)
+[sub_resource type="BoxShape3D" id="FrontRightCollision"]
+size = Vector3(4.98, 0.3, 1.35)
+[sub_resource type="BoxShape3D" id="FrontCenterCollision"]
+size = Vector3(5.32, 0.3, 1.35)
+[sub_resource type="BoxShape3D" id="FrontLeftCollision"]
+size = Vector3(2.90, 0.3, 1.35)
+[sub_resource type="BoxShape3D" id="FrontNubCollision"]
+size = Vector3(1.35, 0.3, 1.05)
+[sub_resource type="BoxShape3D" id="CenterWallCollision"]
+size = Vector3(5.32, 1.45, 0.42)
+
+[node name="StartPlatform" type="Node3D"]
+
+[node name="Deck" type="Node3D" parent="."]
+[node name="RearDeck" type="MeshInstance3D" parent="Deck"]
+position = Vector3(6.6, 1.85, 3.525)
+mesh = SubResource("RearDeck")
+[node name="FrontRightDeck" type="MeshInstance3D" parent="Deck"]
+position = Vector3(-0.91, 1.85, -0.075)
+mesh = SubResource("FrontRightDeck")
+[node name="FrontCenterDeck" type="MeshInstance3D" parent="Deck"]
+position = Vector3(7.64, 1.85, -0.075)
+mesh = SubResource("FrontCenterDeck")
+[node name="FrontLeftDeck" type="MeshInstance3D" parent="Deck"]
+position = Vector3(15.15, 1.85, -0.075)
+mesh = SubResource("FrontLeftDeck")
+[node name="FrontLeftNub" type="MeshInstance3D" parent="Deck"]
+position = Vector3(15.85, 1.85, -1.15)
+mesh = SubResource("FrontNub")
+
+[node name="RightStair" parent="." instance=ExtResource("5_stair")]
+position = Vector3(3.2778025, 0, 0)
+[node name="LeftStair" parent="." instance=ExtResource("5_stair")]
+position = Vector3(12.0, 0, 0)
+
+[node name="FrontArchitecture" type="Node3D" parent="."]
+[node name="CenterRetainingWall" type="MeshInstance3D" parent="FrontArchitecture"]
+position = Vector3(7.64, 1.275, 0.315)
+mesh = SubResource("CenterWall")
+[node name="ScreenRightRetainingWall" type="MeshInstance3D" parent="FrontArchitecture"]
+position = Vector3(-0.91, 1.275, 0.315)
+mesh = SubResource("RightWall")
+[node name="ScreenLeftRetainingWall" type="MeshInstance3D" parent="FrontArchitecture"]
+position = Vector3(15.15, 1.275, 0.315)
+mesh = SubResource("LeftWall")
+
+[node name="CenterFrontRail" type="MeshInstance3D" parent="FrontArchitecture"]
+position = Vector3(7.64, 2.43, 0.39)
+mesh = SubResource("CenterRail")
+[node name="ScreenRightFrontRail" type="MeshInstance3D" parent="FrontArchitecture"]
+position = Vector3(-0.91, 2.43, 0.39)
+mesh = SubResource("RightRail")
+[node name="ScreenLeftFrontRail" type="MeshInstance3D" parent="FrontArchitecture"]
+position = Vector3(15.15, 2.43, 0.39)
+mesh = SubResource("LeftRail")
+
+[node name="CenterRailPost01" type="MeshInstance3D" parent="FrontArchitecture"]
+position = Vector3(5.02, 2.38, 0.39)
+mesh = SubResource("RailPost")
+[node name="CenterRailPost02" type="MeshInstance3D" parent="FrontArchitecture"]
+position = Vector3(7.64, 2.38, 0.39)
+mesh = SubResource("RailPost")
+[node name="CenterRailPost03" type="MeshInstance3D" parent="FrontArchitecture"]
+position = Vector3(10.26, 2.38, 0.39)
+mesh = SubResource("RailPost")
+
+[node name="RearRail" type="MeshInstance3D" parent="."]
+position = Vector3(6.4, 2.43, 6.18)
+mesh = SubResource("RearRail")
+[node name="ScreenRightOuterRail" type="MeshInstance3D" parent="."]
+position = Vector3(-3.35, 2.43, 2.85)
+mesh = SubResource("SideRail")
+[node name="ScreenLeftOuterRail" type="MeshInstance3D" parent="."]
+position = Vector3(16.55, 2.43, 2.85)
+mesh = SubResource("SideRail")
+
+[node name="ScreenLeftRecessFloor" type="MeshInstance3D" parent="."]
+position = Vector3(17.55, 0.42, 2.8)
+mesh = SubResource("RecessFloor")
+[node name="ScreenLeftRecessBackWall" type="MeshInstance3D" parent="."]
+position = Vector3(17.55, 1.16, 4.55)
+mesh = SubResource("RecessWall")
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_mask = 0
+[node name="RearDeck" type="CollisionShape3D" parent="Collision"]
+position = Vector3(6.6, 1.85, 3.525)
+shape = SubResource("RearDeckCollision")
+[node name="FrontRightDeck" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-0.91, 1.85, -0.075)
+shape = SubResource("FrontRightCollision")
+[node name="FrontCenterDeck" type="CollisionShape3D" parent="Collision"]
+position = Vector3(7.64, 1.85, -0.075)
+shape = SubResource("FrontCenterCollision")
+[node name="FrontLeftDeck" type="CollisionShape3D" parent="Collision"]
+position = Vector3(15.15, 1.85, -0.075)
+shape = SubResource("FrontLeftCollision")
+[node name="FrontLeftNub" type="CollisionShape3D" parent="Collision"]
+position = Vector3(15.85, 1.85, -1.15)
+shape = SubResource("FrontNubCollision")
+[node name="CenterRetainingWall" type="CollisionShape3D" parent="Collision"]
+position = Vector3(7.64, 1.275, 0.315)
+shape = SubResource("CenterWallCollision")

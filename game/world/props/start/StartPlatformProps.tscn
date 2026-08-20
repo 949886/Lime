@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://game/world/props/start/StartBench.tscn" id="1_bench"]
+[ext_resource type="PackedScene" path="res://game/world/props/start/StartUtilityVehicle.tscn" id="2_vehicle"]
+[ext_resource type="PackedScene" path="res://game/world/props/start/StartCafeSet.tscn" id="3_cafe"]
+[ext_resource type="PackedScene" path="res://game/world/props/start/StartConstructionCluster.tscn" id="4_construction"]
+[ext_resource type="PackedScene" path="res://game/world/props/start/StartTreePlanter.tscn" id="5_tree"]
+
+[node name="StartPlatformProps" type="Node3D"]
+[node name="Bench" parent="." instance=ExtResource("1_bench")]
+position = Vector3(9.1, 2.0, 4.55)
+rotation_degrees = Vector3(0, 180, 0)
+[node name="UtilityVehicle" parent="." instance=ExtResource("2_vehicle")]
+position = Vector3(5.1, 2.0, 4.45)
+[node name="CafeSet" parent="." instance=ExtResource("3_cafe")]
+position = Vector3(2.75, 2.0, 4.1)
+rotation_degrees = Vector3(0, 10, 0)
+[node name="ConstructionCluster" parent="." instance=ExtResource("4_construction")]
+position = Vector3(-0.35, 2.0, 4.25)
+rotation_degrees = Vector3(0, 5, 0)
+[node name="ScreenLeftTreePlanter" parent="." instance=ExtResource("5_tree")]
+position = Vector3(14.7, 2.0, 4.95)
+scale = Vector3(0.88, 0.88, 0.88)
+[node name="ScreenRightTreePlanter" parent="." instance=ExtResource("5_tree")]
+position = Vector3(-2.4, 2.0, 4.75)

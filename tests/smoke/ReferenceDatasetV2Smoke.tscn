@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/smoke/ReferenceDatasetV2Smoke.cs" id="1_smoke"]
+
+[node name="ReferenceDatasetV2Smoke" type="Node"]
+script = ExtResource("1_smoke")

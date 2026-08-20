@@ -54,10 +54,10 @@ follow_mode = 2
 tween_resource = SubResource("Tween_start")
 tween_on_load = false
 camera_3d_resource = SubResource("CameraResource_start")
-follow_offset = Vector3(0, 1.5, -3)
+follow_offset = Vector3(-0.016825, 2.296143, -2.502186)
 follow_damping = true
 follow_damping_value = Vector3(0.2, 0.2, 0.2)
-rotation_degrees = Vector3(-16, 180, 0)
+rotation_degrees = Vector3(-32.02, 179.79, 0)
 
 [node name="ExplorePerspective" type="Node3D" parent="PCams"]
 top_level = true

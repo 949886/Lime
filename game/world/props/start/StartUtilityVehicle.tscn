@@ -1,0 +1,140 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Material" path="res://game/world/props/materials/PropOrange.tres" id="1_orange"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropMetalDark.tres" id="2_dark"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropMetalLight.tres" id="3_light"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropRubber.tres" id="4_rubber"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropGlass.tres" id="5_glass"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropFabric.tres" id="6_fabric"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropCeramic.tres" id="7_lamp"]
+
+[sub_resource type="BoxMesh" id="LowerBody"]
+material = ExtResource("1_orange")
+size = Vector3(1.82, 0.52, 2.15)
+[sub_resource type="BoxMesh" id="Hood"]
+material = ExtResource("1_orange")
+size = Vector3(1.48, 0.34, 0.72)
+[sub_resource type="BoxMesh" id="Panel"]
+material = ExtResource("1_orange")
+size = Vector3(0.12, 0.58, 1.0)
+[sub_resource type="BoxMesh" id="FrameBar"]
+material = ExtResource("2_dark")
+size = Vector3(0.09, 1.18, 0.09)
+[sub_resource type="BoxMesh" id="CrossBar"]
+material = ExtResource("2_dark")
+size = Vector3(1.55, 0.09, 0.09)
+[sub_resource type="BoxMesh" id="Windshield"]
+material = ExtResource("5_glass")
+size = Vector3(1.42, 0.78, 0.04)
+[sub_resource type="BoxMesh" id="Seat"]
+material = ExtResource("6_fabric")
+size = Vector3(0.58, 0.18, 0.62)
+[sub_resource type="BoxMesh" id="Bumper"]
+material = ExtResource("2_dark")
+size = Vector3(1.62, 0.16, 0.18)
+[sub_resource type="CylinderMesh" id="Wheel"]
+material = ExtResource("4_rubber")
+top_radius = 0.37
+bottom_radius = 0.37
+height = 0.24
+radial_segments = 16
+[sub_resource type="CylinderMesh" id="Hub"]
+material = ExtResource("3_light")
+top_radius = 0.16
+bottom_radius = 0.16
+height = 0.255
+radial_segments = 12
+[sub_resource type="CylinderMesh" id="Lamp"]
+material = ExtResource("7_lamp")
+top_radius = 0.11
+bottom_radius = 0.11
+height = 0.08
+radial_segments = 12
+
+[node name="StartUtilityVehicle" type="Node3D"]
+[node name="Body" type="Node3D" parent="."]
+[node name="LowerBody" type="MeshInstance3D" parent="Body"]
+position = Vector3(0, 0.66, 0)
+mesh = SubResource("LowerBody")
+[node name="Hood" type="MeshInstance3D" parent="Body"]
+position = Vector3(0, 0.93, -1.08)
+mesh = SubResource("Hood")
+[node name="SidePanelLeft" type="MeshInstance3D" parent="Body"]
+position = Vector3(-0.9, 1.0, 0.18)
+mesh = SubResource("Panel")
+[node name="SidePanelRight" type="MeshInstance3D" parent="Body"]
+position = Vector3(0.9, 1.0, 0.18)
+mesh = SubResource("Panel")
+[node name="FrontBumper" type="MeshInstance3D" parent="Body"]
+position = Vector3(0, 0.48, -1.25)
+mesh = SubResource("Bumper")
+[node name="RearBumper" type="MeshInstance3D" parent="Body"]
+position = Vector3(0, 0.48, 1.18)
+mesh = SubResource("Bumper")
+[node name="Cabin" type="Node3D" parent="."]
+[node name="PostLeft" type="MeshInstance3D" parent="Cabin"]
+position = Vector3(-0.68, 1.48, -0.12)
+rotation_degrees = Vector3(-8, 0, 0)
+mesh = SubResource("FrameBar")
+[node name="PostRight" type="MeshInstance3D" parent="Cabin"]
+position = Vector3(0.68, 1.48, -0.12)
+rotation_degrees = Vector3(-8, 0, 0)
+mesh = SubResource("FrameBar")
+[node name="CabinTop" type="MeshInstance3D" parent="Cabin"]
+position = Vector3(0, 2.02, -0.19)
+mesh = SubResource("CrossBar")
+[node name="Windshield" type="MeshInstance3D" parent="Cabin"]
+position = Vector3(0, 1.55, -0.19)
+rotation_degrees = Vector3(-8, 0, 0)
+mesh = SubResource("Windshield")
+[node name="SeatLeft" type="MeshInstance3D" parent="Cabin"]
+position = Vector3(-0.38, 1.15, 0.42)
+mesh = SubResource("Seat")
+[node name="SeatRight" type="MeshInstance3D" parent="Cabin"]
+position = Vector3(0.38, 1.15, 0.42)
+mesh = SubResource("Seat")
+[node name="Wheels" type="Node3D" parent="."]
+[node name="WheelFL" type="MeshInstance3D" parent="Wheels"]
+position = Vector3(-0.94, 0.43, -0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Wheel")
+[node name="HubFL" type="MeshInstance3D" parent="Wheels"]
+position = Vector3(-0.945, 0.43, -0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Hub")
+[node name="WheelFR" type="MeshInstance3D" parent="Wheels"]
+position = Vector3(0.94, 0.43, -0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Wheel")
+[node name="HubFR" type="MeshInstance3D" parent="Wheels"]
+position = Vector3(0.945, 0.43, -0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Hub")
+[node name="WheelRL" type="MeshInstance3D" parent="Wheels"]
+position = Vector3(-0.94, 0.43, 0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Wheel")
+[node name="HubRL" type="MeshInstance3D" parent="Wheels"]
+position = Vector3(-0.945, 0.43, 0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Hub")
+[node name="WheelRR" type="MeshInstance3D" parent="Wheels"]
+position = Vector3(0.94, 0.43, 0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Wheel")
+[node name="HubRR" type="MeshInstance3D" parent="Wheels"]
+position = Vector3(0.945, 0.43, 0.72)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Hub")
+[node name="SpareWheel" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.02, 1.20)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Wheel")
+[node name="HeadLampLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-0.45, 0.92, -1.47)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Lamp")
+[node name="HeadLampRight" type="MeshInstance3D" parent="."]
+position = Vector3(0.45, 0.92, -1.47)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Lamp")

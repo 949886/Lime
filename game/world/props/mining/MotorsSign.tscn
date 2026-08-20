@@ -1,0 +1,77 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Material" path="res://game/world/props/materials/PropMetalDark.tres" id="1_dark"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropWarning.tres" id="2_warning"]
+
+[sub_resource type="BoxMesh" id="Post"]
+material = ExtResource("1_dark")
+size = Vector3(0.22, 5.6, 0.22)
+[sub_resource type="BoxMesh" id="LetterBack"]
+material = ExtResource("2_warning")
+size = Vector3(0.82, 0.72, 0.12)
+[sub_resource type="BoxMesh" id="Bracket"]
+material = ExtResource("1_dark")
+size = Vector3(1.1, 0.12, 0.12)
+
+[node name="MotorsSign" type="Node3D"]
+[node name="Post" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.8, 0)
+mesh = SubResource("Post")
+[node name="BracketTop" type="MeshInstance3D" parent="."]
+position = Vector3(0.45, 5.25, 0)
+mesh = SubResource("Bracket")
+[node name="Letters" type="Node3D" parent="."]
+[node name="MBack" type="MeshInstance3D" parent="Letters"]
+position = Vector3(0.85, 4.95, 0)
+mesh = SubResource("LetterBack")
+[node name="M" type="Label3D" parent="Letters"]
+position = Vector3(0.85, 4.95, -0.075)
+text = "M"
+font_size = 64
+outline_size = 8
+modulate = Color(0.95, 0.9, 0.8, 1)
+[node name="OBack" type="MeshInstance3D" parent="Letters"]
+position = Vector3(0.85, 4.12, 0)
+mesh = SubResource("LetterBack")
+[node name="O" type="Label3D" parent="Letters"]
+position = Vector3(0.85, 4.12, -0.075)
+text = "O"
+font_size = 64
+outline_size = 8
+modulate = Color(0.95, 0.9, 0.8, 1)
+[node name="TBack" type="MeshInstance3D" parent="Letters"]
+position = Vector3(0.85, 3.29, 0)
+mesh = SubResource("LetterBack")
+[node name="T" type="Label3D" parent="Letters"]
+position = Vector3(0.85, 3.29, -0.075)
+text = "T"
+font_size = 64
+outline_size = 8
+modulate = Color(0.95, 0.9, 0.8, 1)
+[node name="OBack2" type="MeshInstance3D" parent="Letters"]
+position = Vector3(0.85, 2.46, 0)
+mesh = SubResource("LetterBack")
+[node name="O2" type="Label3D" parent="Letters"]
+position = Vector3(0.85, 2.46, -0.075)
+text = "O"
+font_size = 64
+outline_size = 8
+modulate = Color(0.95, 0.9, 0.8, 1)
+[node name="RBack" type="MeshInstance3D" parent="Letters"]
+position = Vector3(0.85, 1.63, 0)
+mesh = SubResource("LetterBack")
+[node name="R" type="Label3D" parent="Letters"]
+position = Vector3(0.85, 1.63, -0.075)
+text = "R"
+font_size = 64
+outline_size = 8
+modulate = Color(0.95, 0.9, 0.8, 1)
+[node name="SBack" type="MeshInstance3D" parent="Letters"]
+position = Vector3(0.85, 0.8, 0)
+mesh = SubResource("LetterBack")
+[node name="S" type="Label3D" parent="Letters"]
+position = Vector3(0.85, 0.8, -0.075)
+text = "S"
+font_size = 64
+outline_size = 8
+modulate = Color(0.95, 0.9, 0.8, 1)
