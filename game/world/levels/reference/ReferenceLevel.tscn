@@ -106,7 +106,7 @@ mesh = SubResource("Box_lower_front")
 transform = Transform3D(7.54979e-08, 0, 1, 0, 1, 0, -1, 0, 7.54979e-08, -0.05, -0.45454544, -13.1)
 mesh = SubResource("Box_lower_front_stairs")
 [node name="Step02" type="MeshInstance3D" parent="Geometry/LowerFrontStairs"]
-transform = Transform3D(7.54979e-08, 0, 1, 0, -1, 0, -1, 0, 7.54979e-08, 0.05, -0.56363636, -13.1)
+transform = Transform3D(7.54979e-08, 0, 1, 0, 1, 0, -1, 0, 7.54979e-08, 0.05, -0.56363636, -13.1)
 mesh = SubResource("Box_lower_front_stairs")
 [node name="Step03" type="MeshInstance3D" parent="Geometry/LowerFrontStairs"]
 transform = Transform3D(7.54979e-08, 0, 1, 0, 1, 0, -1, 0, 7.54979e-08, 0.15, -0.6727273, -13.1)
