@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/StartPlatform.tscn" id="1_start_platform"]
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/StartDeckGrid.tscn" id="2_start_grid"]
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/StartBackgroundStructures.tscn" id="3_start_background"]
 [ext_resource type="PackedScene" path="res://game/world/props/start/StartPlatformProps.tscn" id="4_start_props"]
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/StartLowerTerrace.tscn" id="5_lower_terrace"]
+[ext_resource type="PackedScene" path="res://game/world/levels/reference/MiningApproachTerrace.tscn" id="6_mining_approach"]
 
 [node name="ReferenceLevelVisuals" type="Node3D"]
 [node name="StartPlatform" parent="." instance=ExtResource("1_start_platform")]
@@ -12,3 +13,4 @@
 [node name="StartBackgroundStructures" parent="." instance=ExtResource("3_start_background")]
 [node name="StartPlatformProps" parent="." instance=ExtResource("4_start_props")]
 [node name="StartLowerTerrace" parent="." instance=ExtResource("5_lower_terrace")]
+[node name="MiningApproachTerrace" parent="." instance=ExtResource("6_mining_approach")]
