@@ -64,11 +64,7 @@ jobs:
 
           for spine_path in Path(".").rglob("spine_godot_extension.gdextension"):
               lines = spine_path.read_text(encoding="utf-8").splitlines()
-              lines = [
-                  line
-                  for line in lines
-                  if not line.lstrip().startswith("linux.editor.x86_64 =")
-              ]
+              lines = [line for line in lines if not line.lstrip().startswith("linux.editor.x86_64 =")]
               spine_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
       - name: Bootstrap Godot import and script class cache
@@ -120,7 +116,10 @@ jobs:
 
       - name: Capture M1.6.3 production transition curve
         if: matrix.platform == 'Windows'
-        run: godot --headless --path . res://tests/smoke/ReferenceRuntimeTransitionCaptureSmoke.tscn
+        run: |
+          mkdir -p build/diagnostics
+          set -o pipefail
+          godot --headless --path . res://tests/smoke/ReferenceRuntimeTransitionCaptureSmoke.tscn 2>&1 | tee build/diagnostics/runtime-transition.txt
 
       - name: Run M1.6.3 Start orientation sweep
         if: matrix.platform == 'Windows'
@@ -136,7 +135,17 @@ jobs:
 
       - name: Backproject M1.6.4 Start whitebox targets
         if: matrix.platform == 'Windows'
-        run: godot --headless --path . res://tests/smoke/ReferenceStartWhiteboxBackprojectionSmoke.tscn
+        run: |
+          mkdir -p build/diagnostics
+          set -o pipefail
+          godot --headless --path . res://tests/smoke/ReferenceStartWhiteboxBackprojectionSmoke.tscn 2>&1 | tee build/diagnostics/start-backprojection.txt
+
+      - name: Upload camera solve diagnostics
+        if: matrix.platform == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Camera-Solve-Diagnostics
+          path: build/diagnostics/
 
       - name: Setup JDK 17
         if: matrix.platform == 'Android'
