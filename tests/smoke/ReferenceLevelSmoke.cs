@@ -135,8 +135,9 @@ public partial class ReferenceLevelSmoke : Node
             ?? throw new InvalidOperationException("StartLowerTerrace Collision/MainDeck must use BoxShape3D.");
         Require(mainShape.Size.DistanceTo(mainMesh.Size) < 0.01f,
             "StartLowerTerrace main deck collision must match its visual.");
-        Require(Mathf.Abs(mainDeck.GlobalPosition.Y + mainMesh.Size.Y * 0.5f - 0.8f) < 0.01f,
-            "StartLowerTerrace top surface must stay at Y=0.8 for CameraCheck01/02 continuity.");
+        var mainDeckInLevel = level.ToLocal(mainDeck.GlobalPosition);
+        Require(Mathf.Abs(mainDeckInLevel.Y + mainMesh.Size.Y * 0.5f - 0.8f) < 0.01f,
+            $"StartLowerTerrace top surface must stay at local Y=0.8 for CameraCheck01/02 continuity. Actual={mainDeckInLevel.Y + mainMesh.Size.Y * 0.5f:0.000}.");
 
         var extension = deck.GetNode<MeshInstance3D>("ScreenRightDeckExtension");
         var extensionMesh = extension.Mesh as BoxMesh
