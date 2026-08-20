@@ -22,67 +22,82 @@ public partial class ReferenceStartAssemblySmoke : Node
             var visuals = level.GetNode<Node3D>("ReferenceLevelVisuals");
             var startPlatform = visuals.GetNode<Node3D>("StartPlatform");
             var grid = visuals.GetNode<Node3D>("StartDeckGrid");
-            var background = visuals.GetNode<Node3D>("StartBackgroundStructures");
+            var props = visuals.GetNode<Node3D>("StartPlatformProps");
 
             Require(level.GetNodeOrNull<Node3D>("Geometry/UpperPlatform") is null,
-                "Legacy UpperPlatform must stay removed after StartPlatform takes ownership.");
+                "Legacy UpperPlatform must stay removed.");
             Require(level.GetNodeOrNull<Node3D>("Geometry/Stairs01") is null,
-                "Legacy Stairs01 must stay removed after StartPlatform takes ownership.");
+                "Legacy Stairs01 must stay removed.");
 
-            var deck = startPlatform.GetNode<MeshInstance3D>("DeckMain");
-            var deckMesh = deck.Mesh as BoxMesh
-                ?? throw new InvalidOperationException("StartPlatform/DeckMain must use BoxMesh.");
-            Require(deckMesh.Size.X >= 16.0f,
-                $"Supplemental Start reference requires a broad continuous upper plaza. Width={deckMesh.Size.X:0.000}.");
-            Require(deckMesh.Material is not null &&
-                    deckMesh.Material.ResourcePath.Contains("/materials/", StringComparison.Ordinal),
-                "StartPlatform DeckMain must use an external material resource.");
+            var deck = startPlatform.GetNode<Node3D>("Deck");
+            Require(deck.GetNodeOrNull<MeshInstance3D>("RearDeck") is not null,
+                "StartPlatform must contain the broad rear deck slab.");
+            Require(deck.GetNodeOrNull<MeshInstance3D>("FrontRightDeck") is not null &&
+                    deck.GetNodeOrNull<MeshInstance3D>("FrontCenterDeck") is not null &&
+                    deck.GetNodeOrNull<MeshInstance3D>("FrontLeftDeck") is not null,
+                "StartPlatform front edge must be segmented around both stair openings.");
+            Require(deck.GetNodeOrNull<MeshInstance3D>("FrontLeftNub") is not null,
+                "StartPlatform must preserve the screen-left front projection/nub.");
 
-            var deckCollision = startPlatform.GetNode<CollisionShape3D>("Collision/Deck");
-            var deckShape = deckCollision.Shape as BoxShape3D
-                ?? throw new InvalidOperationException("StartPlatform Collision/Deck must use BoxShape3D.");
-            Require(deckShape.Size.DistanceTo(deckMesh.Size) < 0.01f,
-                "StartPlatform collision must match the broad continuous deck.");
+            var rearMesh = (BoxMesh)deck.GetNode<MeshInstance3D>("RearDeck").Mesh;
+            Require(rearMesh.Size.X >= 19.5f,
+                $"Detailed Start plaza must span roughly 20m. Actual={rearMesh.Size.X:0.00}.");
+            Require(startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/RearDeck") is not null &&
+                    startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/FrontRightDeck") is not null &&
+                    startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/FrontCenterDeck") is not null &&
+                    startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/FrontLeftDeck") is not null,
+                "Segmented Start deck must own matching segmented collision.");
 
-            ValidateStair(startPlatform.GetNode<Node3D>("RightStair"), "RightStair");
-            ValidateStair(startPlatform.GetNode<Node3D>("LeftStair"), "LeftStair");
+            var rightStair = startPlatform.GetNode<Node3D>("RightStair");
+            var leftStair = startPlatform.GetNode<Node3D>("LeftStair");
+            ValidateStair(rightStair, "RightStair");
+            ValidateStair(leftStair, "LeftStair");
+            Require(leftStair.Position.X - rightStair.Position.X > 8.0f,
+                $"Dual Start stairs must have the wide reference separation. Separation={leftStair.Position.X - rightStair.Position.X:0.00}m.");
 
-            Require(startPlatform.GetNodeOrNull<MeshInstance3D>("FrontRetainingWall") is not null,
-                "StartPlatform must include the retaining-wall mass between the two stair openings.");
-            Require(startPlatform.GetNodeOrNull<MeshInstance3D>("FrontRail") is not null,
-                "StartPlatform must include the front rail above the central retaining wall.");
+            Require(startPlatform.GetNodeOrNull<MeshInstance3D>("FrontArchitecture/CenterRetainingWall") is not null,
+                "StartPlatform must include the retaining wall between stair openings.");
+            Require(startPlatform.GetNodeOrNull<MeshInstance3D>("FrontArchitecture/ScreenRightRetainingWall") is not null &&
+                    startPlatform.GetNodeOrNull<MeshInstance3D>("FrontArchitecture/ScreenLeftRetainingWall") is not null,
+                "StartPlatform must preserve the stepped/segmented front retaining edge.");
 
-            Require(background.GetNodeOrNull<MeshInstance3D>("ScreenRightRoundBuilding") is not null,
-                "StartBackgroundStructures must include the round-building mass.");
-            Require(background.GetNodeOrNull<Node3D>("RearEquipment") is not null,
-                "StartBackgroundStructures must include the rear equipment cluster.");
+            Require(props.GetNodeOrNull<Node3D>("Bench") is not null,
+                "StartPlatformProps must instance the bench.");
+            Require(props.GetNodeOrNull<Node3D>("UtilityVehicle") is not null,
+                "StartPlatformProps must instance the utility vehicle.");
+            Require(props.GetNodeOrNull<Node3D>("CafeSet") is not null,
+                "StartPlatformProps must instance the cafe table/chairs.");
+            Require(props.GetNodeOrNull<Node3D>("ConstructionCluster") is not null,
+                "StartPlatformProps must instance the construction cluster.");
+            Require(props.GetNodeOrNull<Node3D>("ScreenLeftTreePlanter") is not null &&
+                    props.GetNodeOrNull<Node3D>("ScreenRightTreePlanter") is not null,
+                "StartPlatformProps must include both large planter/tree silhouettes.");
 
-            var rowCount = 0;
-            var columnCount = 0;
-            foreach (var child in grid.GetChildren())
-            {
-                var name = child.Name.ToString();
-                if (name.StartsWith("Row", StringComparison.Ordinal)) rowCount++;
-                else if (name.StartsWith("Column", StringComparison.Ordinal)) columnCount++;
-            }
-            Require(rowCount == 7 && columnCount == 18,
-                $"Expanded StartDeckGrid must cover the full plaza. Rows={rowCount}, Columns={columnCount}.");
+            Require(grid.GetNodeOrNull<Node3D>("RearRows") is not null &&
+                    grid.GetNodeOrNull<Node3D>("FrontRows") is not null &&
+                    grid.GetNodeOrNull<Node3D>("Columns") is not null,
+                "Start deck grid must be segmented around the stair openings.");
+            var rearOnlyColumn = grid.GetNode<MeshInstance3D>("Columns/Column07");
+            var rearOnlyMesh = rearOnlyColumn.Mesh as BoxMesh
+                ?? throw new InvalidOperationException("Column07 must use BoxMesh.");
+            Require(rearOnlyMesh.Size.Z < 4.0f,
+                "Grid columns inside a stair opening must stop at the rear deck instead of floating over stairs.");
 
-            GD.Print("[M1.6.4] PASS: supplemental Start reference topology (broad deck + dual stairs + retaining wall) is scene-authored.");
+            GD.Print("[M1.6.4] PASS: detailed Start platform, dual stair spacing, irregular deck and props are scene-authored.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
         {
-            GD.PushError($"[M1.6.4] FAIL: supplemental Start topology: {exception}");
+            GD.PushError($"[M1.6.4] FAIL: detailed Start platform: {exception}");
             GetTree().Quit(1);
         }
     }
 
-    private static void ValidateStair(Node3D stair, string name)
+    private static void ValidateStair(Node3D stair, string label)
     {
-        var stairVisual = stair.GetNode<Node3D>("StairVisual");
-        var stepCount = 0;
-        foreach (var child in stairVisual.GetChildren())
+        var visual = stair.GetNode<Node3D>("StairVisual");
+        var count = 0;
+        foreach (var child in visual.GetChildren())
         {
             if (child is not MeshInstance3D step ||
                 !step.Name.ToString().StartsWith("Step", StringComparison.Ordinal))
@@ -90,22 +105,19 @@ public partial class ReferenceStartAssemblySmoke : Node
                 continue;
             }
 
-            stepCount++;
-            var box = step.Mesh as BoxMesh
-                ?? throw new InvalidOperationException($"{name}/{step.Name} must use BoxMesh.");
-            Require(Mathf.Abs(box.Size.X - 3.4f) < 0.01f,
-                $"{name} reference stair width must be 3.4m in this topology pass. Actual={box.Size.X:0.000}.");
-            Require(box.Material is not null &&
-                    box.Material.ResourcePath.Contains("/materials/", StringComparison.Ordinal),
-                $"{name}/{step.Name} must use the external Start step material.");
+            count++;
+            var mesh = step.Mesh as BoxMesh
+                ?? throw new InvalidOperationException($"{label}/{step.Name} must use BoxMesh.");
+            Require(Mathf.Abs(mesh.Size.X - 3.4f) < 0.01f,
+                $"{label} width must remain 3.4m during this reference pass. Actual={mesh.Size.X:0.00}.");
+            Require(mesh.Material is not null &&
+                    mesh.Material.ResourcePath.Contains("/materials/", StringComparison.Ordinal),
+                $"{label}/{step.Name} must use an external material resource.");
         }
 
-        Require(stepCount == 12, $"{name} must contain 12 visible treads. Actual={stepCount}.");
+        Require(count == 12, $"{label} must contain 12 visible treads. Actual={count}.");
         Require(stair.GetNodeOrNull<CollisionShape3D>("Collision/Ramp") is not null,
-            $"{name} must own its traversal ramp collision.");
-        Require(stair.GetNodeOrNull<MeshInstance3D>("OuterSideWall") is not null &&
-                stair.GetNodeOrNull<MeshInstance3D>("InnerSideWall") is not null,
-            $"{name} must include both thick side walls.");
+            $"{label} must own its ramp collision.");
     }
 
     private static void Require(bool condition, string message)
