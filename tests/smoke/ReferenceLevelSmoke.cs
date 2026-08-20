@@ -56,7 +56,7 @@ public partial class ReferenceLevelSmoke : Node
             Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.ExplorePerspective,
                 "Starting movement must transition to ExplorePerspective.");
 
-            GD.Print("[M1.4] PASS: segmented StartPlatform traversal smoke completed successfully.");
+            GD.Print("[M1.4] PASS: StartPlatform + StartLowerTerrace traversal smoke completed successfully.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
@@ -76,6 +76,10 @@ public partial class ReferenceLevelSmoke : Node
             "Legacy UpperPlatform must not return after StartPlatform replacement.");
         Require(level.GetNodeOrNull<Node3D>("Geometry/Stairs01") is null,
             "Legacy Stairs01 must not return after StartPlatform replacement.");
+        Require(level.GetNodeOrNull<Node3D>("Geometry/IntermediatePlatform") is null,
+            "Legacy IntermediatePlatform visual must be removed after StartLowerTerrace replacement.");
+        Require(level.GetNodeOrNull<CollisionShape3D>("Collision/WorldCollision/IntermediatePlatform") is null,
+            "Legacy IntermediatePlatform collision must be removed after StartLowerTerrace replacement.");
 
         var startPlatform = level.GetNode<Node3D>("ReferenceLevelVisuals/StartPlatform");
         var deck = startPlatform.GetNode<Node3D>("Deck");
@@ -102,12 +106,12 @@ public partial class ReferenceLevelSmoke : Node
         Require(level.GetNodeOrNull<Node3D>("ReferenceLevelVisuals/StartPlatformProps") is not null,
             "Detailed StartPlatform props must be part of production visuals.");
 
+        ValidateLowerTerrace(level);
         ValidateStairCount(level.GetNode<Node3D>("Geometry/Stairs02"), "Geometry/Stairs02");
         ValidateStairCount(level.GetNode<Node3D>("Geometry/LowerFrontStairs"), "Geometry/LowerFrontStairs");
 
         foreach (var name in new[]
                  {
-                     "IntermediatePlatform",
                      "LowerCorridor",
                      "PlazaExtension",
                      "LowerFrontPlatform",
@@ -117,6 +121,38 @@ public partial class ReferenceLevelSmoke : Node
         {
             ValidateBoxSync(level, name);
         }
+    }
+
+    private static void ValidateLowerTerrace(ReferenceLevel level)
+    {
+        var terrace = level.GetNode<Node3D>("ReferenceLevelVisuals/StartLowerTerrace");
+        var deck = terrace.GetNode<Node3D>("Deck");
+        var mainDeck = deck.GetNode<MeshInstance3D>("MainDeck");
+        var mainMesh = mainDeck.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("StartLowerTerrace Deck/MainDeck must use BoxMesh.");
+        var mainCollision = terrace.GetNode<CollisionShape3D>("Collision/MainDeck");
+        var mainShape = mainCollision.Shape as BoxShape3D
+            ?? throw new InvalidOperationException("StartLowerTerrace Collision/MainDeck must use BoxShape3D.");
+        Require(mainShape.Size.DistanceTo(mainMesh.Size) < 0.01f,
+            "StartLowerTerrace main deck collision must match its visual.");
+        Require(Mathf.Abs(mainDeck.GlobalPosition.Y + mainMesh.Size.Y * 0.5f - 0.8f) < 0.01f,
+            "StartLowerTerrace top surface must stay at Y=0.8 for CameraCheck01/02 continuity.");
+
+        var extension = deck.GetNode<MeshInstance3D>("ScreenRightDeckExtension");
+        var extensionMesh = extension.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("StartLowerTerrace Deck/ScreenRightDeckExtension must use BoxMesh.");
+        var extensionCollision = terrace.GetNode<CollisionShape3D>("Collision/ScreenRightDeckExtension");
+        var extensionShape = extensionCollision.Shape as BoxShape3D
+            ?? throw new InvalidOperationException("StartLowerTerrace extension collision must use BoxShape3D.");
+        Require(extensionShape.Size.DistanceTo(extensionMesh.Size) < 0.01f,
+            "StartLowerTerrace extension collision must match its visual.");
+
+        Require(terrace.GetNodeOrNull<MeshInstance3D>("RetainingWalls/FrontScreenRight") is not null &&
+                terrace.GetNodeOrNull<MeshInstance3D>("RetainingWalls/FrontScreenLeft") is not null,
+            "StartLowerTerrace front wall must be split around the Stairs02 opening.");
+        Require(terrace.GetNodeOrNull<Node3D>("Rails") is not null &&
+                terrace.GetNodeOrNull<Node3D>("Grid") is not null,
+            "StartLowerTerrace must own its rail and tile-grid structure.");
     }
 
     private static void ValidateDeckPiece(Node3D startPlatform, Node3D deck, string name)
