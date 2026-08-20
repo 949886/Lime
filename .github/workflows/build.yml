@@ -114,6 +114,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceVanishingPointSmoke.tscn
 
+      - name: Run M1.6.3 transition observable smoke
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/ReferenceTransitionObservableSmoke.tscn
+
       - name: Run M1.6.3 Start orientation sweep
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceStartOrientationSweepSmoke.tscn
