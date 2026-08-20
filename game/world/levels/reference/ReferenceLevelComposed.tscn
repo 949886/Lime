@@ -6,3 +6,13 @@
 [node name="ReferenceLevel" instance=ExtResource("1_reference_level")]
 
 [node name="ReferenceLevelVisuals" parent="." instance=ExtResource("2_visuals")]
+
+[node name="CalibrationMarkers" type="Node3D" parent="."]
+
+[node name="StartForegroundStairTopLeft" type="Marker3D" parent="CalibrationMarkers"]
+unique_name_in_owner = true
+position = Vector3(4.7778025, 2.0, 0.1888837)
+
+[node name="StartForegroundStairTopRight" type="Marker3D" parent="CalibrationMarkers"]
+unique_name_in_owner = true
+position = Vector3(1.7778025, 2.0, 0.1888837)
