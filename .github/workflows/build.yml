@@ -134,6 +134,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceStartCameraBaselineSmoke.tscn
 
+      - name: Backproject M1.6.4 Start whitebox targets
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/ReferenceStartWhiteboxBackprojectionSmoke.tscn
+
       - name: Setup JDK 17
         if: matrix.platform == 'Android'
         uses: actions/setup-java@v4
