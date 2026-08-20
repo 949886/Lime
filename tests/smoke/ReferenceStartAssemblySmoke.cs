@@ -64,17 +64,7 @@ public partial class ReferenceStartAssemblySmoke : Node
                     startPlatform.GetNodeOrNull<MeshInstance3D>("FrontArchitecture/ScreenLeftRetainingWall") is not null,
                 "StartPlatform must preserve the segmented front retaining edge.");
 
-            Require(props.GetNodeOrNull<Node3D>("Bench") is not null,
-                "StartPlatformProps must instance the bench.");
-            Require(props.GetNodeOrNull<Node3D>("UtilityVehicle") is not null,
-                "StartPlatformProps must instance the utility vehicle.");
-            Require(props.GetNodeOrNull<Node3D>("CafeSet") is not null,
-                "StartPlatformProps must instance the cafe table/chairs.");
-            Require(props.GetNodeOrNull<Node3D>("ConstructionCluster") is not null,
-                "StartPlatformProps must instance the construction cluster.");
-            Require(props.GetNodeOrNull<Node3D>("ScreenLeftTreePlanter") is not null &&
-                    props.GetNodeOrNull<Node3D>("ScreenRightTreePlanter") is not null,
-                "StartPlatformProps must include both large planter/tree silhouettes.");
+            ValidateDetailedProps(props);
 
             Require(grid.GetNodeOrNull<Node3D>("RearRows") is not null &&
                     grid.GetNodeOrNull<Node3D>("FrontRows") is not null &&
@@ -87,7 +77,7 @@ public partial class ReferenceStartAssemblySmoke : Node
                     Mathf.Abs(rearOnlyColumn.Position.Z - 3.525f) < 0.01f,
                 "Grid columns inside a stair opening must begin at the rear-deck edge instead of floating over the stairs.");
 
-            GD.Print("[M1.6.4] PASS: detailed Start platform, shallow stair cutouts, irregular deck and props are scene-authored.");
+            GD.Print("[M1.6.4] PASS: detailed Start platform and reusable world/props assets are scene-authored.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
@@ -95,6 +85,49 @@ public partial class ReferenceStartAssemblySmoke : Node
             GD.PushError($"[M1.6.4] FAIL: detailed Start platform: {exception}");
             GetTree().Quit(1);
         }
+    }
+
+    private static void ValidateDetailedProps(Node3D props)
+    {
+        var bench = props.GetNode<Node3D>("Bench");
+        var vehicle = props.GetNode<Node3D>("UtilityVehicle");
+        var cafe = props.GetNode<Node3D>("CafeSet");
+        var construction = props.GetNode<Node3D>("ConstructionCluster");
+        var leftTree = props.GetNode<Node3D>("ScreenLeftTreePlanter");
+        var rightTree = props.GetNode<Node3D>("ScreenRightTreePlanter");
+
+        foreach (var prop in new[] { bench, vehicle, cafe, construction, leftTree, rightTree })
+        {
+            Require(prop.SceneFilePath.Contains("res://game/world/props/start/", StringComparison.Ordinal),
+                $"{prop.Name} must be instanced from reusable game/world/props/start assets. Path={prop.SceneFilePath}.");
+        }
+
+        Require(bench.GetNodeOrNull<MeshInstance3D>("WoodSlats/Seat01") is not null &&
+                bench.GetNodeOrNull<MeshInstance3D>("WoodSlats/Back03") is not null &&
+                bench.GetNodeOrNull<MeshInstance3D>("MetalFrame/BackSupportLeft") is not null,
+            "StartBench must preserve multi-slat woodwork and metal supports.");
+
+        Require(vehicle.GetNodeOrNull<MeshInstance3D>("Cabin/Windshield") is not null &&
+                vehicle.GetNodeOrNull<MeshInstance3D>("Cabin/SeatLeft") is not null &&
+                vehicle.GetNodeOrNull<MeshInstance3D>("Wheels/HubFL") is not null &&
+                vehicle.GetNodeOrNull<MeshInstance3D>("HeadLampLeft") is not null,
+            "StartUtilityVehicle must preserve cabin, seat, wheel-hub and lamp detail.");
+
+        Require(cafe.GetNodeOrNull<MeshInstance3D>("Table/Cup") is not null &&
+                cafe.GetNodeOrNull<MeshInstance3D>("Table/Plate") is not null &&
+                cafe.GetNodeOrNull<MeshInstance3D>("ChairA/LegFL") is not null,
+            "StartCafeSet must preserve tabletop props and chair-leg detail.");
+
+        Require(construction.GetNodeOrNull<MeshInstance3D>("Scaffold/BraceA") is not null &&
+                construction.GetNodeOrNull<MeshInstance3D>("Scaffold/BraceB") is not null &&
+                construction.GetNodeOrNull<MeshInstance3D>("Cabinet/DoorLeft") is not null &&
+                construction.GetNodeOrNull<MeshInstance3D>("ConeB") is not null,
+            "StartConstructionCluster must preserve scaffold bracing, cabinet doors and multiple cones.");
+
+        Require(leftTree.GetNodeOrNull<MeshInstance3D>("Tree/BranchLeft") is not null &&
+                leftTree.GetNodeOrNull<MeshInstance3D>("Flowers/Flower01") is not null &&
+                rightTree.GetNodeOrNull<MeshInstance3D>("Tree/CanopyRight") is not null,
+            "StartTreePlanter must preserve branched tree, canopy clusters and flower detail.");
     }
 
     private static void ValidateStair(Node3D stair, string label)
