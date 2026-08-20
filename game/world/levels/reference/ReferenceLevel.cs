@@ -25,17 +25,39 @@ public partial class ReferenceLevel : Node3D
         CameraCheck02 = GetNode<Marker3D>("%CameraCheck02");
         CameraCheck03 = GetNode<Marker3D>("%CameraCheck03");
 
+        BuildStartReferenceAssembly();
         BuildStartCalibrationLandmarks();
+    }
+
+    private void BuildStartReferenceAssembly()
+    {
+        var geometry = GetNode<Node3D>("Geometry");
+        var scene = GD.Load<PackedScene>("res://game/world/levels/reference/StartReferenceAssembly.tscn");
+        if (scene is null)
+        {
+            GD.PushWarning("M1.6.4 StartReferenceAssembly.tscn could not be loaded.");
+            return;
+        }
+
+        var assembly = scene.Instantiate<Node3D>();
+        assembly.Name = "StartReferenceAssembly";
+        geometry.AddChild(assembly);
+
+        // The legacy Stairs01 meshes remain as traversal/calibration geometry for this pass,
+        // but are hidden visually so the rebuilt reference stair is the only rendered stair.
+        // Collision stays unchanged until the visual solve is frozen and then follows it.
+        var legacyStairs = GetNodeOrNull<Node3D>("Geometry/Stairs01");
+        if (legacyStairs is not null)
+        {
+            legacyStairs.Visible = false;
+        }
     }
 
     private void BuildStartCalibrationLandmarks()
     {
-        // M1.6.3 starts from geometry points that have an unambiguous whitebox
-        // correspondence. The foreground stair pair is the top/front edge of
-        // Stairs01/Step01. Dataset Left/Right names are SCREEN-space names. The
-        // Start camera has 180-degree yaw, so world +X projects to screen-left.
-        // The far gate landmarks remain intentionally unmapped until M1.6.4
-        // reconstructs a real matching gate structure.
+        // M1.6.3 calibration remains tied to the legacy traversal geometry while M1.6.4
+        // rebuilds the visible Start assembly. Once the Start structure is frozen, these
+        // markers will be promoted onto the reconstructed semantic edges.
         var step = GetNode<MeshInstance3D>("Geometry/Stairs01/Step01");
         var mesh = step.Mesh as BoxMesh;
         if (mesh is null)
