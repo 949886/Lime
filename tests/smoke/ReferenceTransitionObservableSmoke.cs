@@ -49,16 +49,17 @@ public partial class ReferenceTransitionObservableSmoke : Node
 
             var movementStarted = false;
             var settled = true;
-            foreach (var observable in observables)
+            for (var index = 0; index < observables.Count; index++)
             {
+                var observable = observables[index];
                 if (observable.SourceFrame >= 273 && observable.ForegroundStairWidthRatio < 0.96f)
                 {
                     movementStarted = true;
                 }
 
-                if (observable.SourceFrame >= 312 && observable.SourceFrame < 315)
+                if (observable.SourceFrame >= 312 && index + 1 < observables.Count)
                 {
-                    var next = observables[observables.IndexOf(observable) + 1];
+                    var next = observables[index + 1];
                     if (Mathf.Abs(next.GateWidthRatio - observable.GateWidthRatio) > 0.01f ||
                         Mathf.Abs(next.ForegroundStairWidthRatio - observable.ForegroundStairWidthRatio) > 0.01f)
                     {
