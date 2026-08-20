@@ -43,6 +43,18 @@ public partial class ReferenceLevel : Node3D
         assembly.Name = "StartReferenceAssembly";
         geometry.AddChild(assembly);
 
+        var gridScene = GD.Load<PackedScene>("res://game/world/levels/reference/StartDeckGrid.tscn");
+        if (gridScene is not null)
+        {
+            var grid = gridScene.Instantiate<Node3D>();
+            grid.Name = "DeckGrid";
+            assembly.AddChild(grid);
+        }
+        else
+        {
+            GD.PushWarning("M1.6.4 StartDeckGrid.tscn could not be loaded.");
+        }
+
         // The legacy Stairs01 meshes remain as traversal/calibration geometry for this pass,
         // but are hidden visually so the rebuilt reference stair is the only rendered stair.
         // Collision stays unchanged until the visual solve is frozen and then follows it.
