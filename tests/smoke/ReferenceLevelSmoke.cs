@@ -86,8 +86,18 @@ public partial class ReferenceLevelSmoke : Node
             ?? throw new InvalidOperationException("StartPlatform Collision/Deck must use BoxShape3D.");
         Require(deckShape.Size.DistanceTo(deckMesh.Size) < 0.01f,
             "StartPlatform deck collision must match its complete deck visual.");
+        Require(deckMesh.Size.X >= 16.0f,
+            "Supplemental Start reference requires the broad upper plaza replacement.");
 
-        ValidateStairCount(startPlatform.GetNode<Node3D>("StairVisual"), "StartPlatform/StairVisual");
+        var rightStair = startPlatform.GetNode<Node3D>("RightStair");
+        var leftStair = startPlatform.GetNode<Node3D>("LeftStair");
+        ValidateStairCount(rightStair.GetNode<Node3D>("StairVisual"), "StartPlatform/RightStair");
+        ValidateStairCount(leftStair.GetNode<Node3D>("StairVisual"), "StartPlatform/LeftStair");
+        Require(rightStair.GetNodeOrNull<CollisionShape3D>("Collision/Ramp") is not null,
+            "RightStair must own the live traversal collision.");
+        Require(leftStair.GetNodeOrNull<CollisionShape3D>("Collision/Ramp") is not null,
+            "LeftStair must own its matching structural collision.");
+
         ValidateStairCount(level.GetNode<Node3D>("Geometry/Stairs02"), "Geometry/Stairs02");
         ValidateStairCount(level.GetNode<Node3D>("Geometry/LowerFrontStairs"), "Geometry/LowerFrontStairs");
 
