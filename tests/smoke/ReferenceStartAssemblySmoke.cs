@@ -39,14 +39,17 @@ public partial class ReferenceStartAssemblySmoke : Node
             Require(deck.GetNodeOrNull<MeshInstance3D>("FrontLeftNub") is not null,
                 "StartPlatform must preserve the screen-left front projection/nub.");
 
-            var rearMesh = (BoxMesh)deck.GetNode<MeshInstance3D>("RearDeck").Mesh;
-            Require(rearMesh.Size.X >= 19.5f,
-                $"Detailed Start plaza must span roughly 20m. Actual={rearMesh.Size.X:0.00}.");
+            var rearDeck = deck.GetNode<MeshInstance3D>("RearDeck");
+            var rearMesh = (BoxMesh)rearDeck.Mesh;
+            Require(rearMesh.Size.X >= 19.5f && rearMesh.Size.Z > 5.5f,
+                $"Detailed Start rear plaza must span roughly 20m and remain deep. Size={rearMesh.Size}.");
             Require(startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/RearDeck") is not null &&
                     startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/FrontRightDeck") is not null &&
                     startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/FrontCenterDeck") is not null &&
                     startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/FrontLeftDeck") is not null,
                 "Segmented Start deck must own matching segmented collision.");
+            Require(level.PlayerStart.GlobalPosition.Z > rearDeck.GlobalPosition.Z - rearMesh.Size.Z * 0.5f,
+                "PlayerStart must remain on the continuous rear plaza behind the stair cutouts.");
 
             var rightStair = startPlatform.GetNode<Node3D>("RightStair");
             var leftStair = startPlatform.GetNode<Node3D>("LeftStair");
@@ -59,7 +62,7 @@ public partial class ReferenceStartAssemblySmoke : Node
                 "StartPlatform must include the retaining wall between stair openings.");
             Require(startPlatform.GetNodeOrNull<MeshInstance3D>("FrontArchitecture/ScreenRightRetainingWall") is not null &&
                     startPlatform.GetNodeOrNull<MeshInstance3D>("FrontArchitecture/ScreenLeftRetainingWall") is not null,
-                "StartPlatform must preserve the stepped/segmented front retaining edge.");
+                "StartPlatform must preserve the segmented front retaining edge.");
 
             Require(props.GetNodeOrNull<Node3D>("Bench") is not null,
                 "StartPlatformProps must instance the bench.");
@@ -80,10 +83,11 @@ public partial class ReferenceStartAssemblySmoke : Node
             var rearOnlyColumn = grid.GetNode<MeshInstance3D>("Columns/Column07");
             var rearOnlyMesh = rearOnlyColumn.Mesh as BoxMesh
                 ?? throw new InvalidOperationException("Column07 must use BoxMesh.");
-            Require(rearOnlyMesh.Size.Z < 4.0f,
-                "Grid columns inside a stair opening must stop at the rear deck instead of floating over stairs.");
+            Require(Mathf.Abs(rearOnlyMesh.Size.Z - 5.85f) < 0.01f &&
+                    Mathf.Abs(rearOnlyColumn.Position.Z - 3.525f) < 0.01f,
+                "Grid columns inside a stair opening must begin at the rear-deck edge instead of floating over the stairs.");
 
-            GD.Print("[M1.6.4] PASS: detailed Start platform, dual stair spacing, irregular deck and props are scene-authored.");
+            GD.Print("[M1.6.4] PASS: detailed Start platform, shallow stair cutouts, irregular deck and props are scene-authored.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
