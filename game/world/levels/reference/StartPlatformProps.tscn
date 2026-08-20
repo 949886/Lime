@@ -9,23 +9,24 @@
 [node name="StartPlatformProps" type="Node3D"]
 
 [node name="Bench" parent="." instance=ExtResource("1_bench")]
-position = Vector3(0.9, 2.0, 4.55)
+position = Vector3(7.0, 2.0, 4.75)
 rotation_degrees = Vector3(0, 180, 0)
 
 [node name="UtilityVehicle" parent="." instance=ExtResource("2_vehicle")]
-position = Vector3(5.1, 2.0, 4.45)
+position = Vector3(3.55, 2.0, 4.45)
 
 [node name="CafeSet" parent="." instance=ExtResource("3_cafe")]
-position = Vector3(7.45, 2.0, 4.1)
-rotation_degrees = Vector3(0, -10, 0)
+position = Vector3(1.15, 2.0, 4.15)
+rotation_degrees = Vector3(0, 10, 0)
 
 [node name="ConstructionCluster" parent="." instance=ExtResource("4_construction")]
-position = Vector3(10.55, 2.0, 4.25)
-rotation_degrees = Vector3(0, -5, 0)
-
-[node name="ScreenRightTreePlanter" parent="." instance=ExtResource("5_tree")]
-position = Vector3(-2.4, 2.0, 4.75)
+position = Vector3(-1.7, 2.0, 4.3)
+rotation_degrees = Vector3(0, 5, 0)
 
 [node name="ScreenLeftTreePlanter" parent="." instance=ExtResource("5_tree")]
-position = Vector3(13.6, 2.0, 4.95)
-scale = Vector3(0.85, 0.85, 0.85)
+position = Vector3(14.5, 2.0, 4.95)
+scale = Vector3(0.9, 0.9, 0.9)
+
+[node name="ScreenRightTreePlanter" parent="." instance=ExtResource("5_tree")]
+position = Vector3(-2.65, 2.0, 5.0)
+scale = Vector3(0.8, 0.8, 0.8)
