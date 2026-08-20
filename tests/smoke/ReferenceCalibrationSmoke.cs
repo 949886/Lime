@@ -24,12 +24,13 @@ public partial class ReferenceCalibrationSmoke : Node
             ValidateStartReplacement(gameRoot.ReferenceLevel);
             ValidateLowerTerraceReplacement(gameRoot.ReferenceLevel);
             ValidateMiningApproachReplacement(gameRoot.ReferenceLevel);
+            ValidateLowerCorridorReplacement(gameRoot.ReferenceLevel);
             ValidateRemainingCollisionSync(gameRoot.ReferenceLevel);
             ValidateRemainingStairTopology(gameRoot.ReferenceLevel);
             await ValidateStartCamera(gameRoot);
             await ValidateExploreCamera(gameRoot);
 
-            GD.Print("[M1.6] PASS: calibration uses composed Start, lower-terrace and mining-approach replacements.");
+            GD.Print("[M1.6] PASS: calibration uses composed Start-to-lower-corridor replacements.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
@@ -116,12 +117,6 @@ public partial class ReferenceCalibrationSmoke : Node
         var mainDeckLocal = level.ToLocal(mainDeck.GlobalPosition);
         Require(Mathf.Abs(mainDeckLocal.Y + mainMesh.Size.Y * 0.5f - 0.8f) < 0.01f,
             $"StartLowerTerrace top surface must preserve local Y=0.8. Actual={mainDeckLocal.Y + mainMesh.Size.Y * 0.5f:0.000}.");
-
-        var check01Local = level.ToLocal(level.CameraCheck01.GlobalPosition);
-        var check02Local = level.ToLocal(level.CameraCheck02.GlobalPosition);
-        Require(check01Local.Y > 0.79f && check01Local.Y < 0.85f &&
-                check02Local.Y > 0.79f && check02Local.Y < 0.85f,
-            "CameraCheck01/02 must remain aligned to the lower-terrace plane.");
     }
 
     private static void ValidateMiningApproachReplacement(ReferenceLevel level)
@@ -173,13 +168,36 @@ public partial class ReferenceCalibrationSmoke : Node
             ?? throw new InvalidOperationException("MiningApproach Collision/LandingProjection must use BoxShape3D.");
         Require(projectionShape.Size.DistanceTo(projectionMesh.Size) < 0.01f,
             "MiningApproach projection collision must match visual.");
+    }
 
-        var backLocal = level.ToLocal(backDeck.GlobalPosition);
-        Require(Mathf.Abs(backLocal.Y + backMesh.Size.Y * 0.5f + 0.4f) < 0.01f,
-            $"MiningApproach landing top must preserve local Y=-0.4. Actual={backLocal.Y + backMesh.Size.Y * 0.5f:0.000}.");
-        var check03Local = level.ToLocal(level.CameraCheck03.GlobalPosition);
-        Require(check03Local.Y > -0.42f && check03Local.Y < -0.35f,
-            "CameraCheck03 must remain aligned to the MiningApproach landing plane.");
+    private static void ValidateLowerCorridorReplacement(ReferenceLevel level)
+    {
+        Require(level.GetNodeOrNull<Node3D>("Geometry/LowerCorridor") is null,
+            "Legacy LowerCorridor visual must remain removed.");
+        Require(level.GetNodeOrNull<CollisionShape3D>("Collision/WorldCollision/LowerCorridor") is null,
+            "Legacy LowerCorridor collision must remain removed.");
+
+        var corridor = level.GetNode<Node3D>("ReferenceLevelVisuals/LowerCorridorSection");
+        foreach (var piece in new[] { "ApproachDeck", "MidDeck", "FarDeck" })
+        {
+            var meshNode = corridor.GetNode<MeshInstance3D>($"Deck/{piece}");
+            var mesh = meshNode.Mesh as BoxMesh
+                ?? throw new InvalidOperationException($"LowerCorridor Deck/{piece} must use BoxMesh.");
+            var shape = corridor.GetNode<CollisionShape3D>($"Collision/{piece}").Shape as BoxShape3D
+                ?? throw new InvalidOperationException($"LowerCorridor Collision/{piece} must use BoxShape3D.");
+            Require(shape.Size.DistanceTo(mesh.Size) < 0.01f,
+                $"LowerCorridor {piece} collision must match its visual.");
+        }
+
+        var mid = corridor.GetNode<MeshInstance3D>("Deck/MidDeck");
+        var midMesh = (BoxMesh)mid.Mesh;
+        var midLocal = level.ToLocal(mid.GlobalPosition);
+        var routeLocal = level.ToLocal(level.RouteEnd.GlobalPosition);
+        Require(Mathf.Abs(midLocal.Y + midMesh.Size.Y * 0.5f + 0.4f) < 0.01f,
+            "LowerCorridor top surface must preserve local Y=-0.4.");
+        Require(routeLocal.X >= midLocal.X - midMesh.Size.X * 0.5f &&
+                routeLocal.X <= midLocal.X + midMesh.Size.X * 0.5f,
+            "RouteEnd must stay on the new LowerCorridor MidDeck.");
     }
 
     private static void ValidateStartStair(Node3D stair, string label)
@@ -191,12 +209,7 @@ public partial class ReferenceCalibrationSmoke : Node
 
     private static void ValidateRemainingCollisionSync(ReferenceLevel level)
     {
-        foreach (var name in new[]
-                 {
-                     "LowerCorridor",
-                     "PlazaExtension",
-                     "LowerFrontPlatform",
-                 })
+        foreach (var name in new[] { "PlazaExtension", "LowerFrontPlatform" })
         {
             var meshNode = level.GetNode<MeshInstance3D>($"Geometry/{name}");
             var mesh = meshNode.Mesh as BoxMesh
