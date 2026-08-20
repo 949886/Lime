@@ -9,10 +9,6 @@ background_color = Color(0.13, 0.14, 0.16, 1)
 [sub_resource type="StandardMaterial3D" id="Material_ground"]
 albedo_color = Color(0.42, 0.43, 0.45, 1)
 
-[sub_resource type="BoxMesh" id="Box_plaza"]
-material = SubResource("Material_ground")
-size = Vector3(8, 0.3, 9)
-
 [sub_resource type="BoxMesh" id="Box_lower_front"]
 material = SubResource("Material_ground")
 size = Vector3(3, 0.3, 4)
@@ -38,17 +34,6 @@ albedo_color = Color(0.24, 0.25, 0.27, 1)
 material = SubResource("Material_foreground")
 size = Vector3(0.5, 4.4780273, 2)
 
-[sub_resource type="StandardMaterial3D" id="Material_water"]
-albedo_color = Color(0.22, 0.38, 0.46, 1)
-roughness = 0.25
-
-[sub_resource type="BoxMesh" id="Box_water"]
-material = SubResource("Material_water")
-size = Vector3(5, 0.08, 5)
-
-[sub_resource type="BoxShape3D" id="Shape_plaza"]
-size = Vector3(8, 0.3, 9)
-
 [sub_resource type="BoxShape3D" id="Shape_lower_front"]
 size = Vector3(3, 0.3, 4)
 
@@ -69,10 +54,6 @@ light_energy = 1.15
 shadow_enabled = true
 
 [node name="Geometry" type="Node3D" parent="."]
-
-[node name="PlazaExtension" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-22.5, -0.55, -12)
-mesh = SubResource("Box_plaza")
 
 [node name="LowerFrontPlatform" type="MeshInstance3D" parent="Geometry"]
 position = Vector3(2.6, -1.75, -13.1)
@@ -125,16 +106,9 @@ mesh = SubResource("Box_building_back")
 position = Vector3(-6.8658333, -0.48901367, -15)
 mesh = SubResource("Box_foreground")
 
-[node name="WaterPool" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-23, -0.37, -13.5)
-mesh = SubResource("Box_water")
-
 [node name="Collision" type="Node3D" parent="."]
 [node name="WorldCollision" type="StaticBody3D" parent="Collision"]
 collision_mask = 0
-[node name="PlazaExtension" type="CollisionShape3D" parent="Collision/WorldCollision"]
-position = Vector3(-22.5, -0.55, -12)
-shape = SubResource("Shape_plaza")
 [node name="LowerFrontPlatform" type="CollisionShape3D" parent="Collision/WorldCollision"]
 position = Vector3(2.6, -1.75, -13.1)
 shape = SubResource("Shape_lower_front")
