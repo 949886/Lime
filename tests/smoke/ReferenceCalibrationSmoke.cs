@@ -70,8 +70,10 @@ public partial class ReferenceCalibrationSmoke : Node
             $"Detailed Start rear plaza must retain the broad reference silhouette. Size={rearMesh.Size}.");
         Require(rearShape.Size.DistanceTo(rearMesh.Size) < 0.01f,
             "RearDeck collision must match the rear plaza mesh.");
-        Require(level.PlayerStart.GlobalPosition.Z > rear.GlobalPosition.Z - rearMesh.Size.Z * 0.5f &&
-                level.PlayerStart.GlobalPosition.Z < rear.GlobalPosition.Z + rearMesh.Size.Z * 0.5f,
+        var playerStartLocal = level.ToLocal(level.PlayerStart.GlobalPosition);
+        var rearLocal = level.ToLocal(rear.GlobalPosition);
+        Require(playerStartLocal.Z > rearLocal.Z - rearMesh.Size.Z * 0.5f &&
+                playerStartLocal.Z < rearLocal.Z + rearMesh.Size.Z * 0.5f,
             "PlayerStart must remain on the continuous rear plaza, not inside a stair cutout.");
 
         foreach (var piece in new[] { "FrontRightDeck", "FrontCenterDeck", "FrontLeftDeck" })
@@ -113,11 +115,14 @@ public partial class ReferenceCalibrationSmoke : Node
             $"StartLowerTerrace must use a thin deck slab, not the legacy multi-meter solid box. Size={mainMesh.Size}.");
         Require(mainShape.Size.DistanceTo(mainMesh.Size) < 0.01f,
             "StartLowerTerrace main deck collision must match its visual.");
-        Require(Mathf.Abs(mainDeck.GlobalPosition.Y + mainMesh.Size.Y * 0.5f - 0.8f) < 0.01f,
-            "StartLowerTerrace top surface must preserve the Y=0.8 traversal level.");
-        Require(level.CameraCheck01.GlobalPosition.Y > 0.79f && level.CameraCheck01.GlobalPosition.Y < 0.85f &&
-                level.CameraCheck02.GlobalPosition.Y > 0.79f && level.CameraCheck02.GlobalPosition.Y < 0.85f,
-            "CameraCheck01/02 must remain aligned to the StartLowerTerrace traversal plane.");
+        var mainDeckLocal = level.ToLocal(mainDeck.GlobalPosition);
+        Require(Mathf.Abs(mainDeckLocal.Y + mainMesh.Size.Y * 0.5f - 0.8f) < 0.01f,
+            $"StartLowerTerrace top surface must preserve local Y=0.8 traversal level. Actual={mainDeckLocal.Y + mainMesh.Size.Y * 0.5f:0.000}.");
+        var check01Local = level.ToLocal(level.CameraCheck01.GlobalPosition);
+        var check02Local = level.ToLocal(level.CameraCheck02.GlobalPosition);
+        Require(check01Local.Y > 0.79f && check01Local.Y < 0.85f &&
+                check02Local.Y > 0.79f && check02Local.Y < 0.85f,
+            "CameraCheck01/02 must remain aligned to the StartLowerTerrace traversal plane in level-local space.");
 
         Require(terrace.GetNodeOrNull<MeshInstance3D>("RetainingWalls/FrontScreenRight") is not null &&
                 terrace.GetNodeOrNull<MeshInstance3D>("RetainingWalls/FrontScreenLeft") is not null,
