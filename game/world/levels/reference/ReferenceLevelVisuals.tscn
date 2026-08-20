@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/StartPlatform.tscn" id="1_start_platform"]
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/StartDeckGrid.tscn" id="2_start_grid"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/MiningApproachTerrace.tscn" id="6_mining_approach"]
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/MiningApproachEnvironment.tscn" id="7_mining_environment"]
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/LowerCorridorSection.tscn" id="8_lower_corridor"]
+[ext_resource type="PackedScene" path="res://game/world/levels/reference/PoolTerrace.tscn" id="9_pool_terrace"]
 
 [node name="ReferenceLevelVisuals" type="Node3D"]
 [node name="StartPlatform" parent="." instance=ExtResource("1_start_platform")]
@@ -18,3 +19,4 @@
 [node name="MiningApproachTerrace" parent="." instance=ExtResource("6_mining_approach")]
 [node name="MiningApproachEnvironment" parent="." instance=ExtResource("7_mining_environment")]
 [node name="LowerCorridorSection" parent="." instance=ExtResource("8_lower_corridor")]
+[node name="PoolTerrace" parent="." instance=ExtResource("9_pool_terrace")]
