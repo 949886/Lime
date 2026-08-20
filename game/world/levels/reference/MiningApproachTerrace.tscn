@@ -9,68 +9,51 @@
 [sub_resource type="BoxMesh" id="Step"]
 material = ExtResource("2_step")
 size = Vector3(3.6, 0.10909091, 0.32866666)
-
 [sub_resource type="BoxMesh" id="StairWall"]
 material = ExtResource("3_concrete")
 size = Vector3(0.42, 0.9, 4.1)
-
 [sub_resource type="BoxMesh" id="StairRail"]
 material = ExtResource("4_rail")
 size = Vector3(0.12, 0.12, 4.05)
-
 [sub_resource type="BoxMesh" id="LandingBack"]
 material = ExtResource("1_deck")
 size = Vector3(6.0, 0.3, 2.2)
-
 [sub_resource type="BoxMesh" id="LandingProjection"]
 material = ExtResource("1_deck")
 size = Vector3(2.6, 0.3, 3.0)
-
-[sub_resource type="BoxMesh" id="LandingWall"]
+[sub_resource type="BoxMesh" id="LandingWallSide"]
 material = ExtResource("3_concrete")
-size = Vector3(6.0, 1.15, 0.32)
-
-[sub_resource type="BoxMesh" id="RailLong"]
+size = Vector3(1.7, 1.15, 0.32)
+[sub_resource type="BoxMesh" id="RailGapSide"]
 material = ExtResource("4_rail")
-size = Vector3(6.0, 0.12, 0.12)
-
+size = Vector3(1.2, 0.12, 0.12)
 [sub_resource type="BoxMesh" id="RailSide"]
 material = ExtResource("4_rail")
 size = Vector3(0.12, 0.12, 2.3)
-
 [sub_resource type="BoxMesh" id="RailPost"]
 material = ExtResource("4_rail")
 size = Vector3(0.12, 0.82, 0.12)
-
 [sub_resource type="BoxMesh" id="GridRowWide"]
 material = ExtResource("5_grid")
 size = Vector3(5.8, 0.012, 0.035)
-
 [sub_resource type="BoxMesh" id="GridRowNarrow"]
 material = ExtResource("5_grid")
 size = Vector3(2.4, 0.012, 0.035)
-
 [sub_resource type="BoxMesh" id="GridColumnBack"]
 material = ExtResource("5_grid")
 size = Vector3(0.035, 0.012, 2.0)
-
 [sub_resource type="BoxMesh" id="GridColumnProjection"]
 material = ExtResource("5_grid")
 size = Vector3(0.035, 0.012, 2.8)
-
 [sub_resource type="BoxShape3D" id="StairRampCollision"]
 size = Vector3(3.6, 0.16, 3.9849718)
-
 [sub_resource type="BoxShape3D" id="LandingBackCollision"]
 size = Vector3(6.0, 0.3, 2.2)
-
 [sub_resource type="BoxShape3D" id="LandingProjectionCollision"]
 size = Vector3(2.6, 0.3, 3.0)
 
 [node name="MiningApproachTerrace" type="Node3D"]
-
 [node name="Stair" type="Node3D" parent="."]
-
 [node name="Steps" type="Node3D" parent="Stair"]
 [node name="Step01" type="MeshInstance3D" parent="Stair/Steps"]
 position = Vector3(-1.4, 0.74545455, -7.1583333)
@@ -108,7 +91,6 @@ mesh = SubResource("Step")
 [node name="Step12" type="MeshInstance3D" parent="Stair/Steps"]
 position = Vector3(-1.4, -0.45454544, -10.641666)
 mesh = SubResource("Step")
-
 [node name="ScreenRightWall" type="MeshInstance3D" parent="Stair"]
 position = Vector3(-3.43, 0.16, -8.88)
 rotation_degrees = Vector3(-17.5, 0, 0)
@@ -133,14 +115,20 @@ mesh = SubResource("LandingBack")
 [node name="ForwardProjection" type="MeshInstance3D" parent="Landing"]
 position = Vector3(-1.4, -0.55, -14.5)
 mesh = SubResource("LandingProjection")
-[node name="ScreenLeftRetainingWall" type="MeshInstance3D" parent="Landing"]
-position = Vector3(-1.4, -0.975, -13.0)
-mesh = SubResource("LandingWall")
+[node name="BoundaryScreenRightWall" type="MeshInstance3D" parent="Landing"]
+position = Vector3(-3.55, -0.975, -13.0)
+mesh = SubResource("LandingWallSide")
+[node name="BoundaryScreenLeftWall" type="MeshInstance3D" parent="Landing"]
+position = Vector3(0.75, -0.975, -13.0)
+mesh = SubResource("LandingWallSide")
 
 [node name="Rails" type="Node3D" parent="."]
-[node name="BackScreenRightRail" type="MeshInstance3D" parent="Rails"]
-position = Vector3(-1.4, 0.02, -10.78)
-mesh = SubResource("RailLong")
+[node name="StairMouthScreenRightRail" type="MeshInstance3D" parent="Rails"]
+position = Vector3(-3.8, 0.02, -10.78)
+mesh = SubResource("RailGapSide")
+[node name="StairMouthScreenLeftRail" type="MeshInstance3D" parent="Rails"]
+position = Vector3(1.0, 0.02, -10.78)
+mesh = SubResource("RailGapSide")
 [node name="ProjectionScreenRightRail" type="MeshInstance3D" parent="Rails"]
 position = Vector3(-2.72, 0.02, -14.45)
 rotation_degrees = Vector3(0, 90, 0)
@@ -149,12 +137,18 @@ mesh = SubResource("RailSide")
 position = Vector3(-4.35, -0.02, -10.78)
 mesh = SubResource("RailPost")
 [node name="Post02" type="MeshInstance3D" parent="Rails"]
-position = Vector3(1.55, -0.02, -10.78)
+position = Vector3(-3.2, -0.02, -10.78)
 mesh = SubResource("RailPost")
 [node name="Post03" type="MeshInstance3D" parent="Rails"]
-position = Vector3(-2.72, -0.02, -13.35)
+position = Vector3(0.4, -0.02, -10.78)
 mesh = SubResource("RailPost")
 [node name="Post04" type="MeshInstance3D" parent="Rails"]
+position = Vector3(1.55, -0.02, -10.78)
+mesh = SubResource("RailPost")
+[node name="ProjectionPost01" type="MeshInstance3D" parent="Rails"]
+position = Vector3(-2.72, -0.02, -13.35)
+mesh = SubResource("RailPost")
+[node name="ProjectionPost02" type="MeshInstance3D" parent="Rails"]
 position = Vector3(-2.72, -0.02, -15.55)
 mesh = SubResource("RailPost")
 
