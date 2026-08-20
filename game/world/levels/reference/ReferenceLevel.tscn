@@ -31,24 +31,6 @@ size = Vector3(2, 0.109, 0.112)
 [sub_resource type="StandardMaterial3D" id="Material_building"]
 albedo_color = Color(0.28, 0.29, 0.31, 1)
 
-[sub_resource type="CylinderMesh" id="Cylinder_tower"]
-material = SubResource("Material_building")
-top_radius = 2.675293
-bottom_radius = 2.675293
-height = 9.165283
-
-[sub_resource type="CylinderMesh" id="Cylinder_building02"]
-material = SubResource("Material_building")
-top_radius = 1.5
-bottom_radius = 1.5
-height = 7.0
-
-[sub_resource type="CylinderMesh" id="Cylinder_building03"]
-material = SubResource("Material_building")
-top_radius = 2.5
-bottom_radius = 2.5
-height = 5.0
-
 [sub_resource type="BoxMesh" id="Box_building_back"]
 material = SubResource("Material_building")
 size = Vector3(12.228516, 6, 4)
@@ -124,7 +106,7 @@ mesh = SubResource("Box_lower_front")
 transform = Transform3D(7.54979e-08, 0, 1, 0, 1, 0, -1, 0, 7.54979e-08, -0.05, -0.45454544, -13.1)
 mesh = SubResource("Box_lower_front_stairs")
 [node name="Step02" type="MeshInstance3D" parent="Geometry/LowerFrontStairs"]
-transform = Transform3D(7.54979e-08, 0, 1, 0, 1, 0, -1, 0, 7.54979e-08, 0.05, -0.56363636, -13.1)
+transform = Transform3D(7.54979e-08, 0, 1, 0, -1, 0, -1, 0, 7.54979e-08, 0.05, -0.56363636, -13.1)
 mesh = SubResource("Box_lower_front_stairs")
 [node name="Step03" type="MeshInstance3D" parent="Geometry/LowerFrontStairs"]
 transform = Transform3D(7.54979e-08, 0, 1, 0, 1, 0, -1, 0, 7.54979e-08, 0.15, -0.6727273, -13.1)
@@ -156,18 +138,6 @@ mesh = SubResource("Box_lower_front_stairs")
 [node name="Step12" type="MeshInstance3D" parent="Geometry/LowerFrontStairs"]
 transform = Transform3D(7.54979e-08, 0, 1, 0, 1, 0, -1, 0, 7.54979e-08, 1.05, -1.6545454, -13.1)
 mesh = SubResource("Box_lower_front_stairs")
-
-[node name="CylinderBuilding01" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(7.7733755, -1.3470397, -6.7011757)
-mesh = SubResource("Cylinder_tower")
-
-[node name="CylinderBuilding02" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-7.083093, 0.63488865, -7.5)
-mesh = SubResource("Cylinder_building02")
-
-[node name="CylinderBuilding03" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-11.170506, 0, -7.5)
-mesh = SubResource("Cylinder_building03")
 
 [node name="BackBuilding" type="MeshInstance3D" parent="Geometry"]
 position = Vector3(-5.1352224, 3, 10)
