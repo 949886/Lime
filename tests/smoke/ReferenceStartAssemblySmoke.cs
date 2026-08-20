@@ -65,8 +65,8 @@ public partial class ReferenceStartAssemblySmoke : Node
                 if (name.StartsWith("Row", StringComparison.Ordinal)) rowCount++;
                 else if (name.StartsWith("Column", StringComparison.Ordinal)) columnCount++;
             }
-            Require(rowCount == 6 && columnCount == 11,
-                $"StartDeckGrid must preserve the square-grid ruler. Rows={rowCount}, Columns={columnCount}.");
+            Require(rowCount == 7 && columnCount == 18,
+                $"Expanded StartDeckGrid must cover the full plaza. Rows={rowCount}, Columns={columnCount}.");
 
             GD.Print("[M1.6.4] PASS: supplemental Start reference topology (broad deck + dual stairs + retaining wall) is scene-authored.");
             GetTree().Quit(0);
