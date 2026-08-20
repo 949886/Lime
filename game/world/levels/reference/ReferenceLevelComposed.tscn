@@ -5,6 +5,9 @@
 
 [node name="ReferenceLevel" instance=ExtResource("1_reference_level")]
 
+[node name="Stairs01" parent="Geometry"]
+visible = false
+
 [node name="ReferenceLevelVisuals" parent="." instance=ExtResource("2_visuals")]
 
 [node name="CalibrationMarkers" type="Node3D" parent="."]
