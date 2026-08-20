@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Material" path="res://game/world/props/materials/PropConcrete.tres" id="1_concrete"]
 [ext_resource type="Material" path="res://game/world/props/materials/PropMetalDark.tres" id="2_dark"]
 [ext_resource type="Material" path="res://game/world/props/materials/PropMetalLight.tres" id="3_light"]
 [ext_resource type="Material" path="res://game/world/props/materials/PropDryGrass.tres" id="4_grass"]
 [ext_resource type="Material" path="res://game/world/props/materials/PropSoil.tres" id="5_soil"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropWarning.tres" id="6_warning"]
 
 [sub_resource type="CylinderMesh" id="Body"]
 material = ExtResource("1_concrete")
@@ -51,6 +52,30 @@ size = Vector3(0.26, 0.26, 1.0)
 [sub_resource type="BoxMesh" id="Panel"]
 material = ExtResource("2_dark")
 size = Vector3(0.95, 1.35, 0.18)
+[sub_resource type="BoxMesh" id="RailSegment"]
+material = ExtResource("2_dark")
+size = Vector3(1.4, 0.1, 0.1)
+[sub_resource type="BoxMesh" id="RailPost"]
+material = ExtResource("2_dark")
+size = Vector3(0.1, 0.72, 0.1)
+[sub_resource type="BoxMesh" id="RoofFenceSegment"]
+material = ExtResource("2_dark")
+size = Vector3(1.25, 0.08, 0.08)
+[sub_resource type="BoxMesh" id="RoofFencePost"]
+material = ExtResource("2_dark")
+size = Vector3(0.08, 0.55, 0.08)
+[sub_resource type="BoxMesh" id="LampArm"]
+material = ExtResource("2_dark")
+size = Vector3(0.1, 0.1, 0.52)
+[sub_resource type="CylinderMesh" id="LampShade"]
+material = ExtResource("6_warning")
+top_radius = 0.18
+bottom_radius = 0.3
+height = 0.28
+radial_segments = 12
+[sub_resource type="BoxMesh" id="UtilityBox"]
+material = ExtResource("3_light")
+size = Vector3(0.62, 0.9, 0.32)
 
 [node name="MiningCylinderBuilding" type="Node3D"]
 [node name="Body" type="MeshInstance3D" parent="."]
@@ -68,31 +93,100 @@ mesh = SubResource("RoofLip")
 [node name="RoofSoil" type="MeshInstance3D" parent="."]
 position = Vector3(0, 6.48, 0)
 mesh = SubResource("Soil")
-[node name="Grass01" type="MeshInstance3D" parent="."]
+
+[node name="RoofVegetation" type="Node3D" parent="."]
+[node name="Grass01" type="MeshInstance3D" parent="RoofVegetation"]
 position = Vector3(-1.1, 6.95, -0.55)
 rotation_degrees = Vector3(0, 0, 10)
 mesh = SubResource("Grass")
-[node name="Grass02" type="MeshInstance3D" parent="."]
+[node name="Grass02" type="MeshInstance3D" parent="RoofVegetation"]
 position = Vector3(0.2, 6.95, -0.85)
 mesh = SubResource("Grass")
-[node name="Grass03" type="MeshInstance3D" parent="."]
+[node name="Grass03" type="MeshInstance3D" parent="RoofVegetation"]
 position = Vector3(1.15, 6.95, 0.0)
 rotation_degrees = Vector3(0, 0, -8)
 mesh = SubResource("Grass")
-[node name="Grass04" type="MeshInstance3D" parent="."]
+[node name="Grass04" type="MeshInstance3D" parent="RoofVegetation"]
 position = Vector3(-0.15, 6.95, 0.85)
 rotation_degrees = Vector3(5, 0, 8)
 mesh = SubResource("Grass")
-[node name="Door" type="MeshInstance3D" parent="."]
+[node name="Grass05" type="MeshInstance3D" parent="RoofVegetation"]
+position = Vector3(0.95, 7.02, 0.7)
+rotation_degrees = Vector3(-4, 0, 12)
+mesh = SubResource("Grass")
+[node name="Grass06" type="MeshInstance3D" parent="RoofVegetation"]
+position = Vector3(-0.85, 6.98, 0.45)
+rotation_degrees = Vector3(6, 0, -10)
+mesh = SubResource("Grass")
+
+[node name="RoofFence" type="Node3D" parent="."]
+[node name="FrontLeft" type="MeshInstance3D" parent="RoofFence"]
+position = Vector3(-0.72, 6.88, -2.22)
+mesh = SubResource("RoofFenceSegment")
+[node name="FrontRight" type="MeshInstance3D" parent="RoofFence"]
+position = Vector3(0.72, 6.88, -2.22)
+mesh = SubResource("RoofFenceSegment")
+[node name="Post01" type="MeshInstance3D" parent="RoofFence"]
+position = Vector3(-1.38, 6.7, -2.22)
+mesh = SubResource("RoofFencePost")
+[node name="Post02" type="MeshInstance3D" parent="RoofFence"]
+position = Vector3(0, 6.7, -2.22)
+mesh = SubResource("RoofFencePost")
+[node name="Post03" type="MeshInstance3D" parent="RoofFence"]
+position = Vector3(1.38, 6.7, -2.22)
+mesh = SubResource("RoofFencePost")
+
+[node name="Facade" type="Node3D" parent="."]
+[node name="Door" type="MeshInstance3D" parent="Facade"]
 position = Vector3(0, 1.45, -2.22)
 mesh = SubResource("Door")
-[node name="UtilityPanel" type="MeshInstance3D" parent="."]
+[node name="UtilityPanel" type="MeshInstance3D" parent="Facade"]
 position = Vector3(1.2, 2.8, -2.05)
 rotation_degrees = Vector3(0, -22, 0)
 mesh = SubResource("Panel")
-[node name="PipeVertical" type="MeshInstance3D" parent="."]
+[node name="UtilityBox" type="MeshInstance3D" parent="Facade"]
+position = Vector3(1.75, 1.25, -1.52)
+rotation_degrees = Vector3(0, -38, 0)
+mesh = SubResource("UtilityBox")
+
+[node name="Pipes" type="Node3D" parent="."]
+[node name="PipeVertical01" type="MeshInstance3D" parent="Pipes"]
 position = Vector3(-1.55, 2.9, -1.7)
 mesh = SubResource("Pipe")
-[node name="PipeTop" type="MeshInstance3D" parent="."]
+[node name="PipeTop01" type="MeshInstance3D" parent="Pipes"]
 position = Vector3(-1.55, 4.35, -1.25)
 mesh = SubResource("PipeElbow")
+[node name="PipeVertical02" type="MeshInstance3D" parent="Pipes"]
+position = Vector3(-1.2, 2.45, -1.95)
+scale = Vector3(0.7, 0.78, 0.7)
+mesh = SubResource("Pipe")
+[node name="PipeTop02" type="MeshInstance3D" parent="Pipes"]
+position = Vector3(-1.2, 3.55, -1.55)
+scale = Vector3(0.7, 0.7, 0.7)
+mesh = SubResource("PipeElbow")
+
+[node name="MidRail" type="Node3D" parent="."]
+[node name="RailLeft" type="MeshInstance3D" parent="MidRail"]
+position = Vector3(-0.78, 4.9, -2.0)
+mesh = SubResource("RailSegment")
+[node name="RailRight" type="MeshInstance3D" parent="MidRail"]
+position = Vector3(0.78, 4.9, -2.0)
+mesh = SubResource("RailSegment")
+[node name="Post01" type="MeshInstance3D" parent="MidRail"]
+position = Vector3(-1.48, 4.65, -2.0)
+mesh = SubResource("RailPost")
+[node name="Post02" type="MeshInstance3D" parent="MidRail"]
+position = Vector3(0, 4.65, -2.0)
+mesh = SubResource("RailPost")
+[node name="Post03" type="MeshInstance3D" parent="MidRail"]
+position = Vector3(1.48, 4.65, -2.0)
+mesh = SubResource("RailPost")
+
+[node name="WallLamp" type="Node3D" parent="."]
+[node name="Arm" type="MeshInstance3D" parent="WallLamp"]
+position = Vector3(-0.55, 3.95, -2.42)
+mesh = SubResource("LampArm")
+[node name="Shade" type="MeshInstance3D" parent="WallLamp"]
+position = Vector3(-0.55, 3.8, -2.66)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("LampShade")
