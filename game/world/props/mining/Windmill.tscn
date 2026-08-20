@@ -1,0 +1,80 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Material" path="res://game/world/props/materials/PropMetalDark.tres" id="1_dark"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropMetalLight.tres" id="2_light"]
+
+[sub_resource type="CylinderMesh" id="Pole"]
+material = ExtResource("1_dark")
+top_radius = 0.11
+bottom_radius = 0.17
+height = 6.0
+radial_segments = 12
+[sub_resource type="CylinderMesh" id="Hub"]
+material = ExtResource("2_light")
+top_radius = 0.38
+bottom_radius = 0.38
+height = 0.32
+radial_segments = 16
+[sub_resource type="BoxMesh" id="Arm"]
+material = ExtResource("1_dark")
+size = Vector3(0.12, 2.55, 0.12)
+[sub_resource type="BoxMesh" id="Blade"]
+material = ExtResource("2_light")
+size = Vector3(0.52, 1.65, 0.08)
+[sub_resource type="CylinderMesh" id="Ring"]
+material = ExtResource("1_dark")
+top_radius = 2.15
+bottom_radius = 2.15
+height = 0.06
+radial_segments = 32
+[sub_resource type="BoxMesh" id="CrossBrace"]
+material = ExtResource("1_dark")
+size = Vector3(0.08, 4.0, 0.08)
+
+[node name="Windmill" type="Node3D"]
+[node name="Pole" type="MeshInstance3D" parent="."]
+position = Vector3(0, 3, 0)
+mesh = SubResource("Pole")
+[node name="Rotor" type="Node3D" parent="."]
+position = Vector3(0, 6.35, 0)
+rotation_degrees = Vector3(90, 0, 0)
+[node name="Hub" type="MeshInstance3D" parent="Rotor"]
+mesh = SubResource("Hub")
+[node name="Ring" type="MeshInstance3D" parent="Rotor"]
+mesh = SubResource("Ring")
+[node name="Arm00" type="MeshInstance3D" parent="Rotor"]
+position = Vector3(0, 1.35, 0)
+mesh = SubResource("Arm")
+[node name="Arm01" type="MeshInstance3D" parent="Rotor"]
+position = Vector3(0, -1.35, 0)
+mesh = SubResource("Arm")
+[node name="Arm02" type="MeshInstance3D" parent="Rotor"]
+rotation_degrees = Vector3(0, 0, 90)
+position = Vector3(1.35, 0, 0)
+mesh = SubResource("Arm")
+[node name="Arm03" type="MeshInstance3D" parent="Rotor"]
+rotation_degrees = Vector3(0, 0, 90)
+position = Vector3(-1.35, 0, 0)
+mesh = SubResource("Arm")
+[node name="Blade00" type="MeshInstance3D" parent="Rotor"]
+position = Vector3(0.38, 1.7, 0)
+rotation_degrees = Vector3(0, 0, -16)
+mesh = SubResource("Blade")
+[node name="Blade01" type="MeshInstance3D" parent="Rotor"]
+position = Vector3(-0.38, -1.7, 0)
+rotation_degrees = Vector3(0, 0, -16)
+mesh = SubResource("Blade")
+[node name="Blade02" type="MeshInstance3D" parent="Rotor"]
+position = Vector3(1.7, -0.38, 0)
+rotation_degrees = Vector3(0, 0, 74)
+mesh = SubResource("Blade")
+[node name="Blade03" type="MeshInstance3D" parent="Rotor"]
+position = Vector3(-1.7, 0.38, 0)
+rotation_degrees = Vector3(0, 0, 74)
+mesh = SubResource("Blade")
+[node name="BraceA" type="MeshInstance3D" parent="Rotor"]
+rotation_degrees = Vector3(0, 0, 45)
+mesh = SubResource("CrossBrace")
+[node name="BraceB" type="MeshInstance3D" parent="Rotor"]
+rotation_degrees = Vector3(0, 0, -45)
+mesh = SubResource("CrossBrace")
