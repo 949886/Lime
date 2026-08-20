@@ -118,6 +118,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceTransitionObservableSmoke.tscn
 
+      - name: Capture M1.6.3 production transition curve
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/ReferenceRuntimeTransitionCaptureSmoke.tscn
+
       - name: Run M1.6.3 Start orientation sweep
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceStartOrientationSweepSmoke.tscn
