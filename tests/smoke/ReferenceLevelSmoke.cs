@@ -57,7 +57,7 @@ public partial class ReferenceLevelSmoke : Node
             Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.ExplorePerspective,
                 "Starting movement must transition to ExplorePerspective.");
 
-            GD.Print("[M1.4] PASS: composed Start-to-mining-approach traversal smoke completed successfully.");
+            GD.Print("[M1.4] PASS: composed Start-to-lower-corridor traversal smoke completed successfully.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
@@ -81,6 +81,7 @@ public partial class ReferenceLevelSmoke : Node
                      "Geometry/Stairs02",
                      "Geometry/Check03BackPlatform",
                      "Geometry/Check03Projection",
+                     "Geometry/LowerCorridor",
                  })
         {
             Require(level.GetNodeOrNull<Node3D>(legacyPath) is null,
@@ -92,6 +93,7 @@ public partial class ReferenceLevelSmoke : Node
                      "Collision/WorldCollision/StairRamp02",
                      "Collision/WorldCollision/Check03BackPlatform",
                      "Collision/WorldCollision/Check03Projection",
+                     "Collision/WorldCollision/LowerCorridor",
                  })
         {
             Require(level.GetNodeOrNull<CollisionShape3D>(legacyPath) is null,
@@ -124,17 +126,11 @@ public partial class ReferenceLevelSmoke : Node
 
         ValidateLowerTerrace(level);
         ValidateMiningApproach(level);
+        ValidateLowerCorridor(level);
         ValidateStairCount(level.GetNode<Node3D>("Geometry/LowerFrontStairs"), "Geometry/LowerFrontStairs");
 
-        foreach (var name in new[]
-                 {
-                     "LowerCorridor",
-                     "PlazaExtension",
-                     "LowerFrontPlatform",
-                 })
-        {
+        foreach (var name in new[] { "PlazaExtension", "LowerFrontPlatform" })
             ValidateBoxSync(level, name);
-        }
     }
 
     private static void ValidateLowerTerrace(ReferenceLevel level)
@@ -178,27 +174,53 @@ public partial class ReferenceLevelSmoke : Node
         Require(approach.GetNodeOrNull<CollisionShape3D>("Collision/StairRamp") is not null,
             "MiningApproach stair must own its ramp collision.");
 
-        ValidateMiningLandingPiece(level, approach, "Landing/BackDeck", "Collision/LandingBack");
-        ValidateMiningLandingPiece(level, approach, "Landing/ForwardProjection", "Collision/LandingProjection");
+        ValidateMiningLandingPiece(approach, "Landing/BackDeck", "Collision/LandingBack");
+        ValidateMiningLandingPiece(approach, "Landing/ForwardProjection", "Collision/LandingProjection");
 
         var backDeck = approach.GetNode<MeshInstance3D>("Landing/BackDeck");
         var backMesh = (BoxMesh)backDeck.Mesh;
         var localBack = level.ToLocal(backDeck.GlobalPosition);
         Require(Mathf.Abs(localBack.Y + backMesh.Size.Y * 0.5f + 0.4f) < 0.01f,
             $"MiningApproach landing must keep local top Y=-0.4. Actual={localBack.Y + backMesh.Size.Y * 0.5f:0.000}.");
-        Require(approach.GetNodeOrNull<MeshInstance3D>("Rails/StairMouthScreenRightRail") is not null &&
-                approach.GetNodeOrNull<MeshInstance3D>("Rails/StairMouthScreenLeftRail") is not null,
-            "MiningApproach landing rail must stay split around the stair mouth.");
-        Require(approach.GetNodeOrNull<MeshInstance3D>("Landing/BoundaryScreenRightWall") is not null &&
-                approach.GetNodeOrNull<MeshInstance3D>("Landing/BoundaryScreenLeftWall") is not null,
-            "MiningApproach landing boundary must preserve the central projection opening.");
     }
 
-    private static void ValidateMiningLandingPiece(
-        ReferenceLevel level,
-        Node3D approach,
-        string meshPath,
-        string collisionPath)
+    private static void ValidateLowerCorridor(ReferenceLevel level)
+    {
+        var corridor = level.GetNode<Node3D>("ReferenceLevelVisuals/LowerCorridorSection");
+        ValidateCorridorPiece(corridor, "ApproachDeck");
+        ValidateCorridorPiece(corridor, "MidDeck");
+        ValidateCorridorPiece(corridor, "FarDeck");
+
+        var midDeck = corridor.GetNode<MeshInstance3D>("Deck/MidDeck");
+        var midMesh = midDeck.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("LowerCorridor MidDeck must use BoxMesh.");
+        var midLocal = level.ToLocal(midDeck.GlobalPosition);
+        var routeLocal = level.ToLocal(level.RouteEnd.GlobalPosition);
+        Require(Mathf.Abs(midLocal.Y + midMesh.Size.Y * 0.5f + 0.4f) < 0.01f,
+            "LowerCorridor top surface must preserve local Y=-0.4 traversal level.");
+        Require(routeLocal.X >= midLocal.X - midMesh.Size.X * 0.5f &&
+                routeLocal.X <= midLocal.X + midMesh.Size.X * 0.5f &&
+                routeLocal.Z >= midLocal.Z - midMesh.Size.Z * 0.5f &&
+                routeLocal.Z <= midLocal.Z + midMesh.Size.Z * 0.5f,
+            "RouteEnd must remain on the composed LowerCorridor MidDeck.");
+        Require(corridor.GetNodeOrNull<Node3D>("Rails") is not null &&
+                corridor.GetNodeOrNull<Node3D>("Grid") is not null,
+            "LowerCorridor replacement must own its rail and tile-grid structure.");
+    }
+
+    private static void ValidateCorridorPiece(Node3D corridor, string name)
+    {
+        var meshNode = corridor.GetNode<MeshInstance3D>($"Deck/{name}");
+        var mesh = meshNode.Mesh as BoxMesh
+            ?? throw new InvalidOperationException($"LowerCorridor Deck/{name} must use BoxMesh.");
+        var collision = corridor.GetNode<CollisionShape3D>($"Collision/{name}");
+        var shape = collision.Shape as BoxShape3D
+            ?? throw new InvalidOperationException($"LowerCorridor Collision/{name} must use BoxShape3D.");
+        Require(shape.Size.DistanceTo(mesh.Size) < 0.01f,
+            $"LowerCorridor {name} collision must match its visual.");
+    }
+
+    private static void ValidateMiningLandingPiece(Node3D approach, string meshPath, string collisionPath)
     {
         var meshNode = approach.GetNode<MeshInstance3D>(meshPath);
         var mesh = meshNode.Mesh as BoxMesh
