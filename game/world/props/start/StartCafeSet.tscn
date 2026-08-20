@@ -1,0 +1,106 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Material" path="res://game/world/props/materials/PropFabric.tres" id="1_fabric"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropMetalDark.tres" id="2_metal"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropWood.tres" id="3_top"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropCeramic.tres" id="4_ceramic"]
+
+[sub_resource type="CylinderMesh" id="TableTop"]
+material = ExtResource("3_top")
+top_radius = 0.62
+bottom_radius = 0.62
+height = 0.08
+radial_segments = 20
+[sub_resource type="CylinderMesh" id="Pedestal"]
+material = ExtResource("2_metal")
+top_radius = 0.07
+bottom_radius = 0.07
+height = 0.72
+radial_segments = 10
+[sub_resource type="CylinderMesh" id="Base"]
+material = ExtResource("2_metal")
+top_radius = 0.32
+bottom_radius = 0.38
+height = 0.06
+radial_segments = 16
+[sub_resource type="BoxMesh" id="Seat"]
+material = ExtResource("1_fabric")
+size = Vector3(0.56, 0.12, 0.52)
+[sub_resource type="BoxMesh" id="ChairLeg"]
+material = ExtResource("2_metal")
+size = Vector3(0.07, 0.48, 0.07)
+[sub_resource type="BoxMesh" id="ChairBack"]
+material = ExtResource("1_fabric")
+size = Vector3(0.56, 0.58, 0.10)
+[sub_resource type="CylinderMesh" id="Plate"]
+material = ExtResource("4_ceramic")
+top_radius = 0.17
+bottom_radius = 0.17
+height = 0.025
+radial_segments = 16
+[sub_resource type="CylinderMesh" id="Cup"]
+material = ExtResource("4_ceramic")
+top_radius = 0.08
+bottom_radius = 0.07
+height = 0.14
+radial_segments = 14
+
+[node name="StartCafeSet" type="Node3D"]
+[node name="Table" type="Node3D" parent="."]
+[node name="Top" type="MeshInstance3D" parent="Table"]
+position = Vector3(0, 0.82, 0)
+mesh = SubResource("TableTop")
+[node name="Pedestal" type="MeshInstance3D" parent="Table"]
+position = Vector3(0, 0.43, 0)
+mesh = SubResource("Pedestal")
+[node name="Base" type="MeshInstance3D" parent="Table"]
+position = Vector3(0, 0.03, 0)
+mesh = SubResource("Base")
+[node name="Plate" type="MeshInstance3D" parent="Table"]
+position = Vector3(0.18, 0.88, 0.05)
+mesh = SubResource("Plate")
+[node name="Cup" type="MeshInstance3D" parent="Table"]
+position = Vector3(-0.18, 0.94, -0.03)
+mesh = SubResource("Cup")
+[node name="ChairA" type="Node3D" parent="."]
+position = Vector3(-0.98, 0, 0.04)
+rotation_degrees = Vector3(0, -8, 0)
+[node name="Seat" type="MeshInstance3D" parent="ChairA"]
+position = Vector3(0, 0.49, 0)
+mesh = SubResource("Seat")
+[node name="Back" type="MeshInstance3D" parent="ChairA"]
+position = Vector3(-0.24, 0.82, 0)
+mesh = SubResource("ChairBack")
+[node name="LegFL" type="MeshInstance3D" parent="ChairA"]
+position = Vector3(-0.20, 0.24, -0.18)
+mesh = SubResource("ChairLeg")
+[node name="LegFR" type="MeshInstance3D" parent="ChairA"]
+position = Vector3(0.20, 0.24, -0.18)
+mesh = SubResource("ChairLeg")
+[node name="LegRL" type="MeshInstance3D" parent="ChairA"]
+position = Vector3(-0.20, 0.24, 0.18)
+mesh = SubResource("ChairLeg")
+[node name="LegRR" type="MeshInstance3D" parent="ChairA"]
+position = Vector3(0.20, 0.24, 0.18)
+mesh = SubResource("ChairLeg")
+[node name="ChairB" type="Node3D" parent="."]
+position = Vector3(1.0, 0, 0.12)
+rotation_degrees = Vector3(0, 188, 0)
+[node name="Seat" type="MeshInstance3D" parent="ChairB"]
+position = Vector3(0, 0.49, 0)
+mesh = SubResource("Seat")
+[node name="Back" type="MeshInstance3D" parent="ChairB"]
+position = Vector3(-0.24, 0.82, 0)
+mesh = SubResource("ChairBack")
+[node name="LegFL" type="MeshInstance3D" parent="ChairB"]
+position = Vector3(-0.20, 0.24, -0.18)
+mesh = SubResource("ChairLeg")
+[node name="LegFR" type="MeshInstance3D" parent="ChairB"]
+position = Vector3(0.20, 0.24, -0.18)
+mesh = SubResource("ChairLeg")
+[node name="LegRL" type="MeshInstance3D" parent="ChairB"]
+position = Vector3(-0.20, 0.24, 0.18)
+mesh = SubResource("ChairLeg")
+[node name="LegRR" type="MeshInstance3D" parent="ChairB"]
+position = Vector3(0.20, 0.24, 0.18)
+mesh = SubResource("ChairLeg")

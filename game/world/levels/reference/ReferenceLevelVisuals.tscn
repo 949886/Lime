@@ -3,10 +3,9 @@
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/StartPlatform.tscn" id="1_start_platform"]
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/StartDeckGrid.tscn" id="2_start_grid"]
 [ext_resource type="PackedScene" path="res://game/world/levels/reference/StartBackgroundStructures.tscn" id="3_start_background"]
-[ext_resource type="PackedScene" path="res://game/world/levels/reference/StartPlatformProps.tscn" id="4_start_props"]
+[ext_resource type="PackedScene" path="res://game/world/props/start/StartPlatformProps.tscn" id="4_start_props"]
 
 [node name="ReferenceLevelVisuals" type="Node3D"]
-
 [node name="StartPlatform" parent="." instance=ExtResource("1_start_platform")]
 [node name="StartDeckGrid" parent="." instance=ExtResource("2_start_grid")]
 [node name="StartBackgroundStructures" parent="." instance=ExtResource("3_start_background")]

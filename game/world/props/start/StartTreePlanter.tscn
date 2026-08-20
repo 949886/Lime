@@ -1,0 +1,86 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Material" path="res://game/world/props/materials/PropConcrete.tres" id="1_concrete"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropWood.tres" id="2_wood"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropFoliage.tres" id="3_foliage"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropSoil.tres" id="4_soil"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropFlower.tres" id="5_flower"]
+
+[sub_resource type="CylinderMesh" id="Planter"]
+material = ExtResource("1_concrete")
+top_radius = 1.08
+bottom_radius = 1.18
+height = 0.72
+radial_segments = 20
+[sub_resource type="CylinderMesh" id="Soil"]
+material = ExtResource("4_soil")
+top_radius = 0.93
+bottom_radius = 0.93
+height = 0.08
+radial_segments = 20
+[sub_resource type="CylinderMesh" id="Trunk"]
+material = ExtResource("2_wood")
+top_radius = 0.15
+bottom_radius = 0.27
+height = 2.65
+radial_segments = 12
+[sub_resource type="CylinderMesh" id="Branch"]
+material = ExtResource("2_wood")
+top_radius = 0.07
+bottom_radius = 0.12
+height = 1.35
+radial_segments = 10
+[sub_resource type="SphereMesh" id="CanopyLarge"]
+material = ExtResource("3_foliage")
+radius = 1.05
+height = 1.7
+[sub_resource type="SphereMesh" id="CanopySmall"]
+material = ExtResource("3_foliage")
+radius = 0.72
+height = 1.15
+[sub_resource type="SphereMesh" id="Flower"]
+material = ExtResource("5_flower")
+radius = 0.13
+height = 0.22
+
+[node name="StartTreePlanter" type="Node3D"]
+[node name="Planter" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.36, 0)
+mesh = SubResource("Planter")
+[node name="Soil" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.75, 0)
+mesh = SubResource("Soil")
+[node name="Tree" type="Node3D" parent="."]
+[node name="Trunk" type="MeshInstance3D" parent="Tree"]
+position = Vector3(0, 1.95, 0)
+mesh = SubResource("Trunk")
+[node name="BranchLeft" type="MeshInstance3D" parent="Tree"]
+position = Vector3(-0.34, 2.85, 0.03)
+rotation_degrees = Vector3(4, 0, -34)
+mesh = SubResource("Branch")
+[node name="BranchRight" type="MeshInstance3D" parent="Tree"]
+position = Vector3(0.38, 2.78, -0.04)
+rotation_degrees = Vector3(-5, 0, 38)
+scale = Vector3(0.9, 0.9, 0.9)
+mesh = SubResource("Branch")
+[node name="CanopyCenter" type="MeshInstance3D" parent="Tree"]
+position = Vector3(0.08, 3.65, 0)
+mesh = SubResource("CanopyLarge")
+[node name="CanopyLeft" type="MeshInstance3D" parent="Tree"]
+position = Vector3(-0.92, 3.36, 0.12)
+mesh = SubResource("CanopySmall")
+[node name="CanopyRight" type="MeshInstance3D" parent="Tree"]
+position = Vector3(0.92, 3.38, -0.08)
+mesh = SubResource("CanopySmall")
+[node name="Flowers" type="Node3D" parent="."]
+[node name="Flower01" type="MeshInstance3D" parent="Flowers"]
+position = Vector3(-0.62, 0.92, -0.22)
+mesh = SubResource("Flower")
+[node name="Flower02" type="MeshInstance3D" parent="Flowers"]
+position = Vector3(-0.28, 0.88, 0.45)
+scale = Vector3(0.8, 0.8, 0.8)
+mesh = SubResource("Flower")
+[node name="Flower03" type="MeshInstance3D" parent="Flowers"]
+position = Vector3(0.55, 0.90, 0.24)
+scale = Vector3(0.9, 0.9, 0.9)
+mesh = SubResource("Flower")
