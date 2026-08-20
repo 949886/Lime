@@ -9,10 +9,6 @@ background_color = Color(0.13, 0.14, 0.16, 1)
 [sub_resource type="StandardMaterial3D" id="Material_ground"]
 albedo_color = Color(0.42, 0.43, 0.45, 1)
 
-[sub_resource type="BoxMesh" id="Box_corridor"]
-material = SubResource("Material_ground")
-size = Vector3(19.577759, 0.3, 2.8327637)
-
 [sub_resource type="BoxMesh" id="Box_plaza"]
 material = SubResource("Material_ground")
 size = Vector3(8, 0.3, 9)
@@ -50,20 +46,6 @@ roughness = 0.25
 material = SubResource("Material_water")
 size = Vector3(5, 0.08, 5)
 
-[sub_resource type="StandardMaterial3D" id="Material_rail"]
-albedo_color = Color(0.18, 0.19, 0.21, 1)
-
-[sub_resource type="BoxMesh" id="Box_rail_long"]
-material = SubResource("Material_rail")
-size = Vector3(5, 0.12, 0.12)
-
-[sub_resource type="BoxMesh" id="Box_rail_post"]
-material = SubResource("Material_rail")
-size = Vector3(0.12, 0.8, 0.12)
-
-[sub_resource type="BoxShape3D" id="Shape_corridor"]
-size = Vector3(19.577759, 0.3, 2.8327637)
-
 [sub_resource type="BoxShape3D" id="Shape_plaza"]
 size = Vector3(8, 0.3, 9)
 
@@ -87,10 +69,6 @@ light_energy = 1.15
 shadow_enabled = true
 
 [node name="Geometry" type="Node3D" parent="."]
-
-[node name="LowerCorridor" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-9.711121, -0.55, -11.666382)
-mesh = SubResource("Box_corridor")
 
 [node name="PlazaExtension" type="MeshInstance3D" parent="Geometry"]
 position = Vector3(-22.5, -0.55, -12)
@@ -151,26 +129,9 @@ mesh = SubResource("Box_foreground")
 position = Vector3(-23, -0.37, -13.5)
 mesh = SubResource("Box_water")
 
-[node name="Rails" type="Node3D" parent="Geometry"]
-[node name="CorridorBack01" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(-6, 0.05, -10.2)
-mesh = SubResource("Box_rail_long")
-[node name="CorridorBack02" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(-11, 0.05, -10.2)
-mesh = SubResource("Box_rail_long")
-[node name="Post03" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(-3.5, 0, -10.2)
-mesh = SubResource("Box_rail_post")
-[node name="Post04" type="MeshInstance3D" parent="Geometry/Rails"]
-position = Vector3(-13.5, 0, -10.2)
-mesh = SubResource("Box_rail_post")
-
 [node name="Collision" type="Node3D" parent="."]
 [node name="WorldCollision" type="StaticBody3D" parent="Collision"]
 collision_mask = 0
-[node name="LowerCorridor" type="CollisionShape3D" parent="Collision/WorldCollision"]
-position = Vector3(-9.711121, -0.55, -11.666382)
-shape = SubResource("Shape_corridor")
 [node name="PlazaExtension" type="CollisionShape3D" parent="Collision/WorldCollision"]
 position = Vector3(-22.5, -0.55, -12)
 shape = SubResource("Shape_plaza")
