@@ -52,7 +52,27 @@ public partial class ReferenceStartAssemblySmoke : Node
             Require(assembly.GetNodeOrNull<Node3D>("RearEquipment") is not null,
                 "Start assembly must include the rear equipment cluster.");
 
-            GD.Print("[M1.6.4] PASS: visible Start reference assembly is instanced in production.");
+            var grid = assembly.GetNodeOrNull<Node3D>("DeckGrid")
+                ?? throw new InvalidOperationException("Start deck tile grid must be instanced into the visible assembly.");
+            var rowCount = 0;
+            var columnCount = 0;
+            foreach (var child in grid.GetChildren())
+            {
+                var name = child.Name.ToString();
+                if (name.StartsWith("Row", StringComparison.Ordinal))
+                {
+                    rowCount++;
+                }
+                else if (name.StartsWith("Column", StringComparison.Ordinal))
+                {
+                    columnCount++;
+                }
+            }
+
+            Require(rowCount == 6 && columnCount == 11,
+                $"Start deck must preserve the Pass-A square-grid ruler. Rows={rowCount}, Columns={columnCount}.");
+
+            GD.Print("[M1.6.4] PASS: visible Start reference assembly and deck grid are instanced in production.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
