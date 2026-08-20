@@ -27,7 +27,7 @@ public partial class ReferenceCalibrationSmoke : Node
             await ValidateStartCamera(gameRoot);
             await ValidateExploreCamera(gameRoot);
 
-            GD.Print("[M1.6] PASS: reference calibration uses the scene-composed dual-stair Start replacement.");
+            GD.Print("[M1.6] PASS: calibration uses the segmented dual-stair StartPlatform replacement.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
@@ -52,31 +52,45 @@ public partial class ReferenceCalibrationSmoke : Node
     private static void ValidateStartReplacement(ReferenceLevel level)
     {
         Require(level.GetNodeOrNull<Node3D>("Geometry/UpperPlatform") is null,
-            "Legacy UpperPlatform must be physically removed after StartPlatform replacement.");
+            "Legacy UpperPlatform must remain removed.");
         Require(level.GetNodeOrNull<Node3D>("Geometry/Stairs01") is null,
-            "Legacy Stairs01 must be physically removed after StartPlatform replacement.");
-        Require(level.GetNodeOrNull<CollisionShape3D>("Collision/WorldCollision/UpperPlatform") is null,
-            "Legacy UpperPlatform collision must be removed.");
-        Require(level.GetNodeOrNull<CollisionShape3D>("Collision/WorldCollision/StairRamp01") is null,
-            "Legacy StairRamp01 collision must be removed.");
+            "Legacy Stairs01 must remain removed.");
 
         var startPlatform = level.GetNode<Node3D>("ReferenceLevelVisuals/StartPlatform");
-        var deck = startPlatform.GetNode<MeshInstance3D>("DeckMain");
-        var deckMesh = deck.Mesh as BoxMesh
-            ?? throw new InvalidOperationException("StartPlatform DeckMain must use BoxMesh.");
-        var deckCollision = startPlatform.GetNode<CollisionShape3D>("Collision/Deck");
-        var deckShape = deckCollision.Shape as BoxShape3D
-            ?? throw new InvalidOperationException("StartPlatform deck collision must use BoxShape3D.");
+        var deck = startPlatform.GetNode<Node3D>("Deck");
+        var rear = deck.GetNode<MeshInstance3D>("RearDeck");
+        var rearMesh = rear.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("StartPlatform Deck/RearDeck must use BoxMesh.");
+        var rearCollision = startPlatform.GetNode<CollisionShape3D>("Collision/RearDeck");
+        var rearShape = rearCollision.Shape as BoxShape3D
+            ?? throw new InvalidOperationException("StartPlatform Collision/RearDeck must use BoxShape3D.");
 
-        Require(deckMesh.Size.X >= 16.0f,
-            "Supplemental Start reference requires a broad continuous upper plaza.");
-        Require(deckShape.Size.DistanceTo(deckMesh.Size) < 0.01f,
-            "StartPlatform deck collision must match the complete deck visual.");
+        Require(rearMesh.Size.X >= 19.5f && rearMesh.Size.Z > 5.5f,
+            $"Detailed Start rear plaza must retain the broad reference silhouette. Size={rearMesh.Size}.");
+        Require(rearShape.Size.DistanceTo(rearMesh.Size) < 0.01f,
+            "RearDeck collision must match the rear plaza mesh.");
+        Require(level.PlayerStart.GlobalPosition.Z > rear.GlobalPosition.Z - rearMesh.Size.Z * 0.5f &&
+                level.PlayerStart.GlobalPosition.Z < rear.GlobalPosition.Z + rearMesh.Size.Z * 0.5f,
+            "PlayerStart must remain on the continuous rear plaza, not inside a stair cutout.");
 
-        ValidateStartStair(startPlatform.GetNode<Node3D>("RightStair"), "RightStair");
-        ValidateStartStair(startPlatform.GetNode<Node3D>("LeftStair"), "LeftStair");
-        Require(startPlatform.GetNodeOrNull<MeshInstance3D>("FrontRetainingWall") is not null,
+        foreach (var piece in new[] { "FrontRightDeck", "FrontCenterDeck", "FrontLeftDeck" })
+        {
+            Require(deck.GetNodeOrNull<MeshInstance3D>(piece) is not null,
+                $"StartPlatform must preserve segmented front deck piece {piece}.");
+            Require(startPlatform.GetNodeOrNull<CollisionShape3D>($"Collision/{piece}") is not null,
+                $"StartPlatform must preserve segmented collision for {piece}.");
+        }
+
+        var right = startPlatform.GetNode<Node3D>("RightStair");
+        var left = startPlatform.GetNode<Node3D>("LeftStair");
+        ValidateStartStair(right, "RightStair");
+        ValidateStartStair(left, "LeftStair");
+        Require(left.Position.X - right.Position.X > 8.0f,
+            "Reference dual-stair spacing must remain wider than 8m in this pass.");
+        Require(startPlatform.GetNodeOrNull<MeshInstance3D>("FrontArchitecture/CenterRetainingWall") is not null,
             "StartPlatform must preserve the central retaining wall between stair openings.");
+        Require(level.GetNodeOrNull<Node3D>("ReferenceLevelVisuals/StartPlatformProps") is not null,
+            "StartPlatformProps must remain part of the production composed scene.");
     }
 
     private static void ValidateStartStair(Node3D stair, string label)
