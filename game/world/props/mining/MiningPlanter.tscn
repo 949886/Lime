@@ -1,0 +1,88 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Material" path="res://game/world/props/materials/PropConcrete.tres" id="1_concrete"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropSoil.tres" id="2_soil"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropDryGrass.tres" id="3_grass"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropWoodDark.tres" id="4_wood"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropFoliage.tres" id="5_foliage"]
+
+[sub_resource type="CylinderMesh" id="PlanterBody"]
+material = ExtResource("1_concrete")
+top_radius = 1.75
+bottom_radius = 1.9
+height = 2.6
+radial_segments = 32
+[sub_resource type="CylinderMesh" id="PlanterLip"]
+material = ExtResource("4_wood")
+top_radius = 2.0
+bottom_radius = 2.0
+height = 0.28
+radial_segments = 32
+[sub_resource type="CylinderMesh" id="Soil"]
+material = ExtResource("2_soil")
+top_radius = 1.72
+bottom_radius = 1.72
+height = 0.16
+radial_segments = 32
+[sub_resource type="CylinderMesh" id="GrassClump"]
+material = ExtResource("3_grass")
+top_radius = 0.22
+bottom_radius = 0.34
+height = 1.0
+radial_segments = 8
+[sub_resource type="CylinderMesh" id="Trunk"]
+material = ExtResource("4_wood")
+top_radius = 0.22
+bottom_radius = 0.34
+height = 3.8
+radial_segments = 12
+[sub_resource type="SphereMesh" id="Canopy"]
+material = ExtResource("5_foliage")
+radius = 1.65
+height = 2.45
+radial_segments = 16
+rings = 8
+
+[node name="MiningPlanter" type="Node3D"]
+[node name="Body" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.3, 0)
+mesh = SubResource("PlanterBody")
+[node name="Lip" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.56, 0)
+mesh = SubResource("PlanterLip")
+[node name="Soil" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.72, 0)
+mesh = SubResource("Soil")
+[node name="Grass01" type="MeshInstance3D" parent="."]
+position = Vector3(-0.95, 3.12, -0.55)
+rotation_degrees = Vector3(0, 0, 12)
+mesh = SubResource("GrassClump")
+[node name="Grass02" type="MeshInstance3D" parent="."]
+position = Vector3(0.85, 3.06, -0.35)
+rotation_degrees = Vector3(0, 0, -8)
+mesh = SubResource("GrassClump")
+[node name="Grass03" type="MeshInstance3D" parent="."]
+position = Vector3(-0.25, 3.14, 0.85)
+rotation_degrees = Vector3(8, 0, 10)
+mesh = SubResource("GrassClump")
+[node name="Grass04" type="MeshInstance3D" parent="."]
+position = Vector3(0.65, 3.08, 0.68)
+rotation_degrees = Vector3(-6, 0, -10)
+mesh = SubResource("GrassClump")
+[node name="Tree" type="Node3D" parent="."]
+[node name="Trunk" type="MeshInstance3D" parent="Tree"]
+position = Vector3(0.2, 4.45, 0.05)
+rotation_degrees = Vector3(0, 0, -5)
+mesh = SubResource("Trunk")
+[node name="Canopy01" type="MeshInstance3D" parent="Tree"]
+position = Vector3(0.05, 6.25, 0)
+scale = Vector3(1.25, 0.8, 1.0)
+mesh = SubResource("Canopy")
+[node name="Canopy02" type="MeshInstance3D" parent="Tree"]
+position = Vector3(-1.25, 6.0, 0.2)
+scale = Vector3(0.85, 0.72, 0.8)
+mesh = SubResource("Canopy")
+[node name="Canopy03" type="MeshInstance3D" parent="Tree"]
+position = Vector3(1.2, 6.05, -0.15)
+scale = Vector3(0.9, 0.75, 0.85)
+mesh = SubResource("Canopy")

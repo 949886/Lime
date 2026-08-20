@@ -1,0 +1,50 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartEquipmentMaterial.tres" id="1_equipment"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartConcreteMaterial.tres" id="2_concrete"]
+
+[sub_resource type="BoxMesh" id="CrateMesh"]
+material = ExtResource("1_equipment")
+size = Vector3(1.65, 1.85, 1.25)
+[sub_resource type="BoxMesh" id="TallCabinetMesh"]
+material = ExtResource("1_equipment")
+size = Vector3(0.72, 2.45, 0.78)
+[sub_resource type="CylinderMesh" id="PipeMesh"]
+material = ExtResource("1_equipment")
+top_radius = 0.28
+bottom_radius = 0.28
+height = 3.4
+radial_segments = 24
+[sub_resource type="CylinderMesh" id="RoundBuildingMesh"]
+material = ExtResource("2_concrete")
+top_radius = 2.15
+bottom_radius = 2.15
+height = 4.7
+radial_segments = 24
+[sub_resource type="CylinderMesh" id="PlanterMesh"]
+material = ExtResource("2_concrete")
+top_radius = 1.52
+bottom_radius = 1.52
+height = 2.8
+radial_segments = 24
+
+[node name="StartBackgroundStructures" type="Node3D"]
+
+[node name="RearEquipment" type="Node3D" parent="."]
+[node name="Crate" type="MeshInstance3D" parent="RearEquipment"]
+position = Vector3(1.15, 2.925, 5.35)
+mesh = SubResource("CrateMesh")
+[node name="TallCabinet" type="MeshInstance3D" parent="RearEquipment"]
+position = Vector3(-0.15, 3.225, 5.45)
+mesh = SubResource("TallCabinetMesh")
+[node name="Pipe" type="MeshInstance3D" parent="RearEquipment"]
+position = Vector3(4.85, 2.85, 5.7)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("PipeMesh")
+
+[node name="ScreenRightRoundBuilding" type="MeshInstance3D" parent="."]
+position = Vector3(-2.3, 4.35, 7.15)
+mesh = SubResource("RoundBuildingMesh")
+[node name="ScreenLeftPlanterMass" type="MeshInstance3D" parent="."]
+position = Vector3(7.55, 3.35, 6.85)
+mesh = SubResource("PlanterMesh")

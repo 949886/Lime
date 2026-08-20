@@ -1,0 +1,129 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartDeckMaterial.tres" id="1_deck"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartConcreteMaterial.tres" id="2_concrete"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartRailMaterial.tres" id="3_rail"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/StartGridMaterial.tres" id="4_grid"]
+[ext_resource type="Material" path="res://game/world/levels/reference/materials/PoolWaterMaterial.tres" id="5_water"]
+
+[sub_resource type="BoxMesh" id="RearDeck"]
+material = ExtResource("1_deck")
+size = Vector3(8.2, 0.3, 2.0)
+[sub_resource type="BoxMesh" id="FrontDeck"]
+material = ExtResource("1_deck")
+size = Vector3(8.2, 0.3, 1.6)
+[sub_resource type="BoxMesh" id="SideDeck"]
+material = ExtResource("1_deck")
+size = Vector3(1.45, 0.3, 5.0)
+[sub_resource type="BoxMesh" id="PoolWater"]
+material = ExtResource("5_water")
+size = Vector3(5.1, 0.08, 5.0)
+[sub_resource type="BoxMesh" id="PoolRimX"]
+material = ExtResource("2_concrete")
+size = Vector3(5.5, 0.42, 0.28)
+[sub_resource type="BoxMesh" id="PoolRimZ"]
+material = ExtResource("2_concrete")
+size = Vector3(0.28, 0.42, 5.0)
+[sub_resource type="BoxMesh" id="RailX"]
+material = ExtResource("3_rail")
+size = Vector3(3.4, 0.12, 0.12)
+[sub_resource type="BoxMesh" id="RailZ"]
+material = ExtResource("3_rail")
+size = Vector3(0.12, 0.12, 4.3)
+[sub_resource type="BoxMesh" id="RailPost"]
+material = ExtResource("3_rail")
+size = Vector3(0.12, 0.82, 0.12)
+[sub_resource type="BoxMesh" id="GridRow"]
+material = ExtResource("4_grid")
+size = Vector3(8.0, 0.012, 0.035)
+[sub_resource type="BoxMesh" id="GridColumnShort"]
+material = ExtResource("4_grid")
+size = Vector3(0.035, 0.012, 1.5)
+[sub_resource type="BoxShape3D" id="RearCollision"]
+size = Vector3(8.2, 0.3, 2.0)
+[sub_resource type="BoxShape3D" id="FrontCollision"]
+size = Vector3(8.2, 0.3, 1.6)
+[sub_resource type="BoxShape3D" id="SideCollision"]
+size = Vector3(1.45, 0.3, 5.0)
+
+[node name="PoolTerrace" type="Node3D"]
+
+[node name="Deck" type="Node3D" parent="."]
+[node name="RearDeck" type="MeshInstance3D" parent="Deck"]
+position = Vector3(-22.5, -0.55, -8.65)
+mesh = SubResource("RearDeck")
+[node name="FrontDeck" type="MeshInstance3D" parent="Deck"]
+position = Vector3(-22.5, -0.55, -15.65)
+mesh = SubResource("FrontDeck")
+[node name="ScreenRightDeck" type="MeshInstance3D" parent="Deck"]
+position = Vector3(-25.875, -0.55, -12.15)
+mesh = SubResource("SideDeck")
+[node name="ScreenLeftDeck" type="MeshInstance3D" parent="Deck"]
+position = Vector3(-19.125, -0.55, -12.15)
+mesh = SubResource("SideDeck")
+
+[node name="Pool" type="Node3D" parent="."]
+[node name="Water" type="MeshInstance3D" parent="Pool"]
+position = Vector3(-22.5, -0.37, -12.15)
+mesh = SubResource("PoolWater")
+[node name="RearRim" type="MeshInstance3D" parent="Pool"]
+position = Vector3(-22.5, -0.29, -9.58)
+mesh = SubResource("PoolRimX")
+[node name="FrontRim" type="MeshInstance3D" parent="Pool"]
+position = Vector3(-22.5, -0.29, -14.72)
+mesh = SubResource("PoolRimX")
+[node name="ScreenRightRim" type="MeshInstance3D" parent="Pool"]
+position = Vector3(-25.18, -0.29, -12.15)
+mesh = SubResource("PoolRimZ")
+[node name="ScreenLeftRim" type="MeshInstance3D" parent="Pool"]
+position = Vector3(-19.82, -0.29, -12.15)
+mesh = SubResource("PoolRimZ")
+
+[node name="Rails" type="Node3D" parent="."]
+[node name="RearOuterRail" type="MeshInstance3D" parent="Rails"]
+position = Vector3(-22.5, 0.02, -7.7)
+mesh = SubResource("RailX")
+[node name="ScreenRightOuterRail" type="MeshInstance3D" parent="Rails"]
+position = Vector3(-26.55, 0.02, -12.15)
+mesh = SubResource("RailZ")
+[node name="Post01" type="MeshInstance3D" parent="Rails"]
+position = Vector3(-24.15, -0.02, -7.7)
+mesh = SubResource("RailPost")
+[node name="Post02" type="MeshInstance3D" parent="Rails"]
+position = Vector3(-20.85, -0.02, -7.7)
+mesh = SubResource("RailPost")
+[node name="Post03" type="MeshInstance3D" parent="Rails"]
+position = Vector3(-26.55, -0.02, -10.1)
+mesh = SubResource("RailPost")
+[node name="Post04" type="MeshInstance3D" parent="Rails"]
+position = Vector3(-26.55, -0.02, -14.2)
+mesh = SubResource("RailPost")
+
+[node name="Grid" type="Node3D" parent="."]
+[node name="RearRow" type="MeshInstance3D" parent="Grid"]
+position = Vector3(-22.5, -0.394, -8.7)
+mesh = SubResource("GridRow")
+[node name="FrontRow" type="MeshInstance3D" parent="Grid"]
+position = Vector3(-22.5, -0.394, -15.6)
+mesh = SubResource("GridRow")
+[node name="ScreenRightColumn" type="MeshInstance3D" parent="Grid"]
+position = Vector3(-25.9, -0.394, -12.15)
+mesh = SubResource("GridColumnShort")
+[node name="ScreenLeftColumn" type="MeshInstance3D" parent="Grid"]
+position = Vector3(-19.1, -0.394, -12.15)
+mesh = SubResource("GridColumnShort")
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_mask = 0
+[node name="RearDeck" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-22.5, -0.55, -8.65)
+shape = SubResource("RearCollision")
+[node name="FrontDeck" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-22.5, -0.55, -15.65)
+shape = SubResource("FrontCollision")
+[node name="ScreenRightDeck" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-25.875, -0.55, -12.15)
+shape = SubResource("SideCollision")
+[node name="ScreenLeftDeck" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-19.125, -0.55, -12.15)
+shape = SubResource("SideCollision")

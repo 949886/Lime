@@ -1,0 +1,74 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Material" path="res://game/world/props/materials/PropWood.tres" id="1_wood"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropMetalDark.tres" id="2_metal"]
+
+[sub_resource type="BoxMesh" id="Slat"]
+material = ExtResource("1_wood")
+size = Vector3(2.85, 0.095, 0.16)
+[sub_resource type="BoxMesh" id="FrameLeg"]
+material = ExtResource("2_metal")
+size = Vector3(0.13, 0.62, 0.13)
+[sub_resource type="BoxMesh" id="FrameBar"]
+material = ExtResource("2_metal")
+size = Vector3(2.45, 0.1, 0.1)
+[sub_resource type="BoxMesh" id="SideSupport"]
+material = ExtResource("2_metal")
+size = Vector3(0.1, 0.82, 0.1)
+[sub_resource type="BoxMesh" id="Foot"]
+material = ExtResource("2_metal")
+size = Vector3(0.34, 0.06, 0.28)
+
+[node name="StartBench" type="Node3D"]
+[node name="WoodSlats" type="Node3D" parent="."]
+[node name="Seat01" type="MeshInstance3D" parent="WoodSlats"]
+position = Vector3(0, 0.63, -0.22)
+mesh = SubResource("Slat")
+[node name="Seat02" type="MeshInstance3D" parent="WoodSlats"]
+position = Vector3(0, 0.63, -0.04)
+mesh = SubResource("Slat")
+[node name="Seat03" type="MeshInstance3D" parent="WoodSlats"]
+position = Vector3(0, 0.63, 0.14)
+mesh = SubResource("Slat")
+[node name="Back01" type="MeshInstance3D" parent="WoodSlats"]
+position = Vector3(0, 0.92, 0.34)
+rotation_degrees = Vector3(-8, 0, 0)
+mesh = SubResource("Slat")
+[node name="Back02" type="MeshInstance3D" parent="WoodSlats"]
+position = Vector3(0, 1.10, 0.36)
+rotation_degrees = Vector3(-8, 0, 0)
+mesh = SubResource("Slat")
+[node name="Back03" type="MeshInstance3D" parent="WoodSlats"]
+position = Vector3(0, 1.28, 0.385)
+rotation_degrees = Vector3(-8, 0, 0)
+mesh = SubResource("Slat")
+[node name="MetalFrame" type="Node3D" parent="."]
+[node name="LegLeftFront" type="MeshInstance3D" parent="MetalFrame"]
+position = Vector3(-1.05, 0.31, -0.18)
+mesh = SubResource("FrameLeg")
+[node name="LegLeftRear" type="MeshInstance3D" parent="MetalFrame"]
+position = Vector3(-1.05, 0.31, 0.22)
+mesh = SubResource("FrameLeg")
+[node name="LegRightFront" type="MeshInstance3D" parent="MetalFrame"]
+position = Vector3(1.05, 0.31, -0.18)
+mesh = SubResource("FrameLeg")
+[node name="LegRightRear" type="MeshInstance3D" parent="MetalFrame"]
+position = Vector3(1.05, 0.31, 0.22)
+mesh = SubResource("FrameLeg")
+[node name="LowerBrace" type="MeshInstance3D" parent="MetalFrame"]
+position = Vector3(0, 0.23, 0.08)
+mesh = SubResource("FrameBar")
+[node name="BackSupportLeft" type="MeshInstance3D" parent="MetalFrame"]
+position = Vector3(-1.05, 0.94, 0.31)
+rotation_degrees = Vector3(-8, 0, 0)
+mesh = SubResource("SideSupport")
+[node name="BackSupportRight" type="MeshInstance3D" parent="MetalFrame"]
+position = Vector3(1.05, 0.94, 0.31)
+rotation_degrees = Vector3(-8, 0, 0)
+mesh = SubResource("SideSupport")
+[node name="FootLeft" type="MeshInstance3D" parent="MetalFrame"]
+position = Vector3(-1.05, 0.03, 0.02)
+mesh = SubResource("Foot")
+[node name="FootRight" type="MeshInstance3D" parent="MetalFrame"]
+position = Vector3(1.05, 0.03, 0.02)
+mesh = SubResource("Foot")
