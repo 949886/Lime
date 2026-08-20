@@ -133,6 +133,10 @@ jobs:
         if: matrix.platform == 'Windows'
         run: godot --headless --path . res://tests/smoke/ReferenceStartCameraBaselineSmoke.tscn
 
+      - name: Validate M1.6.4 visible Start assembly
+        if: matrix.platform == 'Windows'
+        run: godot --headless --path . res://tests/smoke/ReferenceStartAssemblySmoke.tscn
+
       - name: Backproject M1.6.4 Start whitebox targets
         if: matrix.platform == 'Windows'
         run: |
