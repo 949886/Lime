@@ -125,16 +125,23 @@ public partial class ReferenceCalibrationSmoke : Node
         await WaitFramesAsync(3);
 
         var camera = gameRoot.CameraDirector.RenderCamera;
+        var startPcam = gameRoot.CameraDirector
+            .GetNode<Node3D>("PCams/StartPerspective")
+            .AsPhantomCamera3D();
+
         Require(gameRoot.CameraDirector.ActiveCameraId == CameraId.StartPerspective,
             "8.5s Start must use StartPerspective.");
         Require((int)camera.Projection == 0 && Mathf.Abs(camera.Fov - 45.0f) < 0.01f,
-            "StartPerspective must remain a 45 degree perspective camera.");
+            "StartPerspective must remain a 45 degree perspective camera until the apparent-height solve.");
 
-        var offset = camera.GlobalPosition - gameRoot.Player.GlobalPosition;
-        Require(offset.DistanceTo(new Vector3(0.0f, 1.5f, -3.0f)) < 0.05f,
-            $"Start camera offset must remain (0, 1.5, -3). Actual={offset}.");
-        Require(Mathf.Abs(camera.GlobalRotationDegrees.X - (-16.0f)) < 0.1f,
-            "Start camera pitch must remain -16 degrees.");
+        var configuredOffset = startPcam.FollowOffset;
+        Require(configuredOffset.DistanceTo(new Vector3(-0.016825f, 2.296143f, -2.502186f)) < 0.001f,
+            $"StartPerspective must keep the solved framing offset. Actual={configuredOffset}.");
+        Require(startPcam.Node3D.RotationDegrees.DistanceTo(new Vector3(-32.02f, 179.79f, 0.0f)) < 0.02f,
+            $"StartPerspective must keep the solved orientation. Actual={startPcam.Node3D.RotationDegrees}.");
+
+        Require(camera.GlobalRotationDegrees.DistanceTo(new Vector3(-32.02f, 179.79f, 0.0f)) < 0.1f,
+            $"RenderCamera must receive the solved Start orientation. Actual={camera.GlobalRotationDegrees}.");
     }
 
     private async Task ValidateExploreCamera(GameRoot gameRoot)
@@ -261,7 +268,7 @@ public partial class ReferenceCalibrationSmoke : Node
         var result = new List<MeshInstance3D>();
         foreach (var child in stairs.GetChildren())
         {
-            if (child is MeshInstance3D step && step.Name.ToString().StartsWith("Step", StringComparison.Ordinal))
+            if (child is MeshInstance3D step && child.Name.ToString().StartsWith("Step", StringComparison.Ordinal))
             {
                 result.Add(step);
             }
