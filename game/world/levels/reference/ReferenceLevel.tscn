@@ -9,10 +9,6 @@ background_color = Color(0.13, 0.14, 0.16, 1)
 [sub_resource type="StandardMaterial3D" id="Material_ground"]
 albedo_color = Color(0.42, 0.43, 0.45, 1)
 
-[sub_resource type="BoxMesh" id="Box_intermediate"]
-material = SubResource("Material_ground")
-size = Vector3(8.774414, 6.9898925, 5)
-
 [sub_resource type="BoxMesh" id="Box_corridor"]
 material = SubResource("Material_ground")
 size = Vector3(19.577759, 0.3, 2.8327637)
@@ -95,9 +91,6 @@ size = Vector3(5, 0.12, 0.12)
 material = SubResource("Material_rail")
 size = Vector3(0.12, 0.8, 0.12)
 
-[sub_resource type="BoxShape3D" id="Shape_intermediate"]
-size = Vector3(8.774414, 6.9898925, 5)
-
 [sub_resource type="BoxShape3D" id="Shape_corridor"]
 size = Vector3(19.577759, 0.3, 2.8327637)
 
@@ -133,10 +126,6 @@ light_energy = 1.15
 shadow_enabled = true
 
 [node name="Geometry" type="Node3D" parent="."]
-
-[node name="IntermediatePlatform" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(0.38720703, -2.6949463, -4.5)
-mesh = SubResource("Box_intermediate")
 
 [node name="LowerCorridor" type="MeshInstance3D" parent="Geometry"]
 position = Vector3(-9.711121, -0.55, -11.666382)
@@ -284,10 +273,6 @@ mesh = SubResource("Box_water")
 
 [node name="Rails" type="Node3D" parent="Geometry"]
 
-[node name="IntermediateLeft" type="MeshInstance3D" parent="Geometry/Rails"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -3.9, 1.2, -4.5)
-mesh = SubResource("Box_rail_long")
-
 [node name="CorridorBack01" type="MeshInstance3D" parent="Geometry/Rails"]
 position = Vector3(-6, 0.05, -10.2)
 mesh = SubResource("Box_rail_long")
@@ -308,10 +293,6 @@ mesh = SubResource("Box_rail_post")
 
 [node name="WorldCollision" type="StaticBody3D" parent="Collision"]
 collision_mask = 0
-
-[node name="IntermediatePlatform" type="CollisionShape3D" parent="Collision/WorldCollision"]
-position = Vector3(0.38720703, -2.6949463, -4.5)
-shape = SubResource("Shape_intermediate")
 
 [node name="LowerCorridor" type="CollisionShape3D" parent="Collision/WorldCollision"]
 position = Vector3(-9.711121, -0.55, -11.666382)
