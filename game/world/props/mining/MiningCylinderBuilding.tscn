@@ -1,0 +1,98 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Material" path="res://game/world/props/materials/PropConcrete.tres" id="1_concrete"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropMetalDark.tres" id="2_dark"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropMetalLight.tres" id="3_light"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropDryGrass.tres" id="4_grass"]
+[ext_resource type="Material" path="res://game/world/props/materials/PropSoil.tres" id="5_soil"]
+
+[sub_resource type="CylinderMesh" id="Body"]
+material = ExtResource("1_concrete")
+top_radius = 2.15
+bottom_radius = 2.35
+height = 6.2
+radial_segments = 32
+[sub_resource type="CylinderMesh" id="Band"]
+material = ExtResource("2_dark")
+top_radius = 2.38
+bottom_radius = 2.38
+height = 0.18
+radial_segments = 32
+[sub_resource type="CylinderMesh" id="RoofLip"]
+material = ExtResource("2_dark")
+top_radius = 2.5
+bottom_radius = 2.5
+height = 0.34
+radial_segments = 32
+[sub_resource type="CylinderMesh" id="Soil"]
+material = ExtResource("5_soil")
+top_radius = 2.25
+bottom_radius = 2.25
+height = 0.18
+radial_segments = 32
+[sub_resource type="CylinderMesh" id="Grass"]
+material = ExtResource("4_grass")
+top_radius = 0.25
+bottom_radius = 0.42
+height = 1.05
+radial_segments = 8
+[sub_resource type="BoxMesh" id="Door"]
+material = ExtResource("2_dark")
+size = Vector3(1.35, 2.35, 0.18)
+[sub_resource type="CylinderMesh" id="Pipe"]
+material = ExtResource("3_light")
+top_radius = 0.13
+bottom_radius = 0.13
+height = 3.0
+radial_segments = 12
+[sub_resource type="BoxMesh" id="PipeElbow"]
+material = ExtResource("3_light")
+size = Vector3(0.26, 0.26, 1.0)
+[sub_resource type="BoxMesh" id="Panel"]
+material = ExtResource("2_dark")
+size = Vector3(0.95, 1.35, 0.18)
+
+[node name="MiningCylinderBuilding" type="Node3D"]
+[node name="Body" type="MeshInstance3D" parent="."]
+position = Vector3(0, 3.1, 0)
+mesh = SubResource("Body")
+[node name="LowerBand" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.05, 0)
+mesh = SubResource("Band")
+[node name="UpperBand" type="MeshInstance3D" parent="."]
+position = Vector3(0, 5.05, 0)
+mesh = SubResource("Band")
+[node name="RoofLip" type="MeshInstance3D" parent="."]
+position = Vector3(0, 6.25, 0)
+mesh = SubResource("RoofLip")
+[node name="RoofSoil" type="MeshInstance3D" parent="."]
+position = Vector3(0, 6.48, 0)
+mesh = SubResource("Soil")
+[node name="Grass01" type="MeshInstance3D" parent="."]
+position = Vector3(-1.1, 6.95, -0.55)
+rotation_degrees = Vector3(0, 0, 10)
+mesh = SubResource("Grass")
+[node name="Grass02" type="MeshInstance3D" parent="."]
+position = Vector3(0.2, 6.95, -0.85)
+mesh = SubResource("Grass")
+[node name="Grass03" type="MeshInstance3D" parent="."]
+position = Vector3(1.15, 6.95, 0.0)
+rotation_degrees = Vector3(0, 0, -8)
+mesh = SubResource("Grass")
+[node name="Grass04" type="MeshInstance3D" parent="."]
+position = Vector3(-0.15, 6.95, 0.85)
+rotation_degrees = Vector3(5, 0, 8)
+mesh = SubResource("Grass")
+[node name="Door" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.45, -2.22)
+mesh = SubResource("Door")
+[node name="UtilityPanel" type="MeshInstance3D" parent="."]
+position = Vector3(1.2, 2.8, -2.05)
+rotation_degrees = Vector3(0, -22, 0)
+mesh = SubResource("Panel")
+[node name="PipeVertical" type="MeshInstance3D" parent="."]
+position = Vector3(-1.55, 2.9, -1.7)
+mesh = SubResource("Pipe")
+[node name="PipeTop" type="MeshInstance3D" parent="."]
+position = Vector3(-1.55, 4.35, -1.25)
+mesh = SubResource("PipeElbow")
