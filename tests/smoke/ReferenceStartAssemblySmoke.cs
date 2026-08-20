@@ -19,18 +19,34 @@ public partial class ReferenceStartAssemblySmoke : Node
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 
             var level = gameRoot.ReferenceLevel;
-            var visuals = level.GetNodeOrNull<Node3D>("ReferenceLevelVisuals")
-                ?? throw new InvalidOperationException("ReferenceLevelVisuals must be statically instanced by ReferenceLevelComposed.tscn.");
-            var startPlatform = visuals.GetNodeOrNull<Node3D>("StartPlatform")
-                ?? throw new InvalidOperationException("StartPlatform.tscn must be statically instanced in ReferenceLevelVisuals.");
-            var grid = visuals.GetNodeOrNull<Node3D>("StartDeckGrid")
-                ?? throw new InvalidOperationException("StartDeckGrid.tscn must be statically instanced in ReferenceLevelVisuals.");
-            var background = visuals.GetNodeOrNull<Node3D>("StartBackgroundStructures")
-                ?? throw new InvalidOperationException("StartBackgroundStructures.tscn must be statically instanced in ReferenceLevelVisuals.");
+            var visuals = level.GetNode<Node3D>("ReferenceLevelVisuals");
+            var startPlatform = visuals.GetNode<Node3D>("StartPlatform");
+            var grid = visuals.GetNode<Node3D>("StartDeckGrid");
+            var background = visuals.GetNode<Node3D>("StartBackgroundStructures");
 
-            var legacyStairs = level.GetNode<Node3D>("Geometry/Stairs01");
-            Require(!legacyStairs.Visible,
-                "ReferenceLevelComposed.tscn must own the legacy Stairs01 visibility override.");
+            Require(level.GetNodeOrNull<Node3D>("Geometry/UpperPlatform") is null,
+                "Legacy UpperPlatform must be removed once StartPlatform owns the Start deck.");
+            Require(level.GetNodeOrNull<Node3D>("Geometry/Stairs01") is null,
+                "Legacy Stairs01 must be removed once StartPlatform owns the Start stair.");
+            Require(level.GetNodeOrNull<CollisionShape3D>("Collision/WorldCollision/UpperPlatform") is null,
+                "Legacy UpperPlatform collision must be removed with its visual.");
+            Require(level.GetNodeOrNull<CollisionShape3D>("Collision/WorldCollision/StairRamp01") is null,
+                "Legacy StairRamp01 collision must be removed with its stair visual.");
+
+            var deck = startPlatform.GetNode<MeshInstance3D>("DeckMain");
+            var deckMesh = deck.Mesh as BoxMesh
+                ?? throw new InvalidOperationException("StartPlatform/DeckMain must use BoxMesh.");
+            Require(deckMesh.Size.X > 10.0f,
+                $"StartPlatform must own one continuous Start deck instead of wings around a legacy hole. Width={deckMesh.Size.X:0.000}.");
+            Require(deckMesh.Material is not null &&
+                    deckMesh.Material.ResourcePath.Contains("/materials/", StringComparison.Ordinal),
+                "StartPlatform DeckMain must use an external material resource.");
+
+            var deckCollision = startPlatform.GetNode<CollisionShape3D>("Collision/Deck");
+            var deckShape = deckCollision.Shape as BoxShape3D
+                ?? throw new InvalidOperationException("StartPlatform Collision/Deck must use BoxShape3D.");
+            Require(deckShape.Size.DistanceTo(deckMesh.Size) < 0.01f,
+                "StartPlatform must own collision matching the complete DeckMain mesh.");
 
             var stairVisual = startPlatform.GetNode<Node3D>("StairVisual");
             var stepCount = 0;
@@ -46,20 +62,15 @@ public partial class ReferenceStartAssemblySmoke : Node
                 var box = step.Mesh as BoxMesh
                     ?? throw new InvalidOperationException($"{step.Name} must use BoxMesh.");
                 Require(Mathf.Abs(box.Size.X - 4.2f) < 0.01f,
-                    $"StartPlatform stair must keep the Pass-A 4.2m width. Actual={box.Size.X:0.000}.");
-                Require(box.Material is not null &&
-                        box.Material.ResourcePath.Contains("/materials/", StringComparison.Ordinal),
-                    $"{step.Name} material must be an external resource, not a runtime-created material.");
+                    $"StartPlatform stair must keep the 4.2m replacement width. Actual={box.Size.X:0.000}.");
             }
 
             Require(stepCount == 12, $"StartPlatform must contain 12 visible treads. Actual={stepCount}.");
-            Require(startPlatform.GetNodeOrNull<MeshInstance3D>("DeckScreenRightWing") is not null,
-                "StartPlatform must include the broad screen-right deck wing.");
-            Require(startPlatform.GetNodeOrNull<MeshInstance3D>("DeckScreenLeftWing") is not null,
-                "StartPlatform must include the screen-left deck wing/recess boundary.");
+            Require(startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/StairRamp") is not null,
+                "StartPlatform must own the replacement stair collision.");
             Require(startPlatform.GetNodeOrNull<MeshInstance3D>("StairScreenRightWall") is not null &&
                     startPlatform.GetNodeOrNull<MeshInstance3D>("StairScreenLeftWall") is not null,
-                "StartPlatform must include both thick stair side walls.");
+                "StartPlatform must include both stair side walls.");
 
             Require(background.GetNodeOrNull<MeshInstance3D>("ScreenRightRoundBuilding") is not null,
                 "StartBackgroundStructures must include the round-building mass.");
@@ -71,34 +82,24 @@ public partial class ReferenceStartAssemblySmoke : Node
             foreach (var child in grid.GetChildren())
             {
                 var name = child.Name.ToString();
-                if (name.StartsWith("Row", StringComparison.Ordinal))
-                {
-                    rowCount++;
-                }
-                else if (name.StartsWith("Column", StringComparison.Ordinal))
-                {
-                    columnCount++;
-                }
+                if (name.StartsWith("Row", StringComparison.Ordinal)) rowCount++;
+                else if (name.StartsWith("Column", StringComparison.Ordinal)) columnCount++;
             }
-
             Require(rowCount == 6 && columnCount == 11,
-                $"StartDeckGrid must preserve the Pass-A grid ruler. Rows={rowCount}, Columns={columnCount}.");
+                $"StartDeckGrid must preserve the square-grid ruler. Rows={rowCount}, Columns={columnCount}.");
 
-            GD.Print("[M1.6.4] PASS: Start reconstruction is scene-composed with external material resources.");
+            GD.Print("[M1.6.4] PASS: StartPlatform completely replaces the legacy Start graybox and owns its collision.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
         {
-            GD.PushError($"[M1.6.4] FAIL: scene-composed Start reconstruction: {exception}");
+            GD.PushError($"[M1.6.4] FAIL: complete Start replacement: {exception}");
             GetTree().Quit(1);
         }
     }
 
     private static void Require(bool condition, string message)
     {
-        if (!condition)
-        {
-            throw new InvalidOperationException(message);
-        }
+        if (!condition) throw new InvalidOperationException(message);
     }
 }
