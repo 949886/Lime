@@ -22,12 +22,13 @@ public partial class ReferenceCalibrationSmoke : Node
 
             ValidateCharacterVisual(gameRoot);
             ValidateStartReplacement(gameRoot.ReferenceLevel);
+            ValidateLowerTerraceReplacement(gameRoot.ReferenceLevel);
             ValidateRemainingCollisionSync(gameRoot.ReferenceLevel);
             ValidateRemainingStairTopology(gameRoot.ReferenceLevel);
             await ValidateStartCamera(gameRoot);
             await ValidateExploreCamera(gameRoot);
 
-            GD.Print("[M1.6] PASS: calibration uses the segmented dual-stair StartPlatform replacement.");
+            GD.Print("[M1.6] PASS: calibration uses scene-composed StartPlatform and StartLowerTerrace replacements.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
@@ -93,6 +94,38 @@ public partial class ReferenceCalibrationSmoke : Node
             "StartPlatformProps must remain part of the production composed scene.");
     }
 
+    private static void ValidateLowerTerraceReplacement(ReferenceLevel level)
+    {
+        Require(level.GetNodeOrNull<Node3D>("Geometry/IntermediatePlatform") is null,
+            "Legacy IntermediatePlatform visual must remain removed.");
+        Require(level.GetNodeOrNull<CollisionShape3D>("Collision/WorldCollision/IntermediatePlatform") is null,
+            "Legacy IntermediatePlatform collision must remain removed.");
+
+        var terrace = level.GetNode<Node3D>("ReferenceLevelVisuals/StartLowerTerrace");
+        var mainDeck = terrace.GetNode<MeshInstance3D>("Deck/MainDeck");
+        var mainMesh = mainDeck.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("StartLowerTerrace Deck/MainDeck must use BoxMesh.");
+        var mainCollision = terrace.GetNode<CollisionShape3D>("Collision/MainDeck");
+        var mainShape = mainCollision.Shape as BoxShape3D
+            ?? throw new InvalidOperationException("StartLowerTerrace Collision/MainDeck must use BoxShape3D.");
+
+        Require(mainMesh.Size.Y < 0.5f,
+            $"StartLowerTerrace must use a thin deck slab, not the legacy multi-meter solid box. Size={mainMesh.Size}.");
+        Require(mainShape.Size.DistanceTo(mainMesh.Size) < 0.01f,
+            "StartLowerTerrace main deck collision must match its visual.");
+        Require(Mathf.Abs(mainDeck.GlobalPosition.Y + mainMesh.Size.Y * 0.5f - 0.8f) < 0.01f,
+            "StartLowerTerrace top surface must preserve the Y=0.8 traversal level.");
+        Require(level.CameraCheck01.GlobalPosition.Y > 0.79f && level.CameraCheck01.GlobalPosition.Y < 0.85f &&
+                level.CameraCheck02.GlobalPosition.Y > 0.79f && level.CameraCheck02.GlobalPosition.Y < 0.85f,
+            "CameraCheck01/02 must remain aligned to the StartLowerTerrace traversal plane.");
+
+        Require(terrace.GetNodeOrNull<MeshInstance3D>("RetainingWalls/FrontScreenRight") is not null &&
+                terrace.GetNodeOrNull<MeshInstance3D>("RetainingWalls/FrontScreenLeft") is not null,
+            "StartLowerTerrace must split the front retaining wall around the Stairs02 opening.");
+        Require(terrace.GetNodeOrNull<MeshInstance3D>("Rails/ScreenRightSideRail") is not null,
+            "StartLowerTerrace must own the side rail previously approximated by the legacy IntermediateLeft rail.");
+    }
+
     private static void ValidateStartStair(Node3D stair, string label)
     {
         Require(stair.GetNodeOrNull<CollisionShape3D>("Collision/Ramp") is not null,
@@ -101,7 +134,7 @@ public partial class ReferenceCalibrationSmoke : Node
         var count = 0;
         foreach (var child in visual.GetChildren())
         {
-            if (child is MeshInstance3D step && step.Name.ToString().StartsWith("Step", StringComparison.Ordinal))
+            if (child is MeshInstance3D step && child.Name.ToString().StartsWith("Step", StringComparison.Ordinal))
                 count++;
         }
         Require(count == ReferenceLevel.ReferenceStairStepCount,
@@ -112,7 +145,6 @@ public partial class ReferenceCalibrationSmoke : Node
     {
         foreach (var name in new[]
                  {
-                     "IntermediatePlatform",
                      "LowerCorridor",
                      "PlazaExtension",
                      "LowerFrontPlatform",
@@ -142,7 +174,7 @@ public partial class ReferenceCalibrationSmoke : Node
         var count = 0;
         foreach (var child in stairs.GetChildren())
         {
-            if (child is MeshInstance3D step && step.Name.ToString().StartsWith("Step", StringComparison.Ordinal))
+            if (child is MeshInstance3D step && child.Name.ToString().StartsWith("Step", StringComparison.Ordinal))
                 count++;
         }
         Require(count == ReferenceLevel.ReferenceStairStepCount,
