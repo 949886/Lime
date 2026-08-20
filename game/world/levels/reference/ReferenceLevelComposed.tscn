@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://game/world/levels/reference/ReferenceLevel.tscn" id="1_reference_level"]
+[ext_resource type="PackedScene" path="res://game/world/levels/reference/ReferenceLevelVisuals.tscn" id="2_visuals"]
+
+[node name="ReferenceLevel" instance=ExtResource("1_reference_level")]
+
+[node name="ReferenceLevelVisuals" parent="." instance=ExtResource("2_visuals")]
