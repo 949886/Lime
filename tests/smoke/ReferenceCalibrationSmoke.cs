@@ -27,7 +27,7 @@ public partial class ReferenceCalibrationSmoke : Node
             await ValidateStartCamera(gameRoot);
             await ValidateExploreCamera(gameRoot);
 
-            GD.Print("[M1.6] PASS: reference calibration uses the scene-composed Start replacement.");
+            GD.Print("[M1.6] PASS: reference calibration uses the scene-composed dual-stair Start replacement.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
@@ -68,22 +68,30 @@ public partial class ReferenceCalibrationSmoke : Node
         var deckShape = deckCollision.Shape as BoxShape3D
             ?? throw new InvalidOperationException("StartPlatform deck collision must use BoxShape3D.");
 
-        Require(deckMesh.Size.X > 10.0f,
-            "StartPlatform must use one continuous Start deck rather than two wings around a legacy hole.");
+        Require(deckMesh.Size.X >= 16.0f,
+            "Supplemental Start reference requires a broad continuous upper plaza.");
         Require(deckShape.Size.DistanceTo(deckMesh.Size) < 0.01f,
             "StartPlatform deck collision must match the complete deck visual.");
-        Require(startPlatform.GetNodeOrNull<CollisionShape3D>("Collision/StairRamp") is not null,
-            "StartPlatform must own the replacement stair collision.");
 
-        var stairVisual = startPlatform.GetNode<Node3D>("StairVisual");
+        ValidateStartStair(startPlatform.GetNode<Node3D>("RightStair"), "RightStair");
+        ValidateStartStair(startPlatform.GetNode<Node3D>("LeftStair"), "LeftStair");
+        Require(startPlatform.GetNodeOrNull<MeshInstance3D>("FrontRetainingWall") is not null,
+            "StartPlatform must preserve the central retaining wall between stair openings.");
+    }
+
+    private static void ValidateStartStair(Node3D stair, string label)
+    {
+        Require(stair.GetNodeOrNull<CollisionShape3D>("Collision/Ramp") is not null,
+            $"{label} must own its ramp collision.");
+        var visual = stair.GetNode<Node3D>("StairVisual");
         var count = 0;
-        foreach (var child in stairVisual.GetChildren())
+        foreach (var child in visual.GetChildren())
         {
             if (child is MeshInstance3D step && step.Name.ToString().StartsWith("Step", StringComparison.Ordinal))
                 count++;
         }
         Require(count == ReferenceLevel.ReferenceStairStepCount,
-            $"StartPlatform stair must contain {ReferenceLevel.ReferenceStairStepCount} steps. Actual={count}.");
+            $"{label} must contain {ReferenceLevel.ReferenceStairStepCount} steps. Actual={count}.");
     }
 
     private static void ValidateRemainingCollisionSync(ReferenceLevel level)
