@@ -209,19 +209,32 @@ public partial class ReferenceCalibrationSmoke : Node
         var perspectivePoint = ProjectNormalized(gameRoot.CameraDirector.RenderCamera, checkpoint.GlobalPosition);
 
         gameRoot.CameraDirector.ActivateInstant(CameraId.ExploreOrthographic);
-        await WaitFramesAsync(2);
         var camera = gameRoot.CameraDirector.RenderCamera;
+        await WaitForOrthographicStateAsync(camera, 8);
         var orthographicPoint = ProjectNormalized(camera, checkpoint.GlobalPosition);
 
         Require((int)camera.Projection == 1,
             "Orthographic A/B camera must apply orthographic projection.");
         Require(Mathf.Abs(camera.Size - 11.1f) < 0.01f,
-            "Orthographic A/B size must remain 11.1.");
+            $"Orthographic A/B size must settle at 11.1. Actual={camera.Size:0.000}.");
         Require(perspectivePoint.DistanceTo(orthographicPoint) < 0.01f,
             "Perspective and Orthographic A/B must preserve target-plane framing.");
 
         gameRoot.CameraDirector.ActivateInstant(CameraId.ExplorePerspective);
         await WaitFramesAsync(2);
+    }
+
+    private async Task WaitForOrthographicStateAsync(Camera3D camera, int maxFrames)
+    {
+        for (var index = 0; index < maxFrames; index++)
+        {
+            if ((int)camera.Projection == 1 && Mathf.Abs(camera.Size - 11.1f) < 0.01f)
+            {
+                return;
+            }
+
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        }
     }
 
     private void MeasureNormalizedAnchor(
