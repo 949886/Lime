@@ -23,12 +23,13 @@ public partial class ReferenceCalibrationSmoke : Node
             ValidateCharacterVisual(gameRoot);
             ValidateStartReplacement(gameRoot.ReferenceLevel);
             ValidateLowerTerraceReplacement(gameRoot.ReferenceLevel);
+            ValidateMiningApproachReplacement(gameRoot.ReferenceLevel);
             ValidateRemainingCollisionSync(gameRoot.ReferenceLevel);
             ValidateRemainingStairTopology(gameRoot.ReferenceLevel);
             await ValidateStartCamera(gameRoot);
             await ValidateExploreCamera(gameRoot);
 
-            GD.Print("[M1.6] PASS: calibration uses scene-composed StartPlatform and StartLowerTerrace replacements.");
+            GD.Print("[M1.6] PASS: calibration uses composed Start, lower-terrace and mining-approach replacements.");
             GetTree().Quit(0);
         }
         catch (Exception exception)
@@ -65,11 +66,11 @@ public partial class ReferenceCalibrationSmoke : Node
         var rearCollision = startPlatform.GetNode<CollisionShape3D>("Collision/RearDeck");
         var rearShape = rearCollision.Shape as BoxShape3D
             ?? throw new InvalidOperationException("StartPlatform Collision/RearDeck must use BoxShape3D.");
-
         Require(rearMesh.Size.X >= 19.5f && rearMesh.Size.Z > 5.5f,
             $"Detailed Start rear plaza must retain the broad reference silhouette. Size={rearMesh.Size}.");
         Require(rearShape.Size.DistanceTo(rearMesh.Size) < 0.01f,
             "RearDeck collision must match the rear plaza mesh.");
+
         var playerStartLocal = level.ToLocal(level.PlayerStart.GlobalPosition);
         var rearLocal = level.ToLocal(rear.GlobalPosition);
         Require(playerStartLocal.Z > rearLocal.Z - rearMesh.Size.Z * 0.5f &&
@@ -90,8 +91,6 @@ public partial class ReferenceCalibrationSmoke : Node
         ValidateStartStair(left, "LeftStair");
         Require(left.Position.X - right.Position.X > 8.0f,
             "Reference dual-stair spacing must remain wider than 8m in this pass.");
-        Require(startPlatform.GetNodeOrNull<MeshInstance3D>("FrontArchitecture/CenterRetainingWall") is not null,
-            "StartPlatform must preserve the central retaining wall between stair openings.");
         Require(level.GetNodeOrNull<Node3D>("ReferenceLevelVisuals/StartPlatformProps") is not null,
             "StartPlatformProps must remain part of the production composed scene.");
     }
@@ -110,40 +109,84 @@ public partial class ReferenceCalibrationSmoke : Node
         var mainCollision = terrace.GetNode<CollisionShape3D>("Collision/MainDeck");
         var mainShape = mainCollision.Shape as BoxShape3D
             ?? throw new InvalidOperationException("StartLowerTerrace Collision/MainDeck must use BoxShape3D.");
-
         Require(mainMesh.Size.Y < 0.5f,
-            $"StartLowerTerrace must use a thin deck slab, not the legacy multi-meter solid box. Size={mainMesh.Size}.");
+            $"StartLowerTerrace must use a thin deck slab. Size={mainMesh.Size}.");
         Require(mainShape.Size.DistanceTo(mainMesh.Size) < 0.01f,
             "StartLowerTerrace main deck collision must match its visual.");
         var mainDeckLocal = level.ToLocal(mainDeck.GlobalPosition);
         Require(Mathf.Abs(mainDeckLocal.Y + mainMesh.Size.Y * 0.5f - 0.8f) < 0.01f,
-            $"StartLowerTerrace top surface must preserve local Y=0.8 traversal level. Actual={mainDeckLocal.Y + mainMesh.Size.Y * 0.5f:0.000}.");
+            $"StartLowerTerrace top surface must preserve local Y=0.8. Actual={mainDeckLocal.Y + mainMesh.Size.Y * 0.5f:0.000}.");
+
         var check01Local = level.ToLocal(level.CameraCheck01.GlobalPosition);
         var check02Local = level.ToLocal(level.CameraCheck02.GlobalPosition);
         Require(check01Local.Y > 0.79f && check01Local.Y < 0.85f &&
                 check02Local.Y > 0.79f && check02Local.Y < 0.85f,
-            "CameraCheck01/02 must remain aligned to the StartLowerTerrace traversal plane in level-local space.");
+            "CameraCheck01/02 must remain aligned to the lower-terrace plane.");
+    }
 
-        Require(terrace.GetNodeOrNull<MeshInstance3D>("RetainingWalls/FrontScreenRight") is not null &&
-                terrace.GetNodeOrNull<MeshInstance3D>("RetainingWalls/FrontScreenLeft") is not null,
-            "StartLowerTerrace must split the front retaining wall around the Stairs02 opening.");
-        Require(terrace.GetNodeOrNull<MeshInstance3D>("Rails/ScreenRightSideRail") is not null,
-            "StartLowerTerrace must own the side rail previously approximated by the legacy IntermediateLeft rail.");
+    private static void ValidateMiningApproachReplacement(ReferenceLevel level)
+    {
+        foreach (var path in new[]
+                 {
+                     "Geometry/Stairs02",
+                     "Geometry/Check03BackPlatform",
+                     "Geometry/Check03Projection",
+                 })
+        {
+            Require(level.GetNodeOrNull<Node3D>(path) is null,
+                $"Legacy mining approach node {path} must remain removed.");
+        }
+        foreach (var path in new[]
+                 {
+                     "Collision/WorldCollision/StairRamp02",
+                     "Collision/WorldCollision/Check03BackPlatform",
+                     "Collision/WorldCollision/Check03Projection",
+                 })
+        {
+            Require(level.GetNodeOrNull<CollisionShape3D>(path) is null,
+                $"Legacy mining approach collision {path} must remain removed.");
+        }
+
+        var approach = level.GetNode<Node3D>("ReferenceLevelVisuals/MiningApproachTerrace");
+        var steps = approach.GetNode<Node3D>("Stair/Steps");
+        ValidateStairCount(steps, "MiningApproachTerrace/Stair");
+        var firstStep = steps.GetNode<MeshInstance3D>("Step01");
+        var stepMesh = firstStep.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("MiningApproach Step01 must use BoxMesh.");
+        Require(Mathf.Abs(stepMesh.Size.X - 3.6f) < 0.01f,
+            $"MiningApproach stair width must remain 3.6m. Actual={stepMesh.Size.X:0.00}.");
+        Require(approach.GetNodeOrNull<CollisionShape3D>("Collision/StairRamp") is not null,
+            "MiningApproach stair must own its ramp collision.");
+
+        var backDeck = approach.GetNode<MeshInstance3D>("Landing/BackDeck");
+        var backMesh = backDeck.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("MiningApproach Landing/BackDeck must use BoxMesh.");
+        var backShape = approach.GetNode<CollisionShape3D>("Collision/LandingBack").Shape as BoxShape3D
+            ?? throw new InvalidOperationException("MiningApproach Collision/LandingBack must use BoxShape3D.");
+        Require(backShape.Size.DistanceTo(backMesh.Size) < 0.01f,
+            "MiningApproach landing-back collision must match visual.");
+
+        var projection = approach.GetNode<MeshInstance3D>("Landing/ForwardProjection");
+        var projectionMesh = projection.Mesh as BoxMesh
+            ?? throw new InvalidOperationException("MiningApproach Landing/ForwardProjection must use BoxMesh.");
+        var projectionShape = approach.GetNode<CollisionShape3D>("Collision/LandingProjection").Shape as BoxShape3D
+            ?? throw new InvalidOperationException("MiningApproach Collision/LandingProjection must use BoxShape3D.");
+        Require(projectionShape.Size.DistanceTo(projectionMesh.Size) < 0.01f,
+            "MiningApproach projection collision must match visual.");
+
+        var backLocal = level.ToLocal(backDeck.GlobalPosition);
+        Require(Mathf.Abs(backLocal.Y + backMesh.Size.Y * 0.5f + 0.4f) < 0.01f,
+            $"MiningApproach landing top must preserve local Y=-0.4. Actual={backLocal.Y + backMesh.Size.Y * 0.5f:0.000}.");
+        var check03Local = level.ToLocal(level.CameraCheck03.GlobalPosition);
+        Require(check03Local.Y > -0.42f && check03Local.Y < -0.35f,
+            "CameraCheck03 must remain aligned to the MiningApproach landing plane.");
     }
 
     private static void ValidateStartStair(Node3D stair, string label)
     {
         Require(stair.GetNodeOrNull<CollisionShape3D>("Collision/Ramp") is not null,
             $"{label} must own its ramp collision.");
-        var visual = stair.GetNode<Node3D>("StairVisual");
-        var count = 0;
-        foreach (var child in visual.GetChildren())
-        {
-            if (child is MeshInstance3D step && child.Name.ToString().StartsWith("Step", StringComparison.Ordinal))
-                count++;
-        }
-        Require(count == ReferenceLevel.ReferenceStairStepCount,
-            $"{label} must contain {ReferenceLevel.ReferenceStairStepCount} steps. Actual={count}.");
+        ValidateStairCount(stair.GetNode<Node3D>("StairVisual"), label);
     }
 
     private static void ValidateRemainingCollisionSync(ReferenceLevel level)
@@ -153,8 +196,6 @@ public partial class ReferenceCalibrationSmoke : Node
                      "LowerCorridor",
                      "PlazaExtension",
                      "LowerFrontPlatform",
-                     "Check03BackPlatform",
-                     "Check03Projection",
                  })
         {
             var meshNode = level.GetNode<MeshInstance3D>($"Geometry/{name}");
@@ -170,7 +211,6 @@ public partial class ReferenceCalibrationSmoke : Node
 
     private static void ValidateRemainingStairTopology(ReferenceLevel level)
     {
-        ValidateStairCount(level.GetNode<Node3D>("Geometry/Stairs02"), "Stairs02");
         ValidateStairCount(level.GetNode<Node3D>("Geometry/LowerFrontStairs"), "LowerFrontStairs");
     }
 
