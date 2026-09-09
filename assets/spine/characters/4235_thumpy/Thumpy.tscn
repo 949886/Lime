@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://b0xa8r1jk1o4h"]
+
+[ext_resource type="PackedScene" uid="uid://bolnpfgoixqrg" path="res://assets/spine/characters/Character.tscn" id="1_6ak7b"]
+[ext_resource type="SpineAtlasResource" uid="uid://ctcxf5har35ot" path="res://assets/spine/characters/4235_thumpy/build_char_4235_thumpy.atlas" id="2_766vx"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://cv1mlcyah7ykf" path="res://assets/spine/characters/4235_thumpy/build_char_4235_thumpy.skel" id="3_sl5tn"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_jhuke"]
+viewport_path = NodePath("Sprite3D/SubViewport")
+
+[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_6ak7b"]
+atlas_res = ExtResource("2_766vx")
+skeleton_file_res = ExtResource("3_sl5tn")
+
+[node name="Character" unique_id=178272724 instance=ExtResource("1_6ak7b")]
+
+[node name="Sprite3D" parent="." index="0" unique_id=188709310]
+alpha_cut = 2
+texture = SubResource("ViewportTexture_jhuke")
+
+[node name="SpineSprite" parent="Sprite3D/SubViewport" parent_id_path=PackedInt32Array(2040691830) index="0" unique_id=1927152648]
+skeleton_data_res = SubResource("SpineSkeletonDataResource_6ak7b")

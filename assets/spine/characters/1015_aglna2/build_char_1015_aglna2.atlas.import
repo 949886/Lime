@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://bsj5bikxwnee1"
+path="res://.godot/imported/build_char_1015_aglna2.atlas-fdd414f40241ffef6f7281589495a062.spatlas"
+
+[deps]
+
+source_file="res://assets/spine/characters/1015_aglna2/build_char_1015_aglna2.atlas"
+dest_files=["res://.godot/imported/build_char_1015_aglna2.atlas-fdd414f40241ffef6f7281589495a062.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

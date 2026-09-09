@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dislenvt34jnd"]
+
+[ext_resource type="PackedScene" uid="uid://bolnpfgoixqrg" path="res://assets/spine/characters/Character.tscn" id="1_7gxgp"]
+[ext_resource type="SpineAtlasResource" uid="uid://cttam1dk5jgfh" path="res://assets/spine/characters/4237_jcinta/build_char_4237_jcinta.atlas" id="1_dapvu"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://br757y7lf0vf8" path="res://assets/spine/characters/4237_jcinta/build_char_4237_jcinta.skel" id="2_plhvf"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_60hln"]
+viewport_path = NodePath("Sprite3D/SubViewport")
+
+[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_rhe6t"]
+atlas_res = ExtResource("1_dapvu")
+skeleton_file_res = ExtResource("2_plhvf")
+
+[node name="Character" unique_id=178272724 instance=ExtResource("1_7gxgp")]
+
+[node name="Sprite3D" parent="." index="0" unique_id=188709310]
+texture = SubResource("ViewportTexture_60hln")
+
+[node name="SpineSprite" parent="Sprite3D/SubViewport" parent_id_path=PackedInt32Array(2040691830) index="0" unique_id=1927152648]
+skeleton_data_res = SubResource("SpineSkeletonDataResource_rhe6t")

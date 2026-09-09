@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://ctcxf5har35ot"
+path="res://.godot/imported/build_char_4235_thumpy.atlas-08788eeee1c22cec760ffd43353a269a.spatlas"
+
+[deps]
+
+source_file="res://assets/spine/characters/4235_thumpy/build_char_4235_thumpy.atlas"
+dest_files=["res://.godot/imported/build_char_4235_thumpy.atlas-08788eeee1c22cec760ffd43353a269a.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"
